@@ -28,6 +28,12 @@ def responseOption():
 # csv file functions
 #===================================================================================
 
+def csvValidation():
+    # TODO
+    # this function will format each record (response) to make sure it's not too long
+    # for now, all we will do is truncate to 500 chars.
+    print() # this is just placeholder code so there won't a syntax error.
+
 def csvRead(path):
     # TODO
     # this function reads the csv file and makes sure it is formatted correctly. 
