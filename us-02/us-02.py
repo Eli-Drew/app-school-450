@@ -7,6 +7,11 @@ import csv
 import os.path
 from os import path
 
+#===================================================================================
+# Global variables
+#===================================================================================
+
+maxResponseLength = 500
 
 #===================================================================================
 # single reponse functions
@@ -18,8 +23,8 @@ def responseOption():
 
     # this is easier than opening a command line editor
     responseValue = str(input("Enter in a response: "))
-    if (len(responseValue) > 500):
-        responseValue = responseValue[0:499]
+    if (len(responseValue) > maxResponseLength):
+        responseValue = responseValue[0:maxResponseLength]
         print("Response Length = " + str(len(responseValue)))
     else:
         print("Response Length = " + str(len(responseValue)))
@@ -28,22 +33,57 @@ def responseOption():
 # csv file functions
 #===================================================================================
 
-def csvValidation():
+def bomValidation(record):
     # TODO
-    # this function will format each record (response) to make sure it's not too long
-    # for now, all we will do is truncate to 500 chars.
-    print() # this is just placeholder code so there won't a syntax error.
+    # this function will get rid of the 3 bom characters in the beginning if present
+
+    bomDict = [
+        {'name': 'UTF-8', 'sig': b'\xEF\xBB\xBF', 'encoding': 'utf-8'},
+        {'name': 'UTF-16 big-endian', 'sig': b'\xFE\xFF', 'encoding': 'utf-16-be'},
+        {'name': 'UTF-16 little-endian', 'sig': b'\xFF\xFE', 'encoding': 'utf-16-le'},
+        {'name': 'UTF-32 big-endian', 'sig': b'\x00\x00\xFE\xFF', 'encoding': 'utf-32-be'},
+        {'name': 'UTF-32 little-endian', 'sig': b'\xFF\xFE\x00\x00', 'encoding': 'utf-32-le'}]
+
+    bomListOriginal = [b'\xEF\xBB\xBF', b'\xFE\xFF', b'\x00\x00\xFE\xFF', b'\xFF\xFE\x00\x00']
+    bomList = ['ï»¿']
+
+    # test = record[:3]
+
+    if record[:3] in bomList:
+        record = record[3:]
+
+    # print('record 1 = ' + str(record))
+    
+    return record
 
 def csvRead(path):
-    # TODO
+
     # this function reads the csv file and makes sure it is formatted correctly. 
+    # need to reorder some validation
+    count = 0
     with open(path, newline='') as csvFile:
         csvReader = csv.reader(csvFile, delimiter=',')
         for row in csvReader:
-            print(row)
+
+            currentRow = row[0]
+
+            if count == 0:
+                currentRow = bomValidation(currentRow)
+                count += 1
+ 
+            print("Record length is: " + str(len(row[0])))
+
+            # validate that there is only one element is each record.
+            if len(row) != 1:
+                print("***Invalid .csv file***")
+            else:
+                if len(row[0]) > maxResponseLength:
+                    currentRow = currentRow[0:maxResponseLength] 
+                    print("Length now is: " + str(len(currentRow)))
+                    
 
 def csvOption(): # dont change this to csv(). it will cause errors
-    # TODO
+
     # this function asks user for a path and then validates the path is valid. 
     validPath = False
     while not validPath:
@@ -56,7 +96,7 @@ def csvOption(): # dont change this to csv(). it will cause errors
 
         else:
             # continue just continues the loop. the else isn't nessecary but its good practice.
-            continue
+            print("That was not a valid path or file.")
 
 #===================================================================================
 # driver code
