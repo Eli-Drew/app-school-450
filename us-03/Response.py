@@ -14,17 +14,18 @@ Purpose: This is the Response object class file.
 =================================================
 """
 
+
 class Response(object):
     """Represents a response and related result information"""
 
     numberOfResponses = 0
     listOfSentimentScores = []
 
-    def __init__(self, record, recordNumber):
+    def __init__(self, record):
         """Contructor takes in the actual record response."""
         Response.numberOfResponses += 1
         self.record = record
-        self.recordNumber = recordNumber
+        self.recordNumber = Response.numberOfResponses
         self.sequences = [[]]
         self.sentimentScore
         self.themes = []
@@ -40,7 +41,7 @@ class Response(object):
 
     def setSequence(self, sequences):
         self.sequences = sequences
-    
+
     def getSentimentScore(self):
         return self.sentimentScore
 
