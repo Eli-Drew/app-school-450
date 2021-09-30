@@ -1,7 +1,10 @@
 """
+=================================================
 Author: Drew Rinker
-Test File for user story 2
+Date:   09/28/21
 
+This file takes care of us-02
+=================================================
 """
 import csv
 import os.path
@@ -20,14 +23,21 @@ maxResponseLength = 500
 def responseOption():
     # TODO
     # this function will open a command line editor and limit the text area to 500 characters.
+    validResponse = False
+    while not validResponse:
+        responseValue = str(input("Enter in a response (max 500 characters): "))
+        if len(responseValue) > 500:
+            print("That was longer than 500 characters!")
+        else:
+            validResponse = True
 
     # this is easier than opening a command line editor
-    responseValue = str(input("Enter in a response: "))
-    if (len(responseValue) > maxResponseLength):
-        responseValue = responseValue[0:maxResponseLength]
-        print("Response Length = " + str(len(responseValue)))
-    else:
-        print("Response Length = " + str(len(responseValue)))
+    # responseValue = str(input("Enter in a response: "))
+    # if (len(responseValue) > maxResponseLength):
+    #     responseValue = responseValue[0:maxResponseLength]
+    #     print("Response Length = " + str(len(responseValue)))
+    # else:
+    #     print("Response Length = " + str(len(responseValue)))
 
 #===================================================================================
 # csv file functions
@@ -45,6 +55,8 @@ def bomValidation(record):
         {'name': 'UTF-32 little-endian', 'sig': b'\xFF\xFE\x00\x00', 'encoding': 'utf-32-le'}]
 
     bomListOriginal = [b'\xEF\xBB\xBF', b'\xFE\xFF', b'\x00\x00\xFE\xFF', b'\xFF\xFE\x00\x00']
+
+    # this list will have to be added to so we can do this for any time of bom encoding
     bomList = ['ï»¿']
 
     # test = record[:3]
