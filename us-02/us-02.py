@@ -21,7 +21,6 @@ maxResponseLength = 500
 #===================================================================================
 
 def responseOption():
-    # TODO
     # this function will open a command line editor and limit the text area to 500 characters.
     validResponse = False
     while not validResponse:
@@ -44,7 +43,6 @@ def responseOption():
 #===================================================================================
 
 def bomValidation(record):
-    # TODO
     # this function will get rid of the 3 bom characters in the beginning if present
 
     bomDict = [
@@ -69,37 +67,39 @@ def bomValidation(record):
     return record
 
 def csvRead(path):
-
     # this function reads the csv file and makes sure it is formatted correctly. 
     # need to reorder some validation
-    count = 0
-    with open(path, newline='') as csvFile:
-        csvReader = csv.reader(csvFile, delimiter=',')
+    count = 1
+    with open(path, newline='', encoding="utf-8") as csvFile:
+        csvReader = csv.reader(csvFile, delimiter='|')
         for row in csvReader:
 
             currentRow = row[0]
 
-            if count == 0:
-                currentRow = bomValidation(currentRow)
-                count += 1
- 
-            print("Record length is: " + str(len(row[0])))
-
             # validate that there is only one element is each record.
             if len(row) != 1:
                 print("***Invalid .csv file***")
+                break
             else:
+                print("Row " + str(count))
+                if count == 1:
+                    currentRow = bomValidation(currentRow)
+
                 if len(row[0]) > maxResponseLength:
+                    print(currentRow + "\n" + "Length was: " + str(len(currentRow)))
                     currentRow = currentRow[0:maxResponseLength] 
-                    print("Length now is: " + str(len(currentRow)))
-                    
+
+                print(currentRow + "\n" + "Length: " + str(len(currentRow)))
+                count += 1
+
 
 def csvOption(): # dont change this to csv(). it will cause errors
-
     # this function asks user for a path and then validates the path is valid. 
     validPath = False
     while not validPath:
-        enteredPath = str(input("Enter path to the file: "))
+        enteredFile = str(input("Enter name of the data set (with the extention): "))
+        enteredPath = "C:\\Users\\Drew\\Documents\\app-school-450\\data-sets\\" + enteredFile
+        print(enteredPath)
         existingPath = path.exists(enteredPath)
         if existingPath:
             validPath = True
