@@ -6,6 +6,7 @@ Date:   09/28/21
 This file takes care of us-02
 =================================================
 """
+import nltk
 import csv
 import os.path
 from os import path
@@ -38,6 +39,9 @@ def responseOption():
     #     print("Response Length = " + str(len(responseValue)))
     # else:
     #     print("Response Length = " + str(len(responseValue)))
+    
+    nltk_tokens = nltk.word_tokenize(responseValue)
+    print (nltk_tokens)
 
 #===================================================================================
 # csv file functions
@@ -78,6 +82,11 @@ def csvRead(path):
         for row in csvReader:
 
             currentRow = row[0]
+            
+             print(currentRow)
+            
+            nltk_tokens = nltk.word_tokenize(currentRow)
+            print (nltk_tokens)
 
             if count == 0:
                 currentRow = bomValidation(currentRow)
