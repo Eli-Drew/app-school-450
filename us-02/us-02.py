@@ -9,6 +9,13 @@ This file takes care of us-02
 import csv
 import os.path
 from os import path
+from typing import Sequence
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from datetime import datetime
+import numpy as np
 
 #===================================================================================
 # Global variables
@@ -17,11 +24,29 @@ from os import path
 maxResponseLength = 500
 
 #===================================================================================
+# semantic analysis functions
+#===================================================================================
+
+def tokenizeResults(data):
+    # tokenizes an array of strings
+
+    tokenizer = Tokenizer(num_words = 100000)
+    tokenizer.fit_on_texts(data)
+    word_index = tokenizer.word_index
+    # print(word_index)
+
+    sequences = tokenizer.texts_to_sequences(data)
+    paddedSequences = pad_sequences(sequences, maxlen = 500)
+
+    print("Word Index: ", word_index)
+    print("Sequences: ", sequences)
+    print("Padded sequences: ", paddedSequences)
+
+#===================================================================================
 # single reponse functions
 #===================================================================================
 
 def responseOption():
-    # TODO
     # this function will open a command line editor and limit the text area to 500 characters.
     validResponse = False
     while not validResponse:
@@ -31,20 +56,11 @@ def responseOption():
         else:
             validResponse = True
 
-    # this is easier than opening a command line editor
-    # responseValue = str(input("Enter in a response: "))
-    # if (len(responseValue) > maxResponseLength):
-    #     responseValue = responseValue[0:maxResponseLength]
-    #     print("Response Length = " + str(len(responseValue)))
-    # else:
-    #     print("Response Length = " + str(len(responseValue)))
-
 #===================================================================================
 # csv file functions
 #===================================================================================
 
 def bomValidation(record):
-    # TODO
     # this function will get rid of the 3 bom characters in the beginning if present
 
     bomDict = [
@@ -68,48 +84,71 @@ def bomValidation(record):
     
     return record
 
-def csvRead(path):
+def csvWrite(path):
+    # This makes a copy of the input csv with responses truncated to 500 chars
+    now = datetime.now()
+    nowFormat = now.strftime("%d/%m/%Y-%H.%M")
 
+    writeFile = "new-" + path
+
+def csvRead(path):
     # this function reads the csv file and makes sure it is formatted correctly. 
     # need to reorder some validation
-    count = 0
-    with open(path, newline='') as csvFile:
-        csvReader = csv.reader(csvFile, delimiter=',')
+
+    data = []
+
+    count = 1
+    with open(path, newline='', encoding="utf-8") as csvFile:
+        csvReader = csv.reader(csvFile, delimiter='|')
         for row in csvReader:
 
             currentRow = row[0]
 
-            if count == 0:
-                currentRow = bomValidation(currentRow)
-                count += 1
- 
-            print("Record length is: " + str(len(row[0])))
-
             # validate that there is only one element is each record.
             if len(row) != 1:
                 print("***Invalid .csv file***")
+                break
             else:
+                print("Row " + str(count))
+                if count == 1:
+                    currentRow = bomValidation(currentRow)
+
                 if len(row[0]) > maxResponseLength:
+                    print(currentRow + "\n" + "Length was: " + str(len(currentRow)))
                     currentRow = currentRow[0:maxResponseLength] 
-                    print("Length now is: " + str(len(currentRow)))
-                    
+
+                print(currentRow + "\n" + "Length: " + str(len(currentRow)))
+                count += 1
+
+                data.append(currentRow)
+
+    return data
+
 
 def csvOption(): # dont change this to csv(). it will cause errors
-
     # this function asks user for a path and then validates the path is valid. 
+    # this function is essentially the driver code for the .csv option.
     validPath = False
     while not validPath:
-        enteredPath = str(input("Enter path to the file: "))
+        # TODO
+        # this will need to change. the user will have to enter full path or browse. 
+        # change entered path to the correct path on your computer
+        enteredFile = str(input("Enter name of the data set (with the extention): "))
+        enteredPath = "C:\\Users\\Drew\\Documents\\app-school-450\\data-sets\\" + enteredFile
+        print(enteredPath)
         existingPath = path.exists(enteredPath)
         if existingPath:
             validPath = True
             print("This is a valid path.")
-            csvRead(enteredPath)
-
         else:
             # continue just continues the loop. the else isn't nessecary but its good practice.
             print("That was not a valid path or file.")
 
+    newData = csvRead(enteredPath)
+
+    # tokenize
+    tokenizeResults(newData)
+    
 #===================================================================================
 # driver code
 #===================================================================================
