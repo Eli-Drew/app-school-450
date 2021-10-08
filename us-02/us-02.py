@@ -3,7 +3,10 @@
 Author: Drew Rinker
 Date:   09/28/21
 
-This file takes care of us-02
+This file takes care of us-02.
+
+I believe we will need to train and then test 
+the data. I'm not sure how to do that yet. 
 =================================================
 """
 import csv
@@ -27,10 +30,10 @@ maxResponseLength = 500
 # semantic analysis functions
 #===================================================================================
 
-def tokenizeResults(data):
+def tokenizeAndSequence(data):
     # tokenizes an array of strings
 
-    tokenizer = Tokenizer(num_words = 100000)
+    tokenizer = Tokenizer(num_words = 100000, oov_token="<OOV>")
     tokenizer.fit_on_texts(data)
     word_index = tokenizer.word_index
     # print(word_index)
@@ -39,8 +42,9 @@ def tokenizeResults(data):
     paddedSequences = pad_sequences(sequences, maxlen = 500)
 
     print("Word Index: ", word_index)
-    print("Sequences: ", sequences)
-    print("Padded sequences: ", paddedSequences)
+    # print("Sequences: ", sequences)
+    print("Padded sequences: ", paddedSequences[0])
+    print(paddedSequences.shape)
 
 #===================================================================================
 # single reponse functions
@@ -55,6 +59,10 @@ def responseOption():
             print("That was longer than 500 characters!")
         else:
             validResponse = True
+    responseArray = []
+    responseArray.append(responseValue)
+
+    tokenizeAndSequence(responseArray)
 
 #===================================================================================
 # csv file functions
@@ -147,7 +155,7 @@ def csvOption(): # dont change this to csv(). it will cause errors
     newData = csvRead(enteredPath)
 
     # tokenize
-    tokenizeResults(newData)
+    tokenizeAndSequence(newData)
     
 #===================================================================================
 # driver code
