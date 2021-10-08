@@ -1,0 +1,87 @@
+#:kivy 2.0.0
+#:import utils kivy.utils
+
+<FratForLife>:  
+
+    canvas.before:
+
+        Color:
+            rgb: utils.get_color_from_hex('#160E62')
+
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.width, root.height
+        spacing: 50
+        padding: 50
+
+        Label:
+            id: title
+            color: .7, .7, .7, .7
+            font_size: 70  
+            center_x: root.width / 2
+            top: root.top - 50
+            text: "Feedback Response Analysis Tool"
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size: root.width, root.height
+
+            TextInput:
+                halign: 'center'
+                valign: 'middle'
+                center_y: root.width / 2
+                disabled: True
+                text: 'Welcome to the Feedback Response Analysis Tool. \nThis tool takes either a csv file or your plain text in and performs thematic, semantic, and sentiment analysis on it. \nBy default, you can click the "Browse local files" button to choose a csv file to analyze. \nClick the "Toggle Input Method" button to enable plaintext input and type in the bottom text field. \nYou will see your results after clicking the "Analyze" button.'
+
+        ToggleButton:
+            size_hint: 0.1, 0.5
+            center_y: root.width / 2
+            text: 'Toggle Input Method'
+            width: 50
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            size: root.width, root.height/4
+            spacing: 10
+
+            TextInput:
+                size_hint: 1, 0.5
+                center_y: root.width / 2
+                top: root.top - 50
+                text: 'CSV file location'
+
+            Button:
+                size_hint: 1, 0.5
+                center_y: root.width / 2
+                top: root.top - 50
+                text: 'Browse local files'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size: root.width, root.height/4
+
+            TextInput:
+                center_y: root.width / 2
+                text: 'Enable toggle to type in a single response.'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size: root.width, root.height/4
+
+            Label:
+                id: title
+                color: .5, .5, .5, .5
+                font_size: 70  
+                center_x: root.width / 2
+                top: root.top - 50
+                text: " "
+
+            Button:
+                size_hint: 0.25, 0.5
+                center_y: root.width / 2
+                top: root.top - 50
+                text: 'Analyze'
