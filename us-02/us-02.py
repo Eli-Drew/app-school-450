@@ -169,10 +169,7 @@ def main():
             print("Enter a vaild response.")
             print("=" * 50)
 
-    if (option == 'r' or option == 'R'):
-        responseOption()
-    else:
-        csvOption()
+    responseOption() if (option == 'r' or option == 'R') else csvOption()
     
 
 if __name__ == "__main__":
