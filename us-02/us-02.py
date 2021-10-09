@@ -68,29 +68,24 @@ def responseOption():
 # csv file functions
 #===================================================================================
 
-def bomValidation(record):
-    # this function will get rid of the 3 bom characters in the beginning if present
-
-    bomDict = [
+def bomValidation(filename, default='utf-8'):
+    msboms = dict((bom['sig'], bom) for bom in (
         {'name': 'UTF-8', 'sig': b'\xEF\xBB\xBF', 'encoding': 'utf-8'},
-        {'name': 'UTF-16 big-endian', 'sig': b'\xFE\xFF', 'encoding': 'utf-16-be'},
-        {'name': 'UTF-16 little-endian', 'sig': b'\xFF\xFE', 'encoding': 'utf-16-le'},
-        {'name': 'UTF-32 big-endian', 'sig': b'\x00\x00\xFE\xFF', 'encoding': 'utf-32-be'},
-        {'name': 'UTF-32 little-endian', 'sig': b'\xFF\xFE\x00\x00', 'encoding': 'utf-32-le'}]
+        {'name': 'UTF-16 big-endian', 'sig': b'\xFE\xFF', 'encoding':
+            'utf-16-be'},
+        {'name': 'UTF-16 little-endian', 'sig': b'\xFF\xFE', 'encoding':
+            'utf-16-le'},
+        {'name': 'UTF-32 big-endian', 'sig': b'\x00\x00\xFE\xFF', 'encoding':
+            'utf-32-be'},
+        {'name': 'UTF-32 little-endian', 'sig': b'\xFF\xFE\x00\x00',
+            'encoding': 'utf-32-le'}))
 
-    bomListOriginal = [b'\xEF\xBB\xBF', b'\xFE\xFF', b'\x00\x00\xFE\xFF', b'\xFF\xFE\x00\x00']
-
-    # this list will have to be added to so we can do this for any time of bom encoding
-    bomList = ['ï»¿']
-
-    # test = record[:3]
-
-    if record[:3] in bomList:
-        record = record[3:]
-
-    # print('record 1 = ' + str(record))
-    
-    return record
+    with open(filename, 'rb') as f:
+        sig = f.read(4)
+        for sl in range(3, 0, -1):
+            if sig[0:sl] in msboms:
+                return msboms[sig[0:sl]]['encoding']
+        return default
 
 def csvWrite(path):
     # This makes a copy of the input csv with responses truncated to 500 chars
@@ -99,14 +94,14 @@ def csvWrite(path):
 
     writeFile = "new-" + path
 
-def csvRead(path):
+def csvRead(path, encodingX):
     # this function reads the csv file and makes sure it is formatted correctly. 
     # need to reorder some validation
 
     data = []
-
+    
     count = 1
-    with open(path, newline='', encoding="utf-8") as csvFile:
+    with open(path, newline='', encoding= encodingX) as csvFile:
         csvReader = csv.reader(csvFile, delimiter='|')
         for row in csvReader:
 
@@ -117,10 +112,6 @@ def csvRead(path):
                 print("***Invalid .csv file***")
                 break
             else:
-                print("Row " + str(count))
-                if count == 1:
-                    currentRow = bomValidation(currentRow)
-
                 if len(row[0]) > maxResponseLength:
                     print(currentRow + "\n" + "Length was: " + str(len(currentRow)))
                     currentRow = currentRow[0:maxResponseLength] 
@@ -151,8 +142,8 @@ def csvOption(): # dont change this to csv(). it will cause errors
         else:
             # continue just continues the loop. the else isn't nessecary but its good practice.
             print("That was not a valid path or file.")
-
-    newData = csvRead(enteredPath)
+    endcoding = bomValidation(enteredPath)
+    newData = csvRead(enteredPath, endcoding)
 
     # tokenize
     tokenizeAndSequence(newData)
@@ -178,10 +169,7 @@ def main():
             print("Enter a vaild response.")
             print("=" * 50)
 
-    if (option == 'r' or option == 'R'):
-        responseOption()
-    else:
-        csvOption()
+    responseOption() if (option == 'r' or option == 'R') else csvOption()
     
 
 if __name__ == "__main__":

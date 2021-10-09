@@ -1,7 +1,12 @@
 #:kivy 2.0.0
 
 <PongGame>:
+
     canvas:
+
+        Color:
+            rgb: 0,1,0
+
         Rectangle:
             pos: self.center_x - 5, 0
             size: 10, self.height
@@ -21,5 +26,8 @@
     Button:
         text: "Hannah sucks"
         center_x: root.width / 4
-        top: root.top - 100
+        top: root.top - 200
         font_size: 10
+
+
+    
