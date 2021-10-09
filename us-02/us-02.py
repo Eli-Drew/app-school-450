@@ -17,39 +17,111 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from keras.models import Sequential
+from tensorflow.keras.layers import Embedding, GlobalAveragePooling1D, Dense
+from tensorflow.python.keras.layers.core import Flatten
 from datetime import datetime
 import numpy as np
-
-# I think we should stick to snake_case as that is the convention for Python and the libraries we are using uses snake_case
 
 #===================================================================================
 # Global Variables
 #===================================================================================
 max_response_length = 500
+vocab_size = max_response_length
+test_data = "some test data"
+training_size = len(test_data) / 2
+vector_size = 10 # (?) not sure what a good vector size would be
 
 #===================================================================================
 # Semantic Analysis Functions
 #===================================================================================
 """
+Creates a tokenizer and generates the training and testing sequences
+Paramaters:
+    test_data: the data to create and train/test the model
+        (I'm guessing this test_data will come in as a large csv file)
+Returns:
+    void
+"""
+def generate_training_testing_seq(test_data):
+    # First grab the responses and given sentiments
+    dummy_responses = test_data['response']
+
+    # Split data into training and testing
+    global training_responses
+    global testing_responses
+    training_responses = dummy_responses[0:training_size]
+    testing_responses = dummy_responses[training_size:]
+    
+    # Create a global tokenizer and word_index (this tokenizer needs to be used for the actual analysis)
+    global tokenizer
+    tokenizer = Tokenizer(num_words = vocab_size, oov_token="<OOV>")
+    tokenizer.fit_on_texts(training_responses)
+    word_index = tokenizer.word_index
+
+    global training_padded
+    training_sequences = tokenizer.texts_to_sequences(training_responses)
+    training_padded = pad_sequences(training_sequences, maxlen=max_response_length)
+
+    global testing_padded
+    testing_sequences = tokenizer.texts_to_sequences(testing_responses)
+    testing_padded = pad_sequences(testing_sequences, maxlen=max_response_length)
+
+"""
+This function builds the model with training and testing data
+Paramaters:
+    training_padded: the training set of responses padded
+    training_responses: the training set of responses padded
+    testing_padded: the testing set of responses padded
+    testing_responses: the training set of responses padded
+Returns:
+    model: the model that has been trainined
+"""
+def build_model():
+    model = Sequential()
+    model.add(Embedding(vocab_size, vector_size, input_length=max_response_length, name="embedding"))
+    model.add(GlobalAveragePooling1D())
+    model.add(Flatten())
+    model.add(Dense(1, activation="sigmoid"))
+    model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+
+    # train the model
+    num_epochs = 30
+    model.fit(training_padded, training_responses, epochs=num_epochs,
+                validation_data=(testing_padded, testing_responses), verbose=2)
+
+    return model
+
+"""
+This function feeds in and predicts the sentiments of the responses based off of the model
+Paramaters:
+    padded_sequences: the data which to predict/determine the sentiment
+        (must be tokenized with same tokenizer as the tokenizer for training set )
+    model: the trained model to run the padded_sequences against for analysis
+Returns:
+    sentiments: an array or the estimated sentiments
+"""
+def feed_tokens_to_graph(padded_sequences, model):
+    sentiments = model.predict(padded_sequences)
+    return sentiments
+
+"""
 Tokenizes an array of strings into sequences and adds padding if necessary
 Paramaters:
-    data: the response(s) to be processed
+    data: the response(s) to be processed for analysis
 Returns:
     void
 """
 def pre_process(data):
-    tokenizer = Tokenizer(num_words = 100000, oov_token="<OOV>")
-    tokenizer.fit_on_texts(data)
-    word_index = tokenizer.word_index
-    # print(word_index)
-
+    generate_training_testing_seq(test_data)
+    # the global tokenizer created from generate_training_testing_seq(test_data) needs to be used
     sequences = tokenizer.texts_to_sequences(data)
-    padded_sequences = pad_sequences(sequences, maxlen = 500)
+    padded_sequences = pad_sequences(sequences, maxlen = max_response_length)
 
-    print("Word Index: ", word_index)
-    # print("Sequences: ", sequences)
-    print("Padded sequences: ", padded_sequences[0])
-    print(padded_sequences.shape)
+    model = build_model()
+
+    sentiments = feed_tokens_to_graph(padded_sequences, model)
+    print(sentiments)
 
 #===================================================================================
 # Single Reponse Functions
