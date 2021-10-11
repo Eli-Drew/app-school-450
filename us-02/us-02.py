@@ -9,17 +9,12 @@ I believe we will need to train and then test
 the data. I'm not sure how to do that yet. 
 =================================================
 """
+
 import csv
-import os.path
-from os import path
-from typing import Sequence
+import os
 import tensorflow as tf
-from tensorflow import keras
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from keras.models import Sequential
-from tensorflow.keras.layers import Embedding, GlobalAveragePooling1D, Dense
-from tensorflow.python.keras.layers.core import Flatten
 from datetime import datetime
 import numpy as np
 
@@ -27,111 +22,49 @@ import numpy as np
 # Global Variables
 #===================================================================================
 max_response_length = 500
-vocab_size = max_response_length
-test_data = "some test data"
-training_size = len(test_data) / 2
-vector_size = 10 # (?) not sure what a good vector size would be
 
 #===================================================================================
 # Semantic Analysis Functions
 #===================================================================================
 """
-Creates a tokenizer and generates the training and testing sequences
+Tokenizes an array of strings (the user's response(s)) into sequences and adds padding if necessary
 Paramaters:
-    test_data: the data to create and train/test the model
-        (I'm guessing this test_data will come in as a large csv file)
+    data: the response(s) as an array of strings to be pre-processed for analysis
 Returns:
-    void
+    padded_sequences: the padded sequences to be analyzed by the model
 """
-def generate_training_testing_seq(test_data):
-    # First grab the responses and given sentiments
-    dummy_responses = test_data['response']
+def tokenize_and_sequence(data):
+    # TODO change this tokenizer to be the same as the one used for the training/testing data
+    tokenizer = Tokenizer(num_words = 100000, oov_token="<OOV>")
+    tokenizer.fit_on_texts(data)
 
-    # Split data into training and testing
-    global training_responses
-    global testing_responses
-    training_responses = dummy_responses[0:training_size]
-    testing_responses = dummy_responses[training_size:]
-    
-    # Create a global tokenizer and word_index (this tokenizer needs to be used for the actual analysis)
-    global tokenizer
-    tokenizer = Tokenizer(num_words = vocab_size, oov_token="<OOV>")
-    tokenizer.fit_on_texts(training_responses)
-    word_index = tokenizer.word_index
+    sequences = tokenizer.texts_to_sequences(data)
+    padded_sequences = pad_sequences(sequences, maxlen = max_response_length)
 
-    global training_padded
-    training_sequences = tokenizer.texts_to_sequences(training_responses)
-    training_padded = pad_sequences(training_sequences, maxlen=max_response_length)
-
-    global testing_padded
-    testing_sequences = tokenizer.texts_to_sequences(testing_responses)
-    testing_padded = pad_sequences(testing_sequences, maxlen=max_response_length)
+    return padded_sequences
 
 """
-This function builds the model with training and testing data
+Feeds in and predicts the sentiments of the user's response(s) based off of the model
 Paramaters:
-    training_padded: the training set of responses padded
-    training_responses: the training set of responses padded
-    testing_padded: the testing set of responses padded
-    testing_responses: the training set of responses padded
-Returns:
-    model: the model that has been trainined
-"""
-def build_model():
-    model = Sequential()
-    model.add(Embedding(vocab_size, vector_size, input_length=max_response_length, name="embedding"))
-    model.add(GlobalAveragePooling1D())
-    model.add(Flatten())
-    model.add(Dense(1, activation="sigmoid"))
-    model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
-
-    # train the model
-    num_epochs = 30
-    model.fit(training_padded, training_responses, epochs=num_epochs,
-                validation_data=(testing_padded, testing_responses), verbose=2)
-
-    return model
-
-"""
-This function feeds in and predicts the sentiments of the responses based off of the model
-Paramaters:
-    padded_sequences: the data which to predict/determine the sentiment
-        (must be tokenized with same tokenizer as the tokenizer for training set )
+    padded_sequences: the user's response(s) as padded sequences which to predict/determine the sentiment
+        (must be tokenized with same tokenizer as the tokenizer for the training/testing set)
     model: the trained model to run the padded_sequences against for analysis
 Returns:
-    sentiments: an array or the estimated sentiments
+    sentiments: an array of the estimated sentiments
 """
 def feed_tokens_to_graph(padded_sequences, model):
     sentiments = model.predict(padded_sequences)
     return sentiments
 
-"""
-Tokenizes an array of strings into sequences and adds padding if necessary
-Paramaters:
-    data: the response(s) to be processed for analysis
-Returns:
-    void
-"""
-def pre_process(data):
-    generate_training_testing_seq(test_data)
-    # the global tokenizer created from generate_training_testing_seq(test_data) needs to be used
-    sequences = tokenizer.texts_to_sequences(data)
-    padded_sequences = pad_sequences(sequences, maxlen = max_response_length)
-
-    model = build_model()
-
-    sentiments = feed_tokens_to_graph(padded_sequences, model)
-    print(sentiments)
-
 #===================================================================================
 # Single Reponse Functions
 #===================================================================================
 """
-This function will open a command line editor and limit the text area to 500 characters.
+Opens a command line editor and limits the text area to 500 characters
 Paramaters:
     N/A
 Returns:
-    void
+    response_array: data to then pass in to be tokenized and then analyzed by the model
 """
 def response_option():
     valid_response = False
@@ -144,17 +77,18 @@ def response_option():
     response_array = []
     response_array.append(response_value)
 
-    pre_process(response_array)
+    return response_array
 
 #===================================================================================
 # csv File Functions
 #===================================================================================
 """
-This function will get rid of the 3 bom characters in the beginning if present
+Gets rid of the 3 bom characters in the beginning if present
 Paramaters:
     filename: the csv file of records to be validated
+    default: 
 Returns:
-    the record after validation
+    encoding
 """
 def bom_validation(filename, default='utf-8'):
     msboms = dict((bom['sig'], bom) for bom in (
@@ -176,7 +110,7 @@ def bom_validation(filename, default='utf-8'):
         return default
 
 """
-This makes a copy of the input csv with responses truncated to 500 chars
+Makes a copy of the input csv with responses truncated to 500 chars
 Paramaters:
     path: the path of the csv file
 Returns:
@@ -189,10 +123,10 @@ def csv_write(path):
     write_file = "new-" + path
 
 """
-This function reads the csv file and makes sure it is formatted correctly. 
+Reads the csv file and makes sure it is formatted correctly
 Paramaters:
     path: the path of the csv file
-    encodingX:
+    encodingX: 
 Returns:
     data: response data from the csv file
 """
@@ -217,7 +151,7 @@ def csv_read(path, encodingX):
                     print(current_row + "\n" + "Length was: " + str(len(current_row)))
                     current_row = current_row[0:max_response_length] 
 
-                print(current_row + "\n" + "Length: " + str(len(current_row)))
+                # print(current_row + "\n" + "Length: " + str(len(current_row)))
                 count += 1
 
                 data.append(current_row)
@@ -226,32 +160,30 @@ def csv_read(path, encodingX):
 
 """
 This function is essentially the driver code for the .csv option
-This function asks user for a path and then validates the path is valid
-Don't change the name to csv(). or it will cause errors
+Asks the user for a path and then validates the path is valid
+Don't change the name to csv() or it will cause errors
 Paramaters:
     N/A
 Returns:
-    N/A
+    new_data: data to then pass in to be tokenized and then analyzed by model
 """
 def csv_option(): 
     valid_path = False
     while not valid_path:
         # TODO the user will have to enter full path or browse
         entered_file = str(input("Enter name of the data set (with the extention): "))
-        entered_path = path.join(os.getcwd(), 'data-sets', entered_file) # this is dynamic and doesn't require us to change to our own path
-        print(entered_path)
-        path_exists = path.exists(entered_path)
+        entered_path = os.path.join(os.getcwd(), 'data-sets', entered_file)
+        path_exists = os.path.exists(entered_path)
         if path_exists:
             valid_path = True
-            print("This is a valid path.")
+            # print("This is a valid path.")
         else:
             # continue just continues the loop. the else isn't nessecary but its good practice.
             print("That was not a valid path or file.")
     endcoding = bom_validation(entered_path)
     new_data = csv_read(entered_path, endcoding)
 
-    # tokenize
-    pre_process(new_data)
+    return new_data
     
 #===================================================================================
 # Driver Code
@@ -274,8 +206,11 @@ def main():
             print("Enter a vaild response.")
             print("=" * 50)
 
-    response_option() if (option == 'r' or option == 'R') else csv_option()
+    data = response_option() if (option == 'r' or option == 'R') else csv_option()
     
+    padded_sequences = tokenize_and_sequence(data)
+    print(padded_sequences)
+    # feed_tokens_to_graph(padded_sequences)
 
 if __name__ == "__main__":
     main()
