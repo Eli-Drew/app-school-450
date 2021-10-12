@@ -18,43 +18,43 @@ Purpose: This is the Response object class file.
 class Response(object):
     """Represents a response and related result information"""
 
-    numberOfResponses = 0
-    listOfSentimentScores = []
+    number_of_responses = 0
+    list_of_sentiment_scores = []
 
     def __init__(self, record):
         """Contructor takes in the actual record response."""
-        Response.numberOfResponses += 1
+        Response.number_of_responses += 1
         self.record = record
-        self.recordNumber = Response.numberOfResponses
+        self.record_number = Response.number_of_responses
         self.sequences = [[]]
-        self.sentimentScore
+        self.sentiment_score
         self.themes = []
 
-    def getRecord(self):
+    def get_record(self):
         return self.record
 
-    def setRecord(self, record):
+    def set_record(self, record):
         self.record = record
 
-    def getSequence(self):
+    def get_sequence(self):
         return self.sequences
 
-    def setSequence(self, sequences):
+    def set_sequence(self, sequences):
         self.sequences = sequences
 
-    def getSentimentScore(self):
-        return self.sentimentScore
+    def get_sentiment_score(self):
+        return self.sentiment_score
 
-    def setSentimentScore(self, score):
-        self.sentimentScore = score
-        Response.listOfSentimentScores.append(score)
+    def set_sentiment_score(self, score):
+        self.sentiment_score = score
+        Response.list_of_sentiment_scores.append(score)
 
     def __len__(self):
         return len(self.record)
 
     def __str__(self):
         """String representation of a Response object."""
-        return "Record Number: " + str(self.recordNumber) + "\n" + self.record
+        return "Record Number: " + str(self.record_number) + "\n" + self.record
 
     def __eq__(self, other):
         return self.record == other.record
@@ -68,7 +68,7 @@ class Response(object):
         # when result info is decided, need to implement aggregation of results here.
 
         # this is aggregating the sequences together.
-        newSequence = self.sequences + other.sequence
-        newResponse = Response(None, None)
-        newResponse.setSequence(newSequence)
-        return newResponse
+        new_sequence = self.sequences + other.sequence
+        new_response = Response(None, None)
+        new_response.set_sequence(new_sequence)
+        return new_sequence
