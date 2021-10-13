@@ -148,8 +148,9 @@ def csv_read(path, encodingX):
                 break
             else:
                 if len(row[0]) > max_response_length:
-                    print(current_row + "\n" + "Length was: " + str(len(current_row)))
+                    print("Length was: " + str(len(current_row)))
                     current_row = current_row[0:max_response_length] 
+                    print("Length: " + str(len(current_row)))
 
                 # print(current_row + "\n" + "Length: " + str(len(current_row)))
                 count += 1
