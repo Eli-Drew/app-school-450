@@ -21,20 +21,20 @@ class Response(object):
     number_of_responses = 0
     list_of_sentiment_scores = []
 
-    def __init__(self, record):
-        """Contructor takes in the actual record response."""
+    def __init__(self, response):
+        """Contructor takes in the actual response."""
         Response.number_of_responses += 1
-        self.record = record
-        self.record_number = Response.number_of_responses
+        self.response = response
+        self.response_number = Response.number_of_responses
         self.sequences = [[]]
-        self.sentiment_score
+        self.sentiment_score = 0
         self.themes = []
 
-    def get_record(self):
-        return self.record
+    def get_response(self):
+        return self.response
 
-    def set_record(self, record):
-        self.record = record
+    def set_response(self, response):
+        self.response = response
 
     def get_sequence(self):
         return self.sequences
@@ -50,20 +50,20 @@ class Response(object):
         Response.list_of_sentiment_scores.append(score)
 
     def __len__(self):
-        return len(self.record)
+        return len(self.response)
 
     def __str__(self):
         """String representation of a Response object."""
-        return "Record Number: " + str(self.record_number) + "\n" + self.record
+        return "Response Number: " + str(self.response_number) + "\nResponse: " + self.response + "\nSentiment: " + str(self.sentiment_score)
 
     def __eq__(self, other):
-        return self.record == other.record
+        return self.response == other.response
 
     def __neq__(self, other):
-        return self.record != other.record
+        return self.response != other.response
 
     def __add__(self, other):
-        """This will combine two records and aggregate the result information."""
+        """This will combine two responses and aggregate the result information."""
         # TODO
         # when result info is decided, need to implement aggregation of results here.
 
