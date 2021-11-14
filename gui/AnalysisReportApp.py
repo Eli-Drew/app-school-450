@@ -6,6 +6,8 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.graphics import Color
+from subprocess import Popen
+import main
 
 kivy.require('2.0.0')
 
@@ -24,13 +26,21 @@ class AnalysisReportApp(App):
 
         sidebar = BoxLayout(orientation='vertical',
                             size_hint_x=None, width=200)
-        sidebar.add_widget(Button(text='topic-1'))
+
+        tpc1_btn = Button(text='topic-1')
+        # =============================================
+        # TODO get topics into the widgets on this side
+        # =============================================
+        #tpc1_btn.text = topic_1
+        sidebar.add_widget(tpc1_btn)
         sidebar.add_widget(Button(text='topic-2'))
         sidebar.add_widget(Button(text='topic-3'))
         sidebar.add_widget(Button(text='topic-4'))
         sidebar.add_widget(Button(text='topic-5'))
         sidebar.add_widget(Button(text='export'))
-        sidebar.add_widget(Button(text='again'))
+        again_btn = Button(text='again')
+        again_btn.bind(on_release=AnalysisReportApp.close_open)
+        sidebar.add_widget(again_btn)
 
         grid = GridLayout(cols=2)
 
@@ -63,6 +73,17 @@ class AnalysisReportApp(App):
         layout.add_widget(content)
 
         return layout
+
+    def close_open(self):
+        AnalysisReportApp().stop()
+        Popen(['python', 'main.py'])
+
+    def topics(topics):
+        topic_1 = topics[0]
+        topic_2 = topics[1]
+        topic_3 = topics[2]
+        topic_4 = topics[3]
+        topic_5 = topics[4]
 
 
 if __name__ == '__main__':
