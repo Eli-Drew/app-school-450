@@ -1,7 +1,8 @@
 #:kivy 2.0.0
 #:import utils kivy.utils
 
-<FratForLife>:  
+<FratForLife>:
+    csv_txt_input: csv_txt_input
 
     canvas.before:
 
@@ -29,8 +30,10 @@
         BoxLayout:
             orientation: 'horizontal'
             size: root.width, root.height
-
+            
+            topic_text: topic_text
             TextInput:
+                id: topic_text
                 halign: 'center'
                 valign: 'middle'
                 center_y: root.width / 2
@@ -42,6 +45,7 @@
             center_y: root.width / 2
             text: 'Toggle Input Method'
             width: 50
+            on_release: root.toggle_disable_inputs()
         
         BoxLayout:
             orientation: 'horizontal'
@@ -49,6 +53,7 @@
             spacing: 10
 
             TextInput:
+                id: csv_txt_input
                 size_hint: 1, 0.5
                 center_y: root.width / 2
                 top: root.top - 50
@@ -59,13 +64,16 @@
                 center_y: root.width / 2
                 top: root.top - 50
                 text: 'Browse local files'
+                on_release: root.show_load()
 
         BoxLayout:
             orientation: 'horizontal'
             size: root.width, root.height/4
 
             TextInput:
+                id: typed_txt_input
                 center_y: root.width / 2
+                disabled: True
                 text: 'Enable toggle to type in a single response.'
 
         BoxLayout:
@@ -81,7 +89,28 @@
                 text: " "
 
             Button:
+                id: analyze_btn
                 size_hint: 0.25, 0.5
                 center_y: root.width / 2
                 top: root.top - 50
                 text: 'Analyze'
+                on_release: root.main()
+
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
