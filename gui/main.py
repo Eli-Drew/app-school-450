@@ -20,6 +20,8 @@ from subprocess import Popen
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
+from kivy.lang import Builder
+from kivy.uix.screenmanager import ScreenManager, Screen
 import os
 import nltk
 import AnalysisReportApp
@@ -27,7 +29,7 @@ nltk.download('stopwords')
 kivy.require('2.0.0')
 
 
-class FratForLife(Widget):
+class FratForLife(Screen):
     #csv_txt_input = ObjectProperty(None)
 
     def main(self):
@@ -175,7 +177,15 @@ class FratForLife(Widget):
 class FratApp(App):
     def build(self):
         Window.size = (1920, 1080)
-        return FratForLife()
+        return Builder.load_file("Frat.kv")
+
+
+class WindowManager(ScreenManager):
+    pass
+
+
+class AnalysisReportApp(Screen):
+    pass
 
 
 class LoadDialog(FloatLayout):
