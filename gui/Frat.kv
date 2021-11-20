@@ -1,7 +1,14 @@
 #:kivy 2.0.0
 #:import utils kivy.utils
 
+WindowManager:
+    FratForLife:
+    AnalysisReportApp:
+    LoadDialog:
+
 <FratForLife>:
+    name: "main"
+
     csv_txt_input: csv_txt_input
 
     canvas.before:
@@ -64,7 +71,10 @@
                 center_y: root.width / 2
                 top: root.top - 50
                 text: 'Browse local files'
-                on_release: root.show_load()
+                on_release: 
+                    root.show_load()
+                    app.root.current = "third"
+                    root.manager.transition.direction = "left"
 
         BoxLayout:
             orientation: 'horizontal'
@@ -94,9 +104,16 @@
                 center_y: root.width / 2
                 top: root.top - 50
                 text: 'Analyze'
-                on_release: root.main()
+                on_release: 
+                    root.main()
+                    app.root.current = "second"
+                    root.manager.transition.direction = "left"
+
+<AnalysisReportApp>:
+    name: "second"
 
 <LoadDialog>:
+    name: "third"
     BoxLayout:
         size: root.size
         pos: root.pos

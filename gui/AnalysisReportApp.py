@@ -7,6 +7,7 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.graphics import Color
 from subprocess import Popen
+import config
 import main
 
 kivy.require('2.0.0')
@@ -14,6 +15,8 @@ kivy.require('2.0.0')
 
 class AnalysisReportApp(App):
     def build(self):
+
+        #topics = main.topic_list
 
         Window.clearcolor = (0, 14/255, 52/255, 1)
 
@@ -52,8 +55,10 @@ class AnalysisReportApp(App):
         chart.add_widget(Label(text='chart'))
         chart.add_widget(Label(text='content', size_hint_y=None, height=32))
 
+        topic1 = config.topic_list[0]
+
         topics1 = BoxLayout(orientation='vertical')
-        topics1.add_widget(Label(text='topics1'))
+        topics1.add_widget(Label(text='topics1' + topic1))
         topics1.add_widget(Label(text='content', size_hint_y=None, height=32))
 
         topics2 = BoxLayout(orientation='vertical')
@@ -77,13 +82,6 @@ class AnalysisReportApp(App):
     def close_open(self):
         AnalysisReportApp().stop()
         Popen(['python', 'main.py'])
-
-    def topics(topics):
-        topic_1 = topics[0]
-        topic_2 = topics[1]
-        topic_3 = topics[2]
-        topic_4 = topics[3]
-        topic_5 = topics[4]
 
 
 if __name__ == '__main__':
