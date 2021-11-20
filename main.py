@@ -1,22 +1,30 @@
-"""
-This file is currrently the main driver of the whole application.
-"""
+# TODO organize imports in separate files
+from user_input.input import get_input
+from analysis.Sentiment_Analysis import Sentiment_Analysis
+from analysis.Thematic_Anlaysis import Thematic_Analysis
 
-from user_input import input
-from analysis.henry_model import henry_model
-from analysis import analysis
-
-max_word_len = 250
+MAXLEN = 250
 
 def main():
-    # TODO Somehow pull in the model and tokenizer created from the jupyter notebook file
-    model, tokenizer = henry_model.create_model(max_word_len)
 
-    data = input.get_input(max_word_len)
+    # Get user's responses
+    responses = get_input(MAXLEN)
+    # TODO figure out why characters aren't being removed from beginning of data_sets/responses.csv
+    # print(responses) # uncomment this line to see what is happening after inputting responses.csv
 
-    padded_sequences = analysis.pre_process(tokenizer, data, max_word_len)
-    sentiments = analysis.feed_tokens_to_graph(padded_sequences, model)
+    # Sentiment Analysis
+    padded_sequences = Sentiment_Analysis.pre_process(responses, MAXLEN)
+    sentiments = Sentiment_Analysis.analyze(padded_sequences) # model needs to be loaded into Sentiment_Analysis.py first
+    sentiments = Sentiment_Analysis.format_results(sentiments) # does nothing now
+    print(sentiments)
 
+    # Thematic Analysis
+    vectors = Thematic_Analysis.pre_process(responses, MAXLEN)
+    feature_names = Thematic_Analysis.analyze(vectors)
+    themes = Thematic_Analysis.format_results(feature_names)
+    print(themes)
+
+    '''
     # Set sentminets to the corresponding response_obj
     for i in range(len(sentiments)):
         input.response_objs[i].set_sentiment_score(sentiments[i][0])
@@ -25,6 +33,7 @@ def main():
     for response_obj in input.response_objs:
         print(response_obj)
         print()
+    '''
 
 if __name__ == "__main__":
     main()

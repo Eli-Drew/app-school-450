@@ -9,6 +9,7 @@ This file gets the user's single response or csv
 =================================================
 """
 
+# TODO organize imports in separate files
 import csv
 import os
 from datetime import datetime
@@ -23,39 +24,42 @@ response_objs = []
 # Single Reponse Functions
 #===================================================================================
 """
-Opens a command line editor and limits the text area to max_word_len characters
-(Currently the if statement with len(response_value) gets the character length)
-    needs to be changed to check for word length
-
+===================================================================
+Description:
+    Opens a command line to recieve and limits the text area to max_len words
 Paramaters:
-    N/A
+    max_len: the max word length a response can be
 Returns:
-    response_array: an array of the one response from the user
+    an array of the one response from the user
+===================================================================
 """
-def response_option():
+def response_option(max_len):
     valid_response = False
     while not valid_response:
-        response_value = str(input("Enter in a response (max {} words): ".format(max_word_len)))
+        response_value = str(input("Enter in a response (max {} words): ".format(max_len)))
         # TODO len(response_value) returns the number or characters. We need to change this condition to check for word length instead
-        if len(response_value) > max_word_len:
-            print("That was longer than {} words!".format(max_word_len))
+        if len(response_value) > max_len:
+            print("That was longer than {} words!".format(max_len))
         else:
             valid_response = True
     response_array = []
     response_array.append(response_value)
     return response_array
 
+
 #===================================================================================
 # csv File Functions
 #===================================================================================
 """
-Gets rid of the 3 bom characters in the beginning if present
-
+===================================================================
+Description:
+    Gets rid of the 3 bom characters in the beginning if present
 Paramaters:
     filename: the csv file of records to be validated
     default: the default encoding that would be returned
 Returns:
-    encoding
+    the encoding detected in the csv file
+===================================================================
 """
 def bom_validation(filename, default='utf-8'):
     msboms = dict((bom['sig'], bom) for bom in (
@@ -76,27 +80,33 @@ def bom_validation(filename, default='utf-8'):
                 return msboms[sig[0:sl]]['encoding']
         return default
 
-"""
-Makes a copy of the input csv
 
+"""
+===================================================================
+Description:
+    Makes a copy of the input csv
 Paramaters:
     path: the path of the csv file
 Returns:
     N/A
+===================================================================
 """
 def csv_write(path):
     now = datetime.now()
     now_format = now.strftime("%d/%m/%Y-%H.%M")
     write_file = "new-" + path
 
-"""
-Reads the csv file and makes sure it is formatted correctly
 
+"""
+===================================================================
+Description:
+    Reads the csv file and makes sure it is formatted correctly
 Paramaters:
     path: the path of the csv file
     encodingX: the encoding found by bom_validation()
 Returns:
-    responses: an array of responses from the csv file
+    an array of responses from the csv file
+===================================================================
 """
 def csv_read(path, encodingX):
     responses = []
@@ -109,9 +119,9 @@ def csv_read(path, encodingX):
             #     break
             # else:
             #     current_resp = row[0]
-            #     if len(current_resp) > max_char_len:
+            #     if len(current_resp) > max_len:
             #         print("Length was: " + str(len(current_resp)))
-            #         current_resp = current_resp[0:max_char_len] 
+            #         current_resp = current_resp[0:max_len] 
 
             #     print("Length: " + str(len(current_resp)))
 
@@ -124,15 +134,17 @@ def csv_read(path, encodingX):
                 pass
     return responses
 
-"""
-This function is essentially the driver code for the .csv option
-Asks the user for a path and then validates the path is valid
-Don't change the name to csv() or it will cause errors
 
+"""
+===================================================================
+Description:
+    This function is essentially the driver code for the .csv option.
+    Asks the user for a path and then validates the path is valid.
 Paramaters:
     N/A
 Returns:
-    responses: data to then pass in to be tokenized and then analyzed by model
+    data to then pass in to be tokenized and then analyzed by model
+===================================================================
 """
 def csv_option():
     valid_path = False
@@ -148,23 +160,23 @@ def csv_option():
     responses = csv_read(entered_path, endcoding)
     return responses
 
+
 #===================================================================================
 # Main prompting function
 #===================================================================================
 """
-This function prompts the user for either a single response
-    or csv file of responses.
-An array of the response(s) is returned to then pass in and
-    be analyzed by the model in analysis.py.
-
+===================================================================
+Description:
+    This function prompts the user via command line for either a 
+    single response or csv file of responses. An array of the response(s)
+    is returned to then pass in and be analyzed by the model.
 Paramaters:
-    num: gets passed in from main.py and assigns to max_word_len globally for this file
+    max_len: the max word length a response can be
 Returns:
-    data: the array of response(s)
+    the array of response(s)
+===================================================================
 """
-def get_input(num):
-    global max_word_len
-    max_word_len = num
+def get_input(max_len):
 
     valid_entry = False
     valid_entries = ['r','R','c','C']
@@ -181,5 +193,4 @@ def get_input(num):
             print("Enter a vaild response.")
             print("=" * 50)
 
-    data = response_option() if (option == 'r' or option == 'R') else csv_option()
-    return data
+    return response_option(max_len) if (option == 'r' or option == 'R') else csv_option()
