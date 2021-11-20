@@ -46,31 +46,7 @@ class FratForLife(Screen):
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
         # get user input and clean the file data
 
-        data = getData('C:/Users/Brentlee/Downloads/demoData.csv')
-        #data = FratForLife.getData(self.ids.csv_txt_input.text)
-        cleanData = getCleanData(data)
-
-        # tokenize and vectorize the data
-        # TFIDF = (occurences of word in document / total number of words in document) * (log[total # of documents in corpus / number of documents containing word])
-        vectorizer = TfidfVectorizer(max_features=1000)
-        vectorData = vectorizer.fit_transform(cleanData)
-
-        # Non-Negative Matrix Factorization model...
-        '''
-        Given a matrix M x N, where M = Total number of documents and N = total number of words,
-        NMF is the matrix decompostition that generates the Features with M rows and K columns,
-        where K = total number of topics and the Components matrix is the matrix of K by N.
-        The Product of the Features and Components matricies results in the approximation of the TF-IDF.
-        '''
-        thematic_model = load('thematic_model')
-        thematic_model.fit_transform(vectorData)
-
-        # nmf_model = NMF(n_components=5, init='random', random_state=0)
-        # nmf_model.fit_transform(vectorData)
-
-        # get the feature names and print the topics from the model
-        featureNames = vectorizer.get_feature_names()
-        getTopics(thematic_model.components_, featureNames)
+        pass
 
         # AnalysisReportApp.AnalysisReportApp.topics(topics)
 
@@ -275,7 +251,7 @@ class FratApp(App):
         return Builder.load_file("Frat.kv")
 
 
-class LoadDialog(Screen):
+class LoadDialog(FloatLayout):
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)
 

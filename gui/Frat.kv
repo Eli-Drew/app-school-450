@@ -4,7 +4,6 @@
 WindowManager:
     FratForLife:
     AnalysisReportApp:
-    LoadDialog:
 
 <FratForLife>:
     name: "main"
@@ -73,8 +72,8 @@ WindowManager:
                 text: 'Browse local files'
                 on_release: 
                     root.show_load()
-                    app.root.current = "third"
-                    root.manager.transition.direction = "left"
+                    # app.root.current = "third"
+                    # root.manager.transition.direction = "left"
 
         BoxLayout:
             orientation: 'horizontal'
@@ -112,8 +111,38 @@ WindowManager:
 <AnalysisReportApp>:
     name: "second"
 
+    canvas.before:
+
+        Color:
+            rgb: utils.get_color_from_hex('#160E62')
+
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.width, root.height
+
+        Label:
+            id: title
+            color: .7, .7, .7, .7
+            padding: 8, 8
+            font_size: 25  
+            center_x: root.width / 2
+            top: root.top - 50
+            text: "Feedback Response Analysis Report"
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size: root.width, root.height
+
+        GridLayout:
+            cols: 2
+            
+
+
 <LoadDialog>:
-    name: "third"
     BoxLayout:
         size: root.size
         pos: root.pos
