@@ -111,6 +111,10 @@ class FratForLife(Screen):
         #true_file_name = os.path.join(path, filename[0])
         self.dismiss_popup()
 
+    def topic(self):
+        self.manager.get_screen("second").ids.report_title = "hi"
+        return config.topic_list[0]
+
 
 class AnalysisReportApp(Screen):
     def build(self):
