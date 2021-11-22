@@ -1,10 +1,9 @@
-# TODO organize imports in separate files
 from analysis.Analysis import Analysis
+import nltk # TODO this can be removed when nltk.download('stopwords') is saved and loaded in
 from nltk.corpus import stopwords
 from textblob import Word, TextBlob
 from sklearn.decomposition import NMF
 from sklearn.feature_extraction.text import TfidfVectorizer
-import nltk
 
 class Thematic_Analysis(Analysis):
 
@@ -23,6 +22,10 @@ class Thematic_Analysis(Analysis):
         To be written
     ===================================================================
     """
+    # TODO make sure this method truncates responses to max_len,
+    #                            removes end of sentence punctuations
+    #                            lematizes
+    #                            returns a 2D array of strings so Top_Words_Analysis.find_top_words() can use it
     @classmethod
     def pre_process(cls, responses, max_len):
         
@@ -40,8 +43,7 @@ class Thematic_Analysis(Analysis):
                 if len(clean_resp) != 0:
                     clean_responses.append(' '.join(clean_resp))
 
-        vectors = cls.vectorizer.fit_transform(clean_responses)
-        return vectors
+        return clean_responses
 
 
     """
@@ -49,13 +51,14 @@ class Thematic_Analysis(Analysis):
     Description:
         To be written
     Paramaters:
-        vectors: 
+        clean_responses: 
     Returns:
         To be written
     ===================================================================
     """
     @classmethod
-    def analyze(cls, vectors):
+    def analyze(cls, clean_responses):
+        vectors = cls.vectorizer.fit_transform(clean_responses)
         cls.nmf_model.fit_transform(vectors)
         feature_names = cls.vectorizer.get_feature_names()
         return feature_names
@@ -81,23 +84,19 @@ class Thematic_Analysis(Analysis):
         return themes
 
 
-# Old comments for thematic analysis functions
-"""
-===================================================================
-Description: getData returns the data located at the fileName param
-Param(s): fileName path for data.
-Returns: dataset as list of one element (entire dataset as one elem)
-===================================================================
-===============================================================
-Description: getCleanData returns its data param after cleaning
-Param(s): data list (from getData())
-Returns: A list of text, for example:
-
-['great', 'great presentation', 'great presentation clear',...]
-===============================================================
-=================================================================================
-Description: getTopics prints the the repective topics and their components
-Param(s): model components, feature names, and n = the number of words per topic.
-Returns: Nothing, just prints topics (at least for now).
-=================================================================================
-"""
+    """
+    ===================================================================
+    Description:
+        Prints the top themes returned by format_results()
+    Paramaters:
+        themes: the array of themes to be printed
+    Returns:
+        N/A
+    ===================================================================
+    """
+    @classmethod
+    def print_themes(cls, themes):
+        print("\nTop {} Themes:".format(len(themes)))
+        # TODO change this to print out the sentiment with each theme
+        for theme in themes:
+            print("{}: 0.0".format(theme))
