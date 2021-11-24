@@ -7,6 +7,7 @@ WindowManager:
     AnalysisReportApp:
         name: "second"
     LoadDialog:
+        name: "third"
 
 <FratForLife>:
     name: "main"
@@ -124,25 +125,84 @@ WindowManager:
             pos: self.pos
             size: self.size
 
+    # LAYOUT #
     BoxLayout:
         orientation: 'vertical'
-        size: root.width, root.height
 
-        TextInput:
-            id: report_title
-            color: .7, .7, .7, .7
-            padding: 8, 8
-            font_size: 25  
-            center_x: root.width / 2
-            top: root.top - 50
-            text: "Feedback Response Analysis Report"
+        # TITLE #
+        Label:
+            text: 'Feedback Response Analysis Report'
+            size_hint_y: None
+            height: 64
+            padding: (8, 8)
 
+        # CONTENT #
         BoxLayout:
             orientation: 'horizontal'
-            size: root.width, root.height
 
-        GridLayout:
-            cols: 2
+            # GRID #
+            GridLayout:
+                cols: 2
+
+                # SUMMARY #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'summary'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+                # CHART #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'chart'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+                # TOPICS1 #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        id: topic_one
+                        text: 'topics1'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+                # TOPICS2 #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'topics2'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+
+            # SIDEBAR #
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: None
+                width: 200
+           
+                Button:
+                    text: 'topic-1'
+                Button:
+                    text: 'topic-2'
+                Button:
+                    text: 'topic-3'
+                Button:
+                    text: 'topic-4'
+                Button:
+                    text: 'topic-5'
+                Button:
+                    text: 'again'
+                    on_release: 
+                        app.root.current = "main"
+                        root.manager.transition.direction = "right"
 
 <LoadDialog>:
     name: "third"
