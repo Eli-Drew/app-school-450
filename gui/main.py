@@ -112,7 +112,8 @@ class FratForLife(Screen):
         self.dismiss_popup()
 
     def topic(self):
-        self.manager.get_screen("second").ids.report_title = "hi"
+        self.manager.get_screen("second").ids.report_title.text = str(
+            config.topic_list[0])
         return config.topic_list[0]
 
 
@@ -255,8 +256,10 @@ Returns: Nothing, just prints topics (at least for now).
 def getTopics(components, feature_names, n=50):
     config.init()
     for idx, topic in enumerate(components):
-        config.topic_list.append([(feature_names[i], topic[i].round(2))
-                                  for i in topic.argsort()[:-n - 1:-1]])
+        config.topic_list.append([(feature_names[i])
+                                 for i in topic.argsort()[:-n - 1:-1]])
+        # config.topic_list.append([(feature_names[i], topic[i].round(2))
+        #                           for i in topic.argsort()[:-n - 1:-1]])
 
 
 def open_close(self):
