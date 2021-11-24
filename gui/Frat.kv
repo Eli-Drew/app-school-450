@@ -6,8 +6,6 @@ WindowManager:
         name: "main"
     AnalysisReportApp:
         name: "second"
-    LoadDialog:
-        name: "third"
 
 <FratForLife>:
     name: "main"
@@ -74,10 +72,7 @@ WindowManager:
                 center_y: root.width / 2
                 top: root.top - 50
                 text: 'Browse local files'
-                on_release: 
-                    root.show_load()
-                    app.root.current = "third"
-                    root.manager.transition.direction = "left"
+                on_release: root.show_load()
 
         BoxLayout:
             orientation: 'horizontal'
@@ -130,11 +125,21 @@ WindowManager:
         orientation: 'vertical'
 
         # TITLE #
+        # Label:
+        #     id: title
+        #     color: .7, .7, .7, .7
+        #     font_size: 20  
+        #     center_x: root.width / 2
+        #     top: root.top - 50
+        #     text: "Feedback Response Analysis Report"
         Label:
             text: 'Feedback Response Analysis Report'
             size_hint_y: None
             height: 64
             padding: (8, 8)
+            color: .7, .7, .7, .7
+            font_size: 45 
+            center_x: root.width / 2
 
         # CONTENT #
         BoxLayout:
@@ -166,21 +171,19 @@ WindowManager:
                 BoxLayout:
                     orientation: 'vertical'
                     Label:
-                        id: topic_one
                         text: 'topics1'
-                    Label:
-                        text: 'content'
-                        size_hint_y: None
-                        height: 32
+                    TextInput:
+                        id: topic_one
+                        disabled: True
+
                 # TOPICS2 #
                 BoxLayout:
                     orientation: 'vertical'
                     Label:
                         text: 'topics2'
-                    Label:
-                        text: 'content'
-                        size_hint_y: None
-                        height: 32
+                    TextInput:
+                        id: topic_two
+                        disabled: True
 
             # SIDEBAR #
             BoxLayout:
@@ -201,11 +204,11 @@ WindowManager:
                 Button:
                     text: 'again'
                     on_release: 
+                        root.clearTopics()
                         app.root.current = "main"
                         root.manager.transition.direction = "right"
 
 <LoadDialog>:
-    name: "third"
     BoxLayout:
         size: root.size
         pos: root.pos
@@ -219,7 +222,6 @@ WindowManager:
             Button:
                 text: "Cancel"
                 on_release: root.cancel()
-
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)

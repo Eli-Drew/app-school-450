@@ -38,16 +38,9 @@ class FratForLife(Screen):
     #csv_txt_input = ObjectProperty(None)
 
     def main(self):
-
-        # ======================================================
-        # TODO clean code to fit final functionality of product!
-        # ======================================================
-
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
         # get user input and clean the file data
-
-        data = getData('C:/Users/Brentlee/Downloads/demoData.csv')
-        #data = FratForLife.getData(self.ids.csv_txt_input.text)
+        data = getData(self.ids.csv_txt_input.text)
         cleanData = getCleanData(data)
 
         # tokenize and vectorize the data
@@ -112,17 +105,24 @@ class FratForLife(Screen):
         self.dismiss_popup()
 
     def topic(self):
-        self.manager.get_screen("second").ids.topic_one.text = str(
+        self.manager.get_screen("second").ids.topic_one.text = ', '.join(
             config.topic_list[0])
-        return config.topic_list[0]
+        self.manager.get_screen("second").ids.topic_two.text = ', '.join(
+            config.topic_list[1])
 
 
 class AnalysisReportApp(Screen):
-    pass
+    def clearTopics(self):
+        config.topic_list.clear()
 
 
 class WindowManager(ScreenManager):
     pass
+
+
+class LoadDialog(FloatLayout):
+    load = ObjectProperty(None)
+    cancel = ObjectProperty(None)
 
 
 '''
@@ -199,29 +199,24 @@ def getTopics(components, feature_names, n=50):
         #                           for i in topic.argsort()[:-n - 1:-1]])
 
 
-def open_close(self):
-    Popen(['python', 'AnalysisReportApp.py'])
-    FratApp().stop()
+# def open_close(self):
+#     Popen(['python', 'AnalysisReportApp.py'])
+#     FratApp().stop()
 
 
-def close_open(self):
-    AnalysisReportApp().stop()
-    Popen(['python', 'main.py'])
+# def close_open(self):
+#     AnalysisReportApp().stop()
+#     Popen(['python', 'main.py'])
 
 
 class FratApp(App):
     def build(self):
-        global root
-        global csv_txt_input
-        root = FratForLife()
-        csv_txt_input = root.ids.csv_txt_input
+        # global root
+        # global csv_txt_input
+        # root = FratForLife()
+        # csv_txt_input = root.ids.csv_txt_input
         Window.size = (1920, 1080)
-        return Builder.load_file("Frat.kv")
-
-
-class LoadDialog(Screen):
-    load = ObjectProperty(None)
-    cancel = ObjectProperty(None)
+        # return Builder.load_file("Frat.kv")
 
 
 if __name__ == '__main__':
