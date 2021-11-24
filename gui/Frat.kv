@@ -1,7 +1,15 @@
 #:kivy 2.0.0
 #:import utils kivy.utils
 
+WindowManager:
+    FratForLife:
+        name: "main"
+    AnalysisReportApp:
+        name: "second"
+
 <FratForLife>:
+    name: "main"
+
     csv_txt_input: csv_txt_input
 
     canvas.before:
@@ -94,7 +102,111 @@
                 center_y: root.width / 2
                 top: root.top - 50
                 text: 'Analyze'
-                on_release: root.main()
+                on_release: 
+                    root.main()
+                    app.root.current = "second"
+                    root.manager.transition.direction = "left"
+                    root.topic()
+
+<AnalysisReportApp>:
+    name: "second"
+
+    canvas.before:
+
+        Color:
+            rgb: utils.get_color_from_hex('#160E62')
+
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    # LAYOUT #
+    BoxLayout:
+        orientation: 'vertical'
+
+        # TITLE #
+        # Label:
+        #     id: title
+        #     color: .7, .7, .7, .7
+        #     font_size: 20  
+        #     center_x: root.width / 2
+        #     top: root.top - 50
+        #     text: "Feedback Response Analysis Report"
+        Label:
+            text: 'Feedback Response Analysis Report'
+            size_hint_y: None
+            height: 64
+            padding: (8, 8)
+            color: .7, .7, .7, .7
+            font_size: 45 
+            center_x: root.width / 2
+
+        # CONTENT #
+        BoxLayout:
+            orientation: 'horizontal'
+
+            # GRID #
+            GridLayout:
+                cols: 2
+
+                # SUMMARY #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'summary'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+                # CHART #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'chart'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+                # TOPICS1 #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'topics1'
+                    TextInput:
+                        id: topic_one
+                        disabled: True
+
+                # TOPICS2 #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'topics2'
+                    TextInput:
+                        id: topic_two
+                        disabled: True
+
+            # SIDEBAR #
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: None
+                width: 200
+           
+                Button:
+                    text: 'topic-1'
+                Button:
+                    text: 'topic-2'
+                Button:
+                    text: 'topic-3'
+                Button:
+                    text: 'topic-4'
+                Button:
+                    text: 'topic-5'
+                Button:
+                    text: 'again'
+                    on_release: 
+                        root.clearTopics()
+                        app.root.current = "main"
+                        root.manager.transition.direction = "right"
 
 <LoadDialog>:
     BoxLayout:
@@ -110,7 +222,6 @@
             Button:
                 text: "Cancel"
                 on_release: root.cancel()
-
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
