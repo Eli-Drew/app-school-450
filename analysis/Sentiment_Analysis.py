@@ -6,7 +6,7 @@ from keras.preprocessing import sequence
 
 class Sentiment_Analysis(Analysis):
     
-    model_path = os.path.join(os.path.dirname(__file__), 'my_model.tf')
+    model_path = os.path.join(os.path.dirname(__file__), 'sentiment_model.tf')
     model = keras.models.load_model(model_path)
     word_index = imdb.get_word_index() # TODO this may need to be saved and loaded in too
 
@@ -87,6 +87,7 @@ class Sentiment_Analysis(Analysis):
             elif (positive_range[0] <= sentiment_value <= positive_range[1]):
                 positives_count += 1
 
+        # TODO percentage rounding is not consistent. Sometimes will have lots of decimal points
         sentiment_analysis_results["overall"] = round(sum / len(sentiments), 2)
         sentiment_analysis_results["percent_negative"] = round((negatives_count / len(sentiments)), 2) * 100
         sentiment_analysis_results["percent_neutral"] = round((neutrals_count / len(sentiments)), 2) * 100
