@@ -33,15 +33,15 @@ class FratForLife(Screen):
     #csv_txt_input = ObjectProperty(None)
 
     def main(self):
-
-        # ======================================================
-        # TODO clean code to fit final functionality of product!
-        # ======================================================
-
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
         # get user input and clean the file data
+<<<<<<< HEAD
         data = FratForLife.getData(self.ids.csv_txt_input.text)
         cleanData = FratForLife.getCleanData(data)
+=======
+        data = getData(self.ids.csv_txt_input.text)
+        cleanData = getCleanData(data)
+>>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
         # tokenize and vectorize the data
         # TFIDF = (occurences of word in document / total number of words in document) * (log[total # of documents in corpus / number of documents containing word])
@@ -106,6 +106,7 @@ class FratForLife(Screen):
         #true_file_name = os.path.join(path, filename[0])
         self.dismiss_popup()
 
+<<<<<<< HEAD
     '''
     def __init__(self, **kwargs):
         super(FratForLife, self).__init__(**kwargs)
@@ -178,12 +179,25 @@ class FratApp(App):
     def build(self):
         Window.size = (1920, 1080)
         return Builder.load_file("Frat.kv")
+=======
+    def topic(self):
+        self.manager.get_screen("second").ids.topic_one.text = ', '.join(
+            config.topic_list[0])
+        self.manager.get_screen("second").ids.topic_two.text = ', '.join(
+            config.topic_list[1])
+
+
+class AnalysisReportApp(Screen):
+    def clearTopics(self):
+        config.topic_list.clear()
+>>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
 
 class WindowManager(ScreenManager):
     pass
 
 
+<<<<<<< HEAD
 class AnalysisReportApp(Screen):
     pass
 
@@ -191,6 +205,105 @@ class AnalysisReportApp(Screen):
 class LoadDialog(FloatLayout):
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)
+=======
+class LoadDialog(FloatLayout):
+    load = ObjectProperty(None)
+    cancel = ObjectProperty(None)
+
+
+'''
+def __init__(self, **kwargs):
+    super(FratForLife, self).__init__(**kwargs)
+    with self.canvas.before:
+        Color(0, 1, 0)
+'''
+
+"""
+===================================================================
+Description: getData returns the data located at the fileName param
+Param(s): fileName path for data.
+Returns: dataset as list of one element (entire dataset as one elem)
+===================================================================
+"""
+
+
+def getData(fileName):
+    # open file
+    data = open(fileName, "r", encoding='UTF8')
+    # split the file data
+    splitData = data.read().replace('"', ' ').replace('’', '\'').split('\n\n')
+    # convert all text to lowercase and replace all newlines with a space
+    realData = [x.lower().replace('\n', ' ')
+                for x in splitData if len(x) > 500]
+    return realData
+
+
+"""
+===============================================================
+Description: getCleanData returns its data param after cleaning
+Param(s): data list (from getData())
+Returns: A list of text, for example:
+
+['great', 'great presentation', 'great presentation clear',...]
+
+===============================================================
+"""
+
+
+def getCleanData(data):
+    cleanData = []
+    # stop words are words that lack context meaning but occur frequently in natural language
+    stop_words = set(stopwords.words('english'))
+    for d in data:
+        tokens = ' '.join(TextBlob(d).noun_phrases).split()
+        cleanD = []
+        for w in tokens:
+            # convert words to their base form, like plural to singular
+            w = Word(w).lemmatize()
+            if w not in stop_words and len(w) > 4:
+                cleanD.append(w)
+            if len(cleanD) != 0:
+                cleanData.append(' '.join(cleanD))
+    return cleanData
+
+
+"""
+=================================================================================
+Description: getTopics prints the the repective topics and their components
+Param(s): model components, feature names, and n = the number of words per topic.
+Returns: Nothing, just prints topics (at least for now).
+=================================================================================
+"""
+
+
+def getTopics(components, feature_names, n=50):
+    config.init()
+    for idx, topic in enumerate(components):
+        config.topic_list.append([(feature_names[i])
+                                 for i in topic.argsort()[:-n - 1:-1]])
+        # config.topic_list.append([(feature_names[i], topic[i].round(2))
+        #                           for i in topic.argsort()[:-n - 1:-1]])
+
+
+# def open_close(self):
+#     Popen(['python', 'AnalysisReportApp.py'])
+#     FratApp().stop()
+
+
+# def close_open(self):
+#     AnalysisReportApp().stop()
+#     Popen(['python', 'main.py'])
+
+
+class FratApp(App):
+    def build(self):
+        # global root
+        # global csv_txt_input
+        # root = FratForLife()
+        # csv_txt_input = root.ids.csv_txt_input
+        Window.size = (1920, 1080)
+        # return Builder.load_file("Frat.kv")
+>>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
 
 if __name__ == '__main__':

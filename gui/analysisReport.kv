@@ -1,35 +1,79 @@
 #:kivy 2.0.0
+#:import utils kivy.utils
 
+<AnalysisReport>:
+    # LAYOUT #
+    BoxLayout:
+        orientation: 'vertical'
 
-<PongGame>:
+        # TITLE #
+        Label:
+            text: 'Feedback Response Analysis Report'
+            size_hint_y: None
+            height: 64
+            padding: (8, 8)
 
-    canvas:
+        # CONTENT #
+        BoxLayout:
+            orientation: 'horizontal'
 
-        Color:
-            rgb: 0,1,0
+            # GRID #
+            GridLayout:
+                cols: 2
 
-        Rectangle:
-            pos: self.center_x - 5, 0
-            size: 10, self.height
+                # SUMMARY #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'summary'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+                # CHART #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'chart'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+                # TOPICS1 #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'topics1'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+                # TOPICS2 #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'topics2'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
 
-    Label:
-        font_size: 70
-        center_x: root.width / 4
-        top: root.top - 50
-        text: "0"
+            # SIDEBAR #
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: None
+                width: 200
+           
+                Button:
+                    text: 'topic-1'
+                Button:
+                    text: 'topic-2'
+                Button:
+                    text: 'topic-3'
+                Button:
+                    text: 'topic-4'
+                Button:
+                    text: 'topic-5'
+                Button:
+                    text: 'again'
 
-    Label:
-        font_size: 70
-        center_x: root.width * 3 / 4
-        top: root.top - 50
-        text: "0"
-
-    Button:
-        text: "Hannah sucks"
-        center_x: root.width / 4
-        top: root.top - 200
-        font_size: 10
-        on_release: root.close_open()
-
-
-    

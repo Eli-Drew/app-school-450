@@ -1,62 +1,33 @@
-"""
-=================================================
-Authors:        Drew Rinker, Henry Knehans
-Date:           09/28/21
-User Storys:    US-02
+import csv, os
 
-This file gets the user's single response or csv
-    file of responses via the command line.
-=================================================
-"""
-
-# TODO organize imports in separate files
-import csv
-import os
-from datetime import datetime
-from analysis.Response import Response
-
-#===================================================================================
-# Global Variables
-#===================================================================================
-response_objs = []
-
-#===================================================================================
-# Single Reponse Functions
-#===================================================================================
 """
 ===================================================================
 Description:
-    Opens a command line to recieve and limits the text area to max_len words
+    Receives and limits the text area to max_len words
 Paramaters:
-    max_len: the max word length a response can be
+    max_len: the max word length the response can be
 Returns:
-    an array of the one response from the user
+    an array of response from the user
 ===================================================================
 """
 def response_option(max_len):
     valid_response = False
     while not valid_response:
-        response_value = str(input("Enter in a response (max {} words): ".format(max_len)))
-        # TODO len(response_value) returns the number or characters. We need to change this condition to check for word length instead
-        if len(response_value) > max_len:
+        response = str(input("Enter in a response with no more than {} words: ".format(max_len)))
+        if len(response.split()) > max_len:
             print("That was longer than {} words!".format(max_len))
         else:
             valid_response = True
-    response_array = []
-    response_array.append(response_value)
-    return response_array
+    return [response]
 
 
-#===================================================================================
-# csv File Functions
-#===================================================================================
 """
 ===================================================================
 Description:
     Gets rid of the 3 bom characters in the beginning if present
 Paramaters:
     filename: the csv file of records to be validated
-    default: the default encoding that would be returned
+    default: the default encoding to be returned
 Returns:
     the encoding detected in the csv file
 ===================================================================
@@ -84,96 +55,62 @@ def bom_validation(filename, default='utf-8'):
 """
 ===================================================================
 Description:
-    Makes a copy of the input csv
-Paramaters:
-    path: the path of the csv file
-Returns:
-    N/A
-===================================================================
-"""
-def csv_write(path):
-    now = datetime.now()
-    now_format = now.strftime("%d/%m/%Y-%H.%M")
-    write_file = "new-" + path
-
-
-"""
-===================================================================
-Description:
     Reads the csv file and makes sure it is formatted correctly
 Paramaters:
     path: the path of the csv file
     encodingX: the encoding found by bom_validation()
 Returns:
-    an array of responses from the csv file
+    an array of string responses from the csv file
 ===================================================================
 """
 def csv_read(path, encodingX):
     responses = []
-    with open(path, newline='', encoding= encodingX) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter='|')
+    with open(path, newline='', encoding=encodingX) as csv_file:
+        csv_reader = csv.reader(csv_file)
         for row in csv_reader:
-            # # Validate that there is only one element in each record.
-            # if len(row) != 1:
-            #     print("***Invalid .csv file. The file must only contain one element per row***")
-            #     break
-            # else:
-            #     current_resp = row[0]
-            #     if len(current_resp) > max_len:
-            #         print("Length was: " + str(len(current_resp)))
-            #         current_resp = current_resp[0:max_len] 
-
-            #     print("Length: " + str(len(current_resp)))
-
-            #     data.append(current_resp)
+            # TODO Cleanup if/else and try/except
+            # Validate that there is only one element in each record.
             try:
                 responses.append(row[0])
-                # Create new response object and appends to list
-                response_objs.append(Response(row[0]))
             except:
-                pass
+                print("***Invalid csv file. The file must only contain one element per row***")
     return responses
 
 
 """
 ===================================================================
 Description:
-    This function is essentially the driver code for the .csv option.
-    Asks the user for a path and then validates the path is valid.
+    Prompts the user for a csv file, validates, and then returns
+    the file as an array of responses
 Paramaters:
     N/A
 Returns:
-    data to then pass in to be tokenized and then analyzed by model
+    an array of string responses
 ===================================================================
 """
 def csv_option():
     valid_path = False
     while not valid_path:
-        # TODO the user will have to enter full path or browse
-        entered_file = str(input("Enter name of the data set (with the extention): "))
+        entered_file = str(input("Enter name of csv file with extension: "))
         entered_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data_sets', entered_file)
         if os.path.exists(entered_path):
             valid_path = True
         else:
             print("That was not a valid path or file.")
     endcoding = bom_validation(entered_path)
-    responses = csv_read(entered_path, endcoding)
-    return responses
+    return csv_read(entered_path, endcoding)
 
 
-#===================================================================================
-# Main prompting function
-#===================================================================================
 """
 ===================================================================
 Description:
     This function prompts the user via command line for either a 
     single response or csv file of responses. An array of the response(s)
-    is returned to then pass in and be analyzed by the model.
+    is returned to then go through analysis.
 Paramaters:
     max_len: the max word length a response can be
 Returns:
-    the array of response(s)
+    an array of string responses
 ===================================================================
 """
 def get_input(max_len):
@@ -183,8 +120,8 @@ def get_input(max_len):
 
     while not valid_entry:
 
-        print("What would you like to like to do? \nImport a .csv file? Or enter in a response? \n ")
-        option = str(input("Press 'c' for .csv. Press 'r' for response: "))
+        print("\nImport a csv file or type a response?")
+        option = str(input("Press 'c' for csv. Press 'r' for response: "))
         
         if option in valid_entries:
             valid_entry = True

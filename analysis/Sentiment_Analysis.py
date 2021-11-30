@@ -1,12 +1,13 @@
-# TODO organize imports in separate files
 from analysis.Analysis import Analysis
+import os, keras
 from keras.datasets import imdb # TODO this can be removed once the word_index is saved and loaded in
 from keras.preprocessing.text import text_to_word_sequence
 from keras.preprocessing import sequence
 
 class Sentiment_Analysis(Analysis):
-
-    model = None # TODO load the saved sentiment model
+    
+    model_path = os.path.join(os.path.dirname(__file__), 'sentiment_model.tf')
+    model = keras.models.load_model(model_path)
     word_index = imdb.get_word_index() # TODO this may need to be saved and loaded in too
 
     """
@@ -27,6 +28,7 @@ class Sentiment_Analysis(Analysis):
         token_sequences = []
         for response in responses:
             word_seq = text_to_word_sequence(response)
+            # TODO fix the error being thrown when analyzing a response with the oov character
             token_seq = [cls.word_index[word] if word in cls.word_index else -1 for word in word_seq]
             token_sequences.append(token_seq)
 
@@ -40,7 +42,7 @@ class Sentiment_Analysis(Analysis):
     Paramaters:
         padded_sequences: the padded sequences of integers returned by pre_process()
     Returns:
-        the predicted sentiments as an array of floating points
+        the predicted sentiments as 2D array of floating points
     ===================================================================
     """
     @classmethod
@@ -52,13 +54,63 @@ class Sentiment_Analysis(Analysis):
     """
     ===================================================================
     Description:
-        Format the sentiments returned from analyze() to prepare for GUI output
+        Iterate through the sentiments returned by analyze() to get the 
+        overall sentiment as well as the percentages of negative, neural,
+        and positive sentiments
     Paramaters:
-        sentiments: 
+        sentiments: the predicted sentiments as a 2D array of floating points
     Returns:
-        To be written
+        dictionary containing the overall sentiment and percentages of
+        negative, neural, and positive sentiments throughout the responses
     ===================================================================
     """
     @classmethod
     def format_results(cls, sentiments):
-        pass
+
+        sentiment_analysis_results = {}
+
+        sum = 0
+        negative_range = [0.00, 0.33]
+        neutral_range = [0.34, 0.66]
+        positive_range = [0.67, 1.00]
+        negatives_count = neutrals_count = positives_count = 0
+
+        # Iterate through to get sentiment sum and the counts of each sentiment type
+        for sentiment in sentiments:
+            sentiment_value = sentiment[0]
+            sum += sentiment_value
+            # Increment correct count
+            if (negative_range[0] <= sentiment_value <= negative_range[1]):
+                negatives_count += 1
+            elif (neutral_range[0] <= sentiment_value <= neutral_range[1]):
+                neutrals_count += 1
+            elif (positive_range[0] <= sentiment_value <= positive_range[1]):
+                positives_count += 1
+
+        # TODO percentage rounding is not consistent. Sometimes will have lots of decimal points
+        sentiment_analysis_results["overall"] = round(sum / len(sentiments), 2)
+        sentiment_analysis_results["percent_negative"] = round((negatives_count / len(sentiments)), 2) * 100
+        sentiment_analysis_results["percent_neutral"] = round((neutrals_count / len(sentiments)), 2) * 100
+        sentiment_analysis_results["percent_positive"] = round((positives_count / len(sentiments)), 2) * 100
+
+        return sentiment_analysis_results
+
+
+    """
+    ===================================================================
+    Description:
+        Print each entry from the dictionary returned by format_results()
+    Paramaters:
+        sentiment_analysis_results: dictionary containing the overall
+            sentiment and percentages of negative, neural, and positive
+            sentiments throughout the responses
+    Returns:
+        N/A
+    ===================================================================
+    """
+    @classmethod
+    def print_sentiment_results(cls, sentiment_analysis_results):
+        print("\nOverall Sentiment: {}".format(sentiment_analysis_results["overall"]))
+        print("Percent Negative: {}%".format(sentiment_analysis_results["percent_negative"]))
+        print("Percent Neutral: {}%".format(sentiment_analysis_results["percent_neutral"]))
+        print("Percent Positive: {}%".format(sentiment_analysis_results["percent_positive"]))

@@ -3,7 +3,12 @@
 
 WindowManager:
     FratForLife:
+        name: "main"
     AnalysisReportApp:
+<<<<<<< HEAD
+=======
+        name: "second"
+>>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
 <FratForLife>:
     name: "main"
@@ -70,10 +75,14 @@ WindowManager:
                 center_y: root.width / 2
                 top: root.top - 50
                 text: 'Browse local files'
+<<<<<<< HEAD
                 on_release: 
                     root.show_load()
                     # app.root.current = "third"
                     # root.manager.transition.direction = "left"
+=======
+                on_release: root.show_load()
+>>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
         BoxLayout:
             orientation: 'horizontal'
@@ -107,6 +116,7 @@ WindowManager:
                     root.main()
                     app.root.current = "second"
                     root.manager.transition.direction = "left"
+                    root.topic()
 
 <AnalysisReportApp>:
     name: "second"
@@ -120,6 +130,7 @@ WindowManager:
             pos: self.pos
             size: self.size
 
+<<<<<<< HEAD
     BoxLayout:
         orientation: 'vertical'
         size: root.width, root.height
@@ -141,6 +152,95 @@ WindowManager:
             cols: 2
             
 
+=======
+    # LAYOUT #
+    BoxLayout:
+        orientation: 'vertical'
+
+        # TITLE #
+        # Label:
+        #     id: title
+        #     color: .7, .7, .7, .7
+        #     font_size: 20  
+        #     center_x: root.width / 2
+        #     top: root.top - 50
+        #     text: "Feedback Response Analysis Report"
+        Label:
+            text: 'Feedback Response Analysis Report'
+            size_hint_y: None
+            height: 64
+            padding: (8, 8)
+            color: .7, .7, .7, .7
+            font_size: 45 
+            center_x: root.width / 2
+
+        # CONTENT #
+        BoxLayout:
+            orientation: 'horizontal'
+
+            # GRID #
+            GridLayout:
+                cols: 2
+
+                # SUMMARY #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'summary'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+                # CHART #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'chart'
+                    Label:
+                        text: 'content'
+                        size_hint_y: None
+                        height: 32
+                # TOPICS1 #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'topics1'
+                    TextInput:
+                        id: topic_one
+                        disabled: True
+
+                # TOPICS2 #
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'topics2'
+                    TextInput:
+                        id: topic_two
+                        disabled: True
+
+            # SIDEBAR #
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: None
+                width: 200
+           
+                Button:
+                    text: 'topic-1'
+                Button:
+                    text: 'topic-2'
+                Button:
+                    text: 'topic-3'
+                Button:
+                    text: 'topic-4'
+                Button:
+                    text: 'topic-5'
+                Button:
+                    text: 'again'
+                    on_release: 
+                        root.clearTopics()
+                        app.root.current = "main"
+                        root.manager.transition.direction = "right"
+>>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
 <LoadDialog>:
     BoxLayout:
@@ -156,7 +256,6 @@ WindowManager:
             Button:
                 text: "Cancel"
                 on_release: root.cancel()
-
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
