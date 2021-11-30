@@ -26,12 +26,14 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.lang import Builder
-from analysis.Sentiment_Analysis import Sentiment_Analysis
-from user_input.input import *
+# from analysis.Sentiment_Analysis import Sentiment_Analysis
+# from user_input.input import *
+from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+import matplotlib.pyplot as plt
 
 import os
 import nltk
-import AnalysisReportApp
+# import AnalysisReportApp
 import config
 nltk.download('stopwords')
 kivy.require('2.0.0')
@@ -123,6 +125,10 @@ class FratForLife(Screen):
             config.topic_list[0])
         self.manager.get_screen("second").ids.topic_two.text = ', '.join(
             config.topic_list[1])
+        plt.plot([1, 23, 2, 4])
+        plt.ylabel('some numbers')
+        self.manager.get_screen("second").ids.topic_two.add_widget(
+            FigureCanvasKivyAgg(plt.gcf()))
 
 
 class AnalysisReportApp(Screen):
