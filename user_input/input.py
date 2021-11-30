@@ -64,6 +64,7 @@ Returns:
 ===================================================================
 """
 def csv_read(path, encodingX):
+    # should we put these in a 2D array instead?
     responses = []
     with open(path, newline='', encoding=encodingX) as csv_file:
         csv_reader = csv.reader(csv_file)
@@ -72,6 +73,7 @@ def csv_read(path, encodingX):
             # Validate that there is only one element in each record.
             try:
                 responses.append(row[0])
+                # responses.append([row[0]])
             except:
                 print("***Invalid csv file. The file must only contain one element per row***")
     return responses

@@ -26,16 +26,14 @@ def main():
         # themes = Thematic_Analysis.format_results(feature_names)
         
         # Top Words Analysis
-        word_dict = Top_Words_Analysis.pre_process(responses, MAXLEN)
-        top_words_dict = Top_Words_Analysis.analyze(word_dict)
-        sorted_top_words_dict = Top_Words_Analysis.format_results(top_words_dict)
+        # word_dict = Top_Woct = Top_Words_Analysis.format_results(top_words_dict)
 
         # Print Analysis Results
         print("\n=================Analysis Results=================")
         Sentiment_Analysis.print_sentiment_results(sentiment_analysis_results)
         # Thematic_Analysis.print_themes(themes)
         print("\nTop 5 Themes:\nTheme 1: 0.0\nTheme 2: 0.0\nTheme 3: 0.0\nTheme 4: 0.0\nTheme 5: 0.0")
-        Top_Words_Analysis.print_top_words(sorted_top_words_dict)
+        # Top_Words_Analysis.print_top_words(sorted_top_words_dict)
         print("\n====================================================")
 
         # Prompt to run another analysis
@@ -50,6 +48,7 @@ def main():
                 valid_input = True
             else:
                 print("Invalid input. Must enter 'y' for yes or 'n' for no.")
+
 
 if __name__ == "__main__":
     main()

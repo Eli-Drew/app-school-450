@@ -55,15 +55,15 @@ class FratForLife(Screen):
         where K = total number of topics and the Components matrix is the matrix of K by N.
         The Product of the Features and Components matricies results in the approximation of the TF-IDF.
         '''
-        thematic_model = load('thematic_model')
-        thematic_model.fit_transform(vectorData)
+        # thematic_model = load('thematic_model')
+        # thematic_model.fit_transform(vectorData)
 
         # nmf_model = NMF(n_components=5, init='random', random_state=0)
         # nmf_model.fit_transform(vectorData)
 
         # get the feature names and print the topics from the model
-        featureNames = vectorizer.get_feature_names()
-        getTopics(thematic_model.components_, featureNames)
+        # featureNames = vectorizer.get_feature_names()
+        # getTopics(thematic_model.components_, featureNames)
 
         # AnalysisReportApp.AnalysisReportApp.topics(topics)
 
