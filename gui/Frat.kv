@@ -5,10 +5,7 @@ WindowManager:
     FratForLife:
         name: "main"
     AnalysisReportApp:
-<<<<<<< HEAD
-=======
         name: "second"
->>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
 <FratForLife>:
     name: "main"
@@ -75,14 +72,7 @@ WindowManager:
                 center_y: root.width / 2
                 top: root.top - 50
                 text: 'Browse local files'
-<<<<<<< HEAD
-                on_release: 
-                    root.show_load()
-                    # app.root.current = "third"
-                    # root.manager.transition.direction = "left"
-=======
                 on_release: root.show_load()
->>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
         BoxLayout:
             orientation: 'horizontal'
@@ -130,29 +120,6 @@ WindowManager:
             pos: self.pos
             size: self.size
 
-<<<<<<< HEAD
-    BoxLayout:
-        orientation: 'vertical'
-        size: root.width, root.height
-
-        Label:
-            id: title
-            color: .7, .7, .7, .7
-            padding: 8, 8
-            font_size: 25  
-            center_x: root.width / 2
-            top: root.top - 50
-            text: "Feedback Response Analysis Report"
-
-        BoxLayout:
-            orientation: 'horizontal'
-            size: root.width, root.height
-
-        GridLayout:
-            cols: 2
-            
-
-=======
     # LAYOUT #
     BoxLayout:
         orientation: 'vertical'
@@ -240,7 +207,6 @@ WindowManager:
                         root.clearTopics()
                         app.root.current = "main"
                         root.manager.transition.direction = "right"
->>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
 <LoadDialog>:
     BoxLayout:

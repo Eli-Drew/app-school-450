@@ -1,14 +1,18 @@
-from analysis.Analysis import Analysis
-import os, keras
-from keras.datasets import imdb # TODO this can be removed once the word_index is saved and loaded in
-from keras.preprocessing.text import text_to_word_sequence
-from keras.preprocessing import sequence
+from analysis.analysis import Analysis
+import os
+import tensorflow.keras
+# TODO this can be removed once the word_index is saved and loaded in
+from tensorflow.keras.datasets import imdb
+from tensorflow.keras.preprocessing.text import text_to_word_sequence
+from tensorflow.keras.preprocessing import sequence
+
 
 class Sentiment_Analysis(Analysis):
-    
+
     model_path = os.path.join(os.path.dirname(__file__), 'sentiment_model.tf')
-    model = keras.models.load_model(model_path)
-    word_index = imdb.get_word_index() # TODO this may need to be saved and loaded in too
+    model = tensorflow.keras.models.load_model(model_path)
+    # TODO this may need to be saved and loaded in too
+    word_index = imdb.get_word_index()
 
     """
     ===================================================================
@@ -29,11 +33,11 @@ class Sentiment_Analysis(Analysis):
         for response in responses:
             word_seq = text_to_word_sequence(response)
             # TODO fix the error being thrown when analyzing a response with the oov character
-            token_seq = [cls.word_index[word] if word in cls.word_index else -1 for word in word_seq]
+            token_seq = [cls.word_index[word]
+                         if word in cls.word_index else -1 for word in word_seq]
             token_sequences.append(token_seq)
 
         return sequence.pad_sequences(token_sequences, max_len)
-
 
     """
     ===================================================================
@@ -49,7 +53,6 @@ class Sentiment_Analysis(Analysis):
     def analyze(cls, padded_sequences):
         sentiments = cls.model.predict(padded_sequences)
         return sentiments
-
 
     """
     ===================================================================
@@ -89,12 +92,14 @@ class Sentiment_Analysis(Analysis):
 
         # TODO percentage rounding is not consistent. Sometimes will have lots of decimal points
         sentiment_analysis_results["overall"] = round(sum / len(sentiments), 2)
-        sentiment_analysis_results["percent_negative"] = round((negatives_count / len(sentiments)), 2) * 100
-        sentiment_analysis_results["percent_neutral"] = round((neutrals_count / len(sentiments)), 2) * 100
-        sentiment_analysis_results["percent_positive"] = round((positives_count / len(sentiments)), 2) * 100
+        sentiment_analysis_results["percent_negative"] = round(
+            (negatives_count / len(sentiments)), 2) * 100
+        sentiment_analysis_results["percent_neutral"] = round(
+            (neutrals_count / len(sentiments)), 2) * 100
+        sentiment_analysis_results["percent_positive"] = round(
+            (positives_count / len(sentiments)), 2) * 100
 
         return sentiment_analysis_results
-
 
     """
     ===================================================================
@@ -110,7 +115,11 @@ class Sentiment_Analysis(Analysis):
     """
     @classmethod
     def print_sentiment_results(cls, sentiment_analysis_results):
-        print("\nOverall Sentiment: {}".format(sentiment_analysis_results["overall"]))
-        print("Percent Negative: {}%".format(sentiment_analysis_results["percent_negative"]))
-        print("Percent Neutral: {}%".format(sentiment_analysis_results["percent_neutral"]))
-        print("Percent Positive: {}%".format(sentiment_analysis_results["percent_positive"]))
+        print("\nOverall Sentiment: {}".format(
+            sentiment_analysis_results["overall"]))
+        print("Percent Negative: {}%".format(
+            sentiment_analysis_results["percent_negative"]))
+        print("Percent Neutral: {}%".format(
+            sentiment_analysis_results["percent_neutral"]))
+        print("Percent Positive: {}%".format(
+            sentiment_analysis_results["percent_positive"]))

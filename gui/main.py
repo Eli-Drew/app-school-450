@@ -20,13 +20,23 @@ from subprocess import Popen
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
-from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.lang import Builder
+from analysis.Sentiment_Analysis import Sentiment_Analysis
+from user_input.input import *
+
 import os
 import nltk
 import AnalysisReportApp
+import config
 nltk.download('stopwords')
 kivy.require('2.0.0')
+
+MAXLEN = 250
 
 
 class FratForLife(Screen):
@@ -35,13 +45,17 @@ class FratForLife(Screen):
     def main(self):
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
         # get user input and clean the file data
-<<<<<<< HEAD
-        data = FratForLife.getData(self.ids.csv_txt_input.text)
-        cleanData = FratForLife.getCleanData(data)
-=======
-        data = getData(self.ids.csv_txt_input.text)
+        csv_file_path = self.ids.csv_txt_input.text
+        data = getData(csv_file_path)
         cleanData = getCleanData(data)
->>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
+
+        # Sentiment Analysis
+        # endcoding = bom_validation(csv_file_path)
+        # file = csv_read(csv_file_path, endcoding)
+        # padded_sequences = Sentiment_Analysis.pre_process(responses, MAXLEN)
+        # sentiments = Sentiment_Analysis.analyze(padded_sequences)
+        # sentiment_analysis_results = Sentiment_Analysis.format_results(
+        #     sentiments)
 
         # tokenize and vectorize the data
         # TFIDF = (occurences of word in document / total number of words in document) * (log[total # of documents in corpus / number of documents containing word])
@@ -63,15 +77,13 @@ class FratForLife(Screen):
 
         # get the feature names and print the topics from the model
         featureNames = vectorizer.get_feature_names()
-        topics = FratForLife.getTopics(
-            thematic_model.components_, featureNames)
+        getTopics(thematic_model.components_, featureNames)
 
-        AnalysisReportApp.AnalysisReportApp.topics(topics)
+        # AnalysisReportApp.AnalysisReportApp.topics(topics)
 
         # topic_one = str(topics[0])
         # self.ids.topic_text.text = topic_one
-        Popen(['python', 'AnalysisReportApp.py'])
-        FratApp().stop()
+        # open_close(self)
 
     def toggle_disable_inputs(self):
         if(self.ids.csv_txt_input.disabled is True):
@@ -106,80 +118,6 @@ class FratForLife(Screen):
         #true_file_name = os.path.join(path, filename[0])
         self.dismiss_popup()
 
-<<<<<<< HEAD
-    '''
-    def __init__(self, **kwargs):
-        super(FratForLife, self).__init__(**kwargs)
-        with self.canvas.before:
-            Color(0, 1, 0)
-    '''
-
-    """
-    ===================================================================
-    Description: getData returns the data located at the fileName param
-    Param(s): fileName path for data.
-    Returns: dataset as list of one element (entire dataset as one elem)
-    ===================================================================
-    """
-
-    def getData(fileName):
-        # open file
-        data = open(fileName, "r", encoding='UTF8')
-        # split the file data
-        splitData = data.read().replace('"', ' ').replace('’', '\'').split('\n\n')
-        # convert all text to lowercase and replace all newlines with a space
-        realData = [x.lower().replace('\n', ' ')
-                    for x in splitData if len(x) > 500]
-        return realData
-
-    """
-    ===============================================================
-    Description: getCleanData returns its data param after cleaning
-    Param(s): data list (from getData())
-    Returns: A list of text, for example:
-
-    ['great', 'great presentation', 'great presentation clear',...]
-
-    ===============================================================
-    """
-
-    def getCleanData(data):
-        cleanData = []
-        # stop words are words that lack context meaning but occur frequently in natural language
-        stop_words = set(stopwords.words('english'))
-        for d in data:
-            tokens = ' '.join(TextBlob(d).noun_phrases).split()
-            cleanD = []
-            for w in tokens:
-                # convert words to their base form, like plural to singular
-                w = Word(w).lemmatize()
-                if w not in stop_words and len(w) > 4:
-                    cleanD.append(w)
-                if len(cleanD) != 0:
-                    cleanData.append(' '.join(cleanD))
-        return cleanData
-
-    """
-    =================================================================================
-    Description: getTopics prints the the repective topics and their components
-    Param(s): model components, feature names, and n = the number of words per topic.
-    Returns: Nothing, just prints topics (at least for now).
-    =================================================================================
-    """
-
-    def getTopics(components, feature_names, n=50):
-        topic_list = []
-        for idx, topic in enumerate(components):
-            topic_list.append([(feature_names[i], topic[i].round(2))
-                               for i in topic.argsort()[:-n - 1:-1]])
-        return topic_list
-
-
-class FratApp(App):
-    def build(self):
-        Window.size = (1920, 1080)
-        return Builder.load_file("Frat.kv")
-=======
     def topic(self):
         self.manager.get_screen("second").ids.topic_one.text = ', '.join(
             config.topic_list[0])
@@ -190,22 +128,12 @@ class FratApp(App):
 class AnalysisReportApp(Screen):
     def clearTopics(self):
         config.topic_list.clear()
->>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
 
 class WindowManager(ScreenManager):
     pass
 
 
-<<<<<<< HEAD
-class AnalysisReportApp(Screen):
-    pass
-
-
-class LoadDialog(FloatLayout):
-    load = ObjectProperty(None)
-    cancel = ObjectProperty(None)
-=======
 class LoadDialog(FloatLayout):
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)
@@ -303,7 +231,6 @@ class FratApp(App):
         # csv_txt_input = root.ids.csv_txt_input
         Window.size = (1920, 1080)
         # return Builder.load_file("Frat.kv")
->>>>>>> ba7c7d0b2bf670a9de399977b17f5a981b25e218
 
 
 if __name__ == '__main__':
