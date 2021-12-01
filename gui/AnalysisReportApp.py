@@ -58,7 +58,7 @@ class AnalysisReportApp(App):
         topic1 = config.topic_list[0]
 
         topics1 = BoxLayout(orientation='vertical')
-        topics1.add_widget(Label(text='topics1' + topic1))
+        topics1.add_widget(Label(text='topics1'))
         topics1.add_widget(Label(text='content', size_hint_y=None, height=32))
 
         topics2 = BoxLayout(orientation='vertical')

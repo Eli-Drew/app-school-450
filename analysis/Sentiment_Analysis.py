@@ -1,8 +1,11 @@
-from analysis.Analysis import Analysis
-import os, keras
-from keras.datasets import imdb # TODO this can be removed once the word_index is saved and loaded in
-from keras.preprocessing.text import text_to_word_sequence
-from keras.preprocessing import sequence
+from analysis.analysis import Analysis
+import os
+import tensorflow.keras
+# TODO this can be removed once the word_index is saved and loaded in
+from tensorflow.keras.datasets import imdb
+from tensorflow.keras.preprocessing.text import text_to_word_sequence
+from tensorflow.keras.preprocessing import sequence
+
 
 class Sentiment_Analysis(Analysis):
     
@@ -32,11 +35,11 @@ class Sentiment_Analysis(Analysis):
             word_seq = text_to_word_sequence(response)
             # word_seq = text_to_word_sequence(response[0])
             # TODO fix the error being thrown when analyzing a response with the oov character
-            token_seq = [cls.word_index[word] if word in cls.word_index else -1 for word in word_seq]
+            token_seq = [cls.word_index[word]
+                         if word in cls.word_index else -1 for word in word_seq]
             token_sequences.append(token_seq)
 
         return sequence.pad_sequences(token_sequences, max_len)
-
 
     """
     ===================================================================
@@ -52,7 +55,6 @@ class Sentiment_Analysis(Analysis):
     def analyze(cls, padded_sequences):
         sentiments = cls.model.predict(padded_sequences)
         return sentiments
-
 
     """
     ===================================================================
@@ -99,7 +101,6 @@ class Sentiment_Analysis(Analysis):
         sentiment_analysis_results["percent_positive"] = round((positives_count / len(sentiments)), 2) * 100
 
         return sentiment_analysis_results
-
 
     """
     ===================================================================

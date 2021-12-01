@@ -26,17 +26,24 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.lang import Builder
+# from analysis.Sentiment_Analysis import Sentiment_Analysis
+# from user_input.input import *
+# from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+import matplotlib.pyplot as plt
+
 import os
 import nltk
 # import AnalysisReportApp
 import config
 import matplotlib.pyplot as plt
 from kivy_garden.graph import Graph
-from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+# from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 
 
 nltk.download('stopwords')
 kivy.require('2.0.0')
+
+MAXLEN = 250
 
 
 class FratForLife(Screen):
@@ -45,8 +52,17 @@ class FratForLife(Screen):
     def main(self):
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
         # get user input and clean the file data
-        data = getData(self.ids.csv_txt_input.text)
+        csv_file_path = self.ids.csv_txt_input.text
+        data = getData(csv_file_path)
         cleanData = getCleanData(data)
+
+        # Sentiment Analysis
+        # endcoding = bom_validation(csv_file_path)
+        # file = csv_read(csv_file_path, endcoding)
+        # padded_sequences = Sentiment_Analysis.pre_process(responses, MAXLEN)
+        # sentiments = Sentiment_Analysis.analyze(padded_sequences)
+        # sentiment_analysis_results = Sentiment_Analysis.format_results(
+        #     sentiments)
 
         # tokenize and vectorize the data
         # TFIDF = (occurences of word in document / total number of words in document) * (log[total # of documents in corpus / number of documents containing word])
