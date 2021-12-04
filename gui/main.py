@@ -50,9 +50,15 @@ class FratForLife(Screen):
     def main(self):
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
         # get user input and clean the file data
+        # if input_method is c, read from csv, otherwise; read from text input.
         csv_file_path = self.ids.csv_txt_input.text
-        data = getData(csv_file_path)
-        cleanData = getCleanData(data)
+        if(config.input_method == 'c'):
+            data = getData(csv_file_path)
+            cleanData = getCleanData(data)
+        else:
+            data = ['string']
+            data[0] = str(self.ids.typed_txt_input.text)
+            cleanData = getCleanData(data)
 
         # tokenize and vectorize the data
         # TFIDF = (occurences of word in document / total number of words in document) * (log[total # of documents in corpus / number of documents containing word])
@@ -87,9 +93,11 @@ class FratForLife(Screen):
         if(self.ids.csv_txt_input.disabled is True):
             self.ids.csv_txt_input.disabled = False
             self.ids.typed_txt_input.disabled = True
+            config.input_method = 'c'
         else:
             self.ids.csv_txt_input.disabled = True
             self.ids.typed_txt_input.disabled = False
+            config.input_method = 'r'
 
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -210,7 +218,7 @@ def getCleanData(data):
         for w in tokens:
             # convert words to their base form, like plural to singular
             w = Word(w).lemmatize()
-            if w not in stop_words and len(w) > 4:
+            if w not in stop_words and len(w) > 3:
                 cleanD.append(w)
             if len(cleanD) != 0:
                 cleanData.append(' '.join(cleanD))
