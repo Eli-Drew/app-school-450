@@ -28,7 +28,7 @@ from kivy.uix.button import Button
 from kivy.lang import Builder
 # from analysis.Sentiment_Analysis import Sentiment_Analysis
 # from user_input.input import *
-# from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib.pyplot as plt
 
 import os
@@ -37,8 +37,6 @@ import nltk
 import config
 import matplotlib.pyplot as plt
 from kivy_garden.graph import Graph
-# from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
-
 
 nltk.download('stopwords')
 kivy.require('2.0.0')
@@ -57,6 +55,7 @@ class FratForLife(Screen):
         cleanData = getCleanData(data)
 
         # Sentiment Analysis
+        # TODO 
         # endcoding = bom_validation(csv_file_path)
         # file = csv_read(csv_file_path, endcoding)
         # padded_sequences = Sentiment_Analysis.pre_process(responses, MAXLEN)
@@ -76,7 +75,7 @@ class FratForLife(Screen):
         where K = total number of topics and the Components matrix is the matrix of K by N.
         The Product of the Features and Components matricies results in the approximation of the TF-IDF.
         '''
-        # thematic_model = load('thematic_model')
+        # thematic_model = load('thematic_model') # looks like only a file name is given but no path.
         # thematic_model.fit_transform(vectorData)
 
         # nmf_model = NMF(n_components=5, init='random', random_state=0)
@@ -130,24 +129,13 @@ class FratForLife(Screen):
             config.topic_list[0])
         # self.manager.get_screen("second").ids.topic_two.text = ', '.join(
         #     config.topic_list[1])
-
+        plt.plot([1,23,2,4])
+        plt.ylabel('some number')
+        self.manager.get_screen("second").ids.topic_two.add_widget(FigureCanvasKivyAgg(plt.gcf()))
 
 class AnalysisReportApp(Screen):
     def clearTopics(self):
         config.topic_list.clear()
-
-    # def addGraph(self, graph):
-    #     plt.plot([1, 2, 3, 4])
-    #     plt.ylabel('some numbers')
-    #     plt.show()
-    graphX = plt.plot([1, 2, 3, 4], [1, 4, 9, 16])
-    graph = Graph(xlabel='X', ylabel='Y', x_ticks_minor=5,
-                x_ticks_major=25, y_ticks_major=1,
-                y_grid_label=True, x_grid_label=True, padding=5,
-                x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=-1, ymax=1)
-    plot = plt.plot([1, 2, 3, 4], [1, 4, 9, 16])
-    graph.add_plot(plot)
-
 
 
 class WindowManager(ScreenManager):
