@@ -30,6 +30,9 @@ from kivy.lang import Builder
 # from user_input.input import *
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib.pyplot as plt
+from sklearn.decomposition import NMF
+from wordcloud import WordCloud
+from wordcloud import STOPWORDS
 
 import os
 import nltk
@@ -50,6 +53,7 @@ class FratForLife(Screen):
     def main(self):
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
         # get user input and clean the file data
+        # if input_method is c, read from csv, otherwise; read from text input.
         csv_file_path = self.ids.csv_txt_input.text
         data = getData(csv_file_path)
         cleanData = getCleanData(data)
@@ -78,8 +82,9 @@ class FratForLife(Screen):
         # thematic_model = load('thematic_model') # looks like only a file name is given but no path.
         # thematic_model.fit_transform(vectorData)
 
-        # nmf_model = NMF(n_components=5, init='random', random_state=0)
-        # nmf_model.fit_transform(vectorData)
+        config.thematic_model = NMF(
+            n_components=1, init='random', random_state=0)
+        config.thematic_model.fit_transform(vectorData)
 
         # get the feature names and print the topics from the model
         # featureNames = vectorizer.get_feature_names()
@@ -95,9 +100,11 @@ class FratForLife(Screen):
         if(self.ids.csv_txt_input.disabled is True):
             self.ids.csv_txt_input.disabled = False
             self.ids.typed_txt_input.disabled = True
+            config.input_method = 'c'
         else:
             self.ids.csv_txt_input.disabled = True
             self.ids.typed_txt_input.disabled = False
+            config.input_method = 'r'
 
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -196,7 +203,7 @@ def getCleanData(data):
         for w in tokens:
             # convert words to their base form, like plural to singular
             w = Word(w).lemmatize()
-            if w not in stop_words and len(w) > 4:
+            if w not in stop_words and len(w) > 3:
                 cleanD.append(w)
             if len(cleanD) != 0:
                 cleanData.append(' '.join(cleanD))
@@ -215,30 +222,14 @@ Returns: Nothing, just prints topics (at least for now).
 def getTopics(components, feature_names, n=50):
     config.init()
     for idx, topic in enumerate(components):
-        config.topic_list.append([(feature_names[i])
-                                 for i in topic.argsort()[:-n - 1:-1]])
-        # config.topic_list.append([(feature_names[i], topic[i].round(2))
-        #                           for i in topic.argsort()[:-n - 1:-1]])
-
-
-# def open_close(self):
-#     Popen(['python', 'AnalysisReportApp.py'])
-#     FratApp().stop()
-
-
-# def close_open(self):
-#     AnalysisReportApp().stop()
-#     Popen(['python', 'main.py'])
+        # config.topic_list.append([(feature_names[i]) for i in topic.argsort()[:-n - 1:-1]])
+        config.topic_list.append(
+            [(feature_names[i], topic[i].round(2)) for i in topic.argsort()[:-n - 1:-1]])
 
 
 class FratApp(App):
     def build(self):
-        # global root
-        # global csv_txt_input
-        # root = FratForLife()
-        # csv_txt_input = root.ids.csv_txt_input
         Window.size = (1920, 1080)
-        # return Builder.load_file("Frat.kv")
 
 
 if __name__ == '__main__':
