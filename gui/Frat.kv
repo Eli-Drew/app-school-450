@@ -171,38 +171,28 @@ WindowManager:
                 BoxLayout:
                     orientation: 'vertical'
                     Label:
-                        text: 'topics1'
-                    TextInput:
+                        text: 'Topic'
+                    BoxLayout:
                         id: topic_one
-                        disabled: True
 
                 # TOPICS2 #
                 BoxLayout:
                     orientation: 'vertical'
                     Label:
                         text: 'topics2'
-                    TextInput:
+                    BoxLayout:
                         id: topic_two
-                        disabled: True
 
             # SIDEBAR #
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_x: None
                 width: 200
-           
+
                 Button:
-                    text: 'topic-1'
-                Button:
-                    text: 'topic-2'
-                Button:
-                    text: 'topic-3'
-                Button:
-                    text: 'topic-4'
-                Button:
-                    text: 'topic-5'
-                Button:
-                    text: 'again'
+                    text: 'New Analysis'
+                    size_hint_y: None
+                    height: 50
                     on_release: 
                         root.clearTopics()
                         app.root.current = "main"

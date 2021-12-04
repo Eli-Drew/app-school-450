@@ -26,12 +26,22 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.lang import Builder
+# from analysis.Sentiment_Analysis import Sentiment_Analysis
+# from user_input.input import *
+from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+import matplotlib.pyplot as plt
+from sklearn.decomposition import NMF
+from wordcloud import WordCloud
+from wordcloud import STOPWORDS
+
 import os
 import nltk
-import AnalysisReportApp
+# import AnalysisReportApp
 import config
 nltk.download('stopwords')
 kivy.require('2.0.0')
+
+MAXLEN = 250
 
 
 class FratForLife(Screen):
@@ -40,7 +50,8 @@ class FratForLife(Screen):
     def main(self):
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
         # get user input and clean the file data
-        data = getData(self.ids.csv_txt_input.text)
+        csv_file_path = self.ids.csv_txt_input.text
+        data = getData(csv_file_path)
         cleanData = getCleanData(data)
 
         # tokenize and vectorize the data
@@ -55,15 +66,16 @@ class FratForLife(Screen):
         where K = total number of topics and the Components matrix is the matrix of K by N.
         The Product of the Features and Components matricies results in the approximation of the TF-IDF.
         '''
-        thematic_model = load('thematic_model')
-        thematic_model.fit_transform(vectorData)
+        # thematic_model = load('thematic_model')
+        # thematic_model.fit_transform(vectorData)
 
-        # nmf_model = NMF(n_components=5, init='random', random_state=0)
-        # nmf_model.fit_transform(vectorData)
+        config.thematic_model = NMF(
+            n_components=1, init='random', random_state=0)
+        config.thematic_model.fit_transform(vectorData)
 
         # get the feature names and print the topics from the model
-        featureNames = vectorizer.get_feature_names()
-        getTopics(thematic_model.components_, featureNames)
+        config.featureNames = vectorizer.get_feature_names()
+        getTopics(config.thematic_model.components_, config.featureNames)
 
         # AnalysisReportApp.AnalysisReportApp.topics(topics)
 
@@ -105,10 +117,34 @@ class FratForLife(Screen):
         self.dismiss_popup()
 
     def topic(self):
-        self.manager.get_screen("second").ids.topic_one.text = ', '.join(
-            config.topic_list[0])
-        self.manager.get_screen("second").ids.topic_two.text = ', '.join(
-            config.topic_list[1])
+        # self.manager.get_screen("second").ids.topic_one.text = ', '.join(
+        #     config.topic_list[0])
+        # self.manager.get_screen("second").ids.topic_two.text = ', '.join(
+        #     config.topic_list[1])
+
+        for idx, topic in enumerate(config.thematic_model.components_):
+            if idx == 0:
+                topic_x = [(config.featureNames[i], topic[i].round(2))
+                           for i in topic.argsort()[:-1000 - 1:-1]]
+                topic_x = {i[0]: i[1] for i in topic_x}
+
+        wordcloud = WordCloud(width=3000, height=3000, stopwords=STOPWORDS,
+                              background_color="white", min_font_size=30)
+        wordcloud = wordcloud.generate_from_frequencies(topic_x)
+
+        # build figure (plot)
+        fig = plt.figure(figsize=(50, 50))
+        plt.axis("off", figure=fig)
+        plt.imshow(wordcloud, interpolation="bilinear", figure=fig)
+        fig.get_tight_layout()
+
+        # put figure on results page at id topic_one
+        self.manager.get_screen("second").ids.topic_one.clear_widgets()
+        self.manager.get_screen("second").ids.topic_one.add_widget(
+            FigureCanvasKivyAgg(fig))
+
+        # clear figure
+        fig = plt.figure()
 
 
 class AnalysisReportApp(Screen):
@@ -193,30 +229,14 @@ Returns: Nothing, just prints topics (at least for now).
 def getTopics(components, feature_names, n=50):
     config.init()
     for idx, topic in enumerate(components):
-        config.topic_list.append([(feature_names[i])
-                                 for i in topic.argsort()[:-n - 1:-1]])
-        # config.topic_list.append([(feature_names[i], topic[i].round(2))
-        #                           for i in topic.argsort()[:-n - 1:-1]])
-
-
-# def open_close(self):
-#     Popen(['python', 'AnalysisReportApp.py'])
-#     FratApp().stop()
-
-
-# def close_open(self):
-#     AnalysisReportApp().stop()
-#     Popen(['python', 'main.py'])
+        # config.topic_list.append([(feature_names[i]) for i in topic.argsort()[:-n - 1:-1]])
+        config.topic_list.append(
+            [(feature_names[i], topic[i].round(2)) for i in topic.argsort()[:-n - 1:-1]])
 
 
 class FratApp(App):
     def build(self):
-        # global root
-        # global csv_txt_input
-        # root = FratForLife()
-        # csv_txt_input = root.ids.csv_txt_input
         Window.size = (1920, 1080)
-        # return Builder.load_file("Frat.kv")
 
 
 if __name__ == '__main__':
