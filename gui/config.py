@@ -7,6 +7,8 @@ thematic_model = NMF(n_components=1, init='random', random_state=0)
 
 featureNames = []
 
+input_method = 'c'
+
 
 def init():
     global topic_list
