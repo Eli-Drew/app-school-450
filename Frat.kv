@@ -116,7 +116,7 @@ WindowManager:
     canvas.before:
 
         Color:
-            rgb: utils.get_color_from_hex('#160E62')
+            rgb: utils.get_color_from_hex('#0f6875')
 
         Rectangle:
             pos: self.pos
@@ -163,12 +163,9 @@ WindowManager:
                 # CHART #
                 BoxLayout:
                     orientation: 'vertical'
-                    Label:
-                        text: 'chart'
-                    Label:
-                        text: 'content'
-                        size_hint_y: None
-                        height: 32
+                    BoxLayout:
+                        orientation: 'vertical'
+                        id: sentiment_chart
                 # TOPICS1 #
                 BoxLayout:
                     orientation: 'vertical'

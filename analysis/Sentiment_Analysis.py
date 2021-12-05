@@ -73,14 +73,14 @@ class Sentiment_Analysis(Analysis):
         sentiment_analysis_results = {}
 
         sum = 0
-        negative_range = [0.00, 0.33]
-        neutral_range = [0.34, 0.66]
-        positive_range = [0.67, 1.00]
+        negative_range = [0.00, 0.44]
+        neutral_range = [0.45, 0.55]
+        positive_range = [0.56, 1.00]
         negatives_count = neutrals_count = positives_count = 0
 
         # Iterate through to get sentiment sum and the counts of each sentiment type
         for sentiment in sentiments:
-            sentiment_value = sentiment[0]
+            sentiment_value = round(sentiment[0].item(), 2)
             sum += sentiment_value
             # Increment correct count
             if (negative_range[0] <= sentiment_value <= negative_range[1]):
@@ -90,14 +90,10 @@ class Sentiment_Analysis(Analysis):
             elif (positive_range[0] <= sentiment_value <= positive_range[1]):
                 positives_count += 1
 
-        # TODO percentage rounding is not consistent. Sometimes will have lots of decimal points
         sentiment_analysis_results["overall"] = round(sum / len(sentiments), 2)
-        sentiment_analysis_results["percent_negative"] = round(
-            (negatives_count / len(sentiments)), 2) * 100
-        sentiment_analysis_results["percent_neutral"] = round(
-            (neutrals_count / len(sentiments)), 2) * 100
-        sentiment_analysis_results["percent_positive"] = round(
-            (positives_count / len(sentiments)), 2) * 100
+        sentiment_analysis_results["percent_negative"] = round((negatives_count / len(sentiments)) * 100, 2)
+        sentiment_analysis_results["percent_neutral"] = round((neutrals_count / len(sentiments)) * 100, 2)
+        sentiment_analysis_results["percent_positive"] = round((positives_count / len(sentiments)) * 100, 2)
 
         return sentiment_analysis_results
 

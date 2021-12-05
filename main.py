@@ -68,6 +68,23 @@ class FratForLife(Screen):
         padded_sequences = Sentiment_Analysis.pre_process(data, MAXLEN)
         sentiments = Sentiment_Analysis.analyze(padded_sequences)
         sentiment_analysis_results = Sentiment_Analysis.format_results(sentiments)
+        pie_chart_labels = 'Negative', 'Positive', 'Neutral'
+        pie_chart_percentages = []
+        for key in sentiment_analysis_results:
+            # pie_chart_labels.append(key)
+            pie_chart_percentages.append(sentiment_analysis_results[key] / 100)
+
+        # pie_chart_labels = pie_chart_labels[1:]
+        pie_chart_percentages= pie_chart_percentages[1:]
+
+        pie_chart_figure, pie_chart_ax = plt.subplots()
+        pie_chart_ax.pie(pie_chart_percentages, labels=pie_chart_labels, autopct='%1.0f%%',
+                                startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'},textprops={'color': 'white'})
+        # pie_chart_ax.axis('equal')
+        pie_chart_figure.set_facecolor('none')
+        self.manager.get_screen("second").ids.sentiment_chart.add_widget(FigureCanvasKivyAgg(pie_chart_figure))
+
+
 
 
         # tokenize and vectorize the data
@@ -91,16 +108,19 @@ class FratForLife(Screen):
 
         # get the feature names and print the topics from the model
         config.featureNames = vectorizer.get_feature_names()
+
+        # getTopics returns nothing. builds global variable topicList in config file. 
+        # single element list that holds sentiment value and word per word
         getTopics(config.thematic_model.components_, config.featureNames)
+
+        # accesss global variable for top topics and their sentiment.
+        # config.topic_list[0]
 
         # AnalysisReportApp.AnalysisReportApp.topics(topics)
 
         # topic_one = str(topics[0])
         # self.ids.topic_text.text = topic_one
         # open_close(self)
-
-        # switches to next screen once the process is done. might not have an animation though.
-        self.switch_to_next_screen()
 
     def toggle_disable_inputs(self):
         if(self.ids.csv_txt_input.disabled is True):
@@ -170,13 +190,6 @@ class FratForLife(Screen):
         # clear figure
         fig = plt.figure()
        
-    # this function is for the loading animation.
-    def switch_to_next_screen(self):
-        self.parent.current = "second"
-
-    def sentiment_analysis(self, response):
-
-        pass
 
 class AnalysisReportApp(Screen):
     def clearTopics(self):
