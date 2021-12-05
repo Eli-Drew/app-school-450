@@ -49,6 +49,7 @@ WindowManager:
                 text: 'Welcome to the Feedback Response Analysis Tool. \nThis tool takes either a csv file or your plain text in and performs thematic, semantic, and sentiment analysis on it. \nBy default, you can click the "Browse local files" button to choose a csv file to analyze. \nClick the "Toggle Input Method" button to enable plaintext input and type in the bottom text field. \nYou will see your results after clicking the "Analyze" button.'
 
         ToggleButton:
+            id: toggle_btn
             size_hint: 0.1, 0.5
             center_y: root.width / 2
             text: 'Toggle Input Method'
@@ -68,6 +69,7 @@ WindowManager:
                 text: 'CSV file location'
 
             Button:
+                id: browse_btn
                 size_hint: 1, 0.5
                 center_y: root.width / 2
                 top: root.top - 50

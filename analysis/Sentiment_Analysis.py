@@ -1,4 +1,4 @@
-from analysis.analysis import Analysis
+from analysis.Analysis import Analysis
 import os
 import tensorflow.keras
 # TODO this can be removed once the word_index is saved and loaded in
@@ -34,7 +34,7 @@ class Sentiment_Analysis(Analysis):
             word_seq = text_to_word_sequence(response)
             # TODO fix the error being thrown when analyzing a response with the oov character
             token_seq = [cls.word_index[word]
-                         if word in cls.word_index else -1 for word in word_seq]
+                         if word in cls.word_index else 0 for word in word_seq]
             token_sequences.append(token_seq)
 
         return sequence.pad_sequences(token_sequences, max_len)

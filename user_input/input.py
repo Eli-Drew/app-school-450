@@ -42,7 +42,8 @@ def bom_validation(filename, default='utf-8'):
         {'name': 'UTF-32 big-endian', 'sig': b'\x00\x00\xFE\xFF', 'encoding':
             'utf-32-be'},
         {'name': 'UTF-32 little-endian', 'sig': b'\xFF\xFE\x00\x00',
-            'encoding': 'utf-32-le'}))
+            'encoding': 'utf-32-le'},
+        {'name': 'UTF-8-SIG', 'sig': b'\xef\xbb\xbf', 'encoding': 'utf-8-sig'}))
 
     with open(filename, 'rb') as f:
         sig = f.read(4)
