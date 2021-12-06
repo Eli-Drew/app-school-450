@@ -90,7 +90,6 @@ class FratForLife(Screen):
 
 
         """Top Tokens Chart"""
-        # TODO
         # top_tokens_processed = Top_Words_Analysis.pre_process(data)
         word_dict = Top_Words_Analysis.pre_process(data, MAXLEN)
         top_words_dict = Top_Words_Analysis.analyze(word_dict)
@@ -99,6 +98,7 @@ class FratForLife(Screen):
         sorted_top_words_dict = Top_Words_Analysis.format_results(top_words_dict)
 
         # top tokens bar graph. 
+        # TODO make graph look better and add labels
         top_token_bar = plt.figure()
         top_token_ax = top_token_bar.add_axes([0,0,1,1])
         words = []
@@ -107,7 +107,7 @@ class FratForLife(Screen):
             words.append(token_key)
             word_count.append(sorted_top_words_dict[token_key])
         top_token_ax.bar(words, word_count)
-        top_token_bar.set_facecolor('none')
+        # top_token_bar.set_facecolor('none')
         self.manager.get_screen("second").ids.top_token_bar_chart.add_widget(FigureCanvasKivyAgg(top_token_bar))
 
         """Top Topics and Their Sentiment chart"""

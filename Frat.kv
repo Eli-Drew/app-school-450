@@ -104,6 +104,7 @@ WindowManager:
                 center_y: root.width / 2
                 top: root.top - 50
                 text: 'Analyze'
+                # background_color: (0.921,0.251,0.204,1.0)
                 on_release: 
                     root.main()
                     app.root.current = "second"
@@ -155,11 +156,16 @@ WindowManager:
                 BoxLayout:
                     orientation: 'vertical'
                     Label:
-                        text: 'summary'
+                        text: 'Analysis Summary'
                     Label:
+                    # TODO - make a summary with dummy data. look good. 
                         text: 'content'
                         size_hint_y: None
                         height: 32
+                        # make a grid layout
+                        # Sentiment analysis stuff: overall/average positive negative neutral
+                        # thematic analysis: top themes. talk to brent about this
+
                 # CHART #
                 BoxLayout:
                     orientation: 'vertical'
@@ -169,12 +175,10 @@ WindowManager:
                 # TOPICS1 #
                 BoxLayout:
                     orientation: 'vertical'
-                    Label:
-                        text: 'Topic'
                     BoxLayout:
                         id: topic_one
 
-                # TOPICS2 #
+                # Top Tokens Bar Chart #
                 BoxLayout:
                     orientation: 'vertical'
                     BoxLayout:
