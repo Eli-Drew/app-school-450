@@ -1,3 +1,6 @@
+print("Welcome to the Feedback Response Analysis Tool")
+print("Please wait for startup...")
+
 from user_input.input import get_input
 from analysis.Sentiment_Analysis import Sentiment_Analysis
 from analysis.Thematic_Anlaysis import Thematic_Analysis
@@ -12,13 +15,13 @@ def main():
 
         # Get user's responses
         responses = get_input(MAXLEN)
-        # TODO figure out why characters aren't being removed from beginning of data_sets/responses.csv
-        # print(responses) # notice the first few characters after inputting responses.csv
 
         # Sentiment Analysis
         padded_sequences = Sentiment_Analysis.pre_process(responses, MAXLEN)
         sentiments = Sentiment_Analysis.analyze(padded_sequences)
         sentiment_analysis_results = Sentiment_Analysis.format_results(sentiments)
+        featured_responses = Sentiment_Analysis.get_featured_responses(
+            responses, sentiments, sentiment_analysis_results["average"][1])
         
         # Thematic Analysis
         # clean_responses = Thematic_Analysis.pre_process(responses, MAXLEN)
@@ -32,11 +35,11 @@ def main():
 
         # Print Analysis Results
         print("\n=================Analysis Results=================")
-        Sentiment_Analysis.print_sentiment_results(sentiment_analysis_results)
+        Sentiment_Analysis.print_sentiment_results(sentiment_analysis_results, featured_responses)
         # Thematic_Analysis.print_themes(themes)
         print("\nTop 5 Themes:\nTheme 1: 0.0\nTheme 2: 0.0\nTheme 3: 0.0\nTheme 4: 0.0\nTheme 5: 0.0")
         Top_Words_Analysis.print_top_words(sorted_top_words_dict)
-        print("\n====================================================")
+        print("\n==================================================")
 
         # Prompt to run another analysis
         valid_input = False

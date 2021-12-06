@@ -11,20 +11,14 @@ Returns:
 ===================================================================
 """
 def response_option(max_len):
-    valid_response = False
-    while not valid_response:
-        response = str(input("Enter in a response with no more than {} words: ".format(max_len)))
-        if len(response.split()) > max_len:
-            print("That was longer than {} words!".format(max_len))
-        else:
-            valid_response = True
+    response = str(input("Enter in a response with no more than {} words: ".format(max_len)))
     return [response]
 
 
 """
 ===================================================================
 Description:
-    Gets rid of the 3 bom characters in the beginning if present
+    Finds the encoding of the csv file being read
 Paramaters:
     filename: the csv file of records to be validated
     default: the default encoding to be returned
@@ -33,6 +27,7 @@ Returns:
 ===================================================================
 """
 def bom_validation(filename, default='utf-8'):
+
     msboms = dict((bom['sig'], bom) for bom in (
         {'name': 'UTF-8', 'sig': b'\xEF\xBB\xBF', 'encoding': 'utf-8'},
         {'name': 'UTF-16 big-endian', 'sig': b'\xFE\xFF', 'encoding':
@@ -42,7 +37,8 @@ def bom_validation(filename, default='utf-8'):
         {'name': 'UTF-32 big-endian', 'sig': b'\x00\x00\xFE\xFF', 'encoding':
             'utf-32-be'},
         {'name': 'UTF-32 little-endian', 'sig': b'\xFF\xFE\x00\x00',
-            'encoding': 'utf-32-le'}))
+            'encoding': 'utf-32-le'},
+        {'name': 'UTF-8-SIG', 'sig': b'\xef\xbb\xbf', 'encoding': 'utf-8-sig'}))
 
     with open(filename, 'rb') as f:
         sig = f.read(4)
@@ -64,16 +60,14 @@ Returns:
 ===================================================================
 """
 def csv_read(path, encodingX):
+    
     responses = []
-    with open(path, newline='', encoding=encodingX) as csv_file:
-        csv_reader = csv.reader(csv_file)
+
+    with open(path, newline='', encoding=encodingX) as csv_file:    
+        csv_reader = csv.reader(csv_file, delimiter='|')
         for row in csv_reader:
-            # TODO Cleanup if/else and try/except
-            # Validate that there is only one element in each record.
-            try:
-                responses.append(row[0])
-            except:
-                print("***Invalid csv file. The file must only contain one element per row***")
+            responses.append(row[0])
+            
     return responses
 
 
@@ -89,14 +83,16 @@ Returns:
 ===================================================================
 """
 def csv_option():
+
     valid_path = False
     while not valid_path:
-        entered_file = str(input("Enter name of csv file with extension: "))
-        entered_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data_sets', entered_file)
+        
+        entered_path = str(input("Enter full path name of csv file with extension: "))
         if os.path.exists(entered_path):
             valid_path = True
         else:
             print("That was not a valid path or file.")
+
     endcoding = bom_validation(entered_path)
     return csv_read(entered_path, endcoding)
 
