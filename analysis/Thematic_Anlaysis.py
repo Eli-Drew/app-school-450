@@ -1,5 +1,4 @@
 from analysis.Analysis import Analysis
-import nltk # TODO this can be removed when nltk.download('stopwords') is saved and loaded in
 from nltk.corpus import stopwords
 from textblob import Word, TextBlob
 from sklearn.decomposition import NMF
@@ -7,7 +6,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 class Thematic_Analysis(Analysis):
 
-    nltk.download('stopwords') # TODO this may need to be saved somewhere too so we can load it in locally without having to download it
     vectorizer = TfidfVectorizer(max_features=1000)
     nmf_model = NMF(n_components=5, init='random', random_state=0)
 
