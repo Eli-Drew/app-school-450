@@ -210,9 +210,9 @@ class FratForLife(Screen):
         fig.get_tight_layout()
 
         # put figure on results page at id topic_one
-        self.manager.get_screen("second").ids.topic_one.clear_widgets()
-        self.manager.get_screen("second").ids.topic_one.add_widget(
-            FigureCanvasKivyAgg(fig))
+        # self.manager.get_screen("second").ids.topic_one.clear_widgets()
+        # self.manager.get_screen("second").ids.topic_one.add_widget(
+        #     FigureCanvasKivyAgg(fig))
 
         # clear figure
         fig = plt.figure()
