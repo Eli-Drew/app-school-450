@@ -10,6 +10,7 @@ from tensorflow.keras.preprocessing import sequence
 class Sentiment_Analysis(Analysis):
 
     model_path = os.path.join(os.path.dirname(__file__), 'sentiment_model.tf')
+    # model_path = "C:\\Users\\Drew\\FRAT-models\\analysis\\sentiment_model.tf"
     model = tensorflow.keras.models.load_model(model_path)
     # TODO this may need to be saved and loaded in too
     word_index = imdb.get_word_index()
