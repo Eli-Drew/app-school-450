@@ -33,6 +33,7 @@ from wordcloud import STOPWORDS
 from kivy.factory import Factory
 from analysis.Sentiment_Analysis import Sentiment_Analysis
 import user_input.input
+from analysis.Top_Words_Analysis import Top_Words_Analysis
 
 import os
 import nltk
@@ -68,13 +69,16 @@ class FratForLife(Screen):
         padded_sequences = Sentiment_Analysis.pre_process(data, MAXLEN)
         sentiments = Sentiment_Analysis.analyze(padded_sequences)
         sentiment_analysis_results = Sentiment_Analysis.format_results(sentiments)
+
+        """Analysis Summary Chart"""
+        # TODO
+
+        """Sentiment Analysis Pie Chart"""
         pie_chart_labels = 'Negative', 'Positive', 'Neutral'
         pie_chart_percentages = []
         for key in sentiment_analysis_results:
-            # pie_chart_labels.append(key)
             pie_chart_percentages.append(sentiment_analysis_results[key] / 100)
 
-        # pie_chart_labels = pie_chart_labels[1:]
         pie_chart_percentages= pie_chart_percentages[1:]
 
         pie_chart_figure, pie_chart_ax = plt.subplots()
@@ -85,6 +89,29 @@ class FratForLife(Screen):
         self.manager.get_screen("second").ids.sentiment_chart.add_widget(FigureCanvasKivyAgg(pie_chart_figure))
 
 
+        """Top Tokens Chart"""
+        # TODO
+        # top_tokens_processed = Top_Words_Analysis.pre_process(data)
+        word_dict = Top_Words_Analysis.pre_process(data, MAXLEN)
+        top_words_dict = Top_Words_Analysis.analyze(word_dict)
+
+        # this has a sorted dictionary from greatest to least
+        sorted_top_words_dict = Top_Words_Analysis.format_results(top_words_dict)
+
+        # top tokens bar graph. 
+        top_token_bar = plt.figure()
+        top_token_ax = top_token_bar.add_axes([0,0,1,1])
+        words = []
+        word_count = []
+        for token_key in sorted_top_words_dict:
+            words.append(token_key)
+            word_count.append(sorted_top_words_dict[token_key])
+        top_token_ax.bar(words, word_count)
+        top_token_bar.set_facecolor('none')
+        self.manager.get_screen("second").ids.top_token_bar_chart.add_widget(FigureCanvasKivyAgg(top_token_bar))
+
+        """Top Topics and Their Sentiment chart"""
+        # TODO
 
 
         # tokenize and vectorize the data
