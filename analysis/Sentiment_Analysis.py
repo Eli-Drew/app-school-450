@@ -232,6 +232,32 @@ class Sentiment_Analysis(Analysis):
     """
     ===================================================================
     Description:
+        Shorten the featured responses if necessesary to prepare for
+            presentation
+    Paramaters:
+        featured_responses: a list of 3 or less string responses
+        length: the length to shorten a response to if needed
+    Returns:
+        a list of 3 or less featured responses shortened to be at or
+            under 'length' words
+    ===================================================================
+    """
+    @classmethod
+    def truncate_featured_responses(cls, featured_responses, length):
+
+        shortened_featured_responses = []
+
+        for response in featured_responses:
+            if len(response.split()) > length:
+                response = ' '.join(response.split()[0:length]) + '...'
+            shortened_featured_responses.append(response)
+
+        return shortened_featured_responses
+
+
+    """
+    ===================================================================
+    Description:
         Print each entry from the dictionary returned by format_results()
         as well as the featured responses
     Paramaters:
@@ -256,4 +282,4 @@ class Sentiment_Analysis(Analysis):
 
         print("\nFeatured {} Responses: ".format(sentiment_analysis_results["average"][1].capitalize()))
         for response in featured_responses:
-            print("\t\"{}\"".format(response))
+            print("\n\t\"{}\"".format(response))
