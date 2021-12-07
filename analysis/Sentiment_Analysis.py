@@ -1,5 +1,4 @@
 from analysis.Analysis import Analysis
-# from Analysis import Analysis
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # suppresses tf info and warning logs
 from tensorflow.keras.models import load_model
@@ -10,12 +9,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 class Sentiment_Analysis(Analysis):
     
-    # model_path = os.path.join(os.path.dirname(__file__), 'sentiment_model.tf')
-    model_path = os.path.join(os.path.expanduser('~'), 'FRAT-models\\analysis\\sentiment_model.tf')
-    # if os.path.exists(model_path):
-    #     print("\n\n\n{} exists\n\n\n".format(model_path))
-    # else:
-    #     print("\n\n\n{} does not exist\n\n\n".format(model_path))
+    model_path = os.path.join(os.path.expanduser('~'), 'FRAT-models\\2_7_sentiment_model.tf')
     model = load_model(model_path, compile=False)
     word_index = get_word_index()
 
@@ -237,6 +231,32 @@ class Sentiment_Analysis(Analysis):
     """
     ===================================================================
     Description:
+        Shorten the featured responses if necessesary to prepare for
+            presentation
+    Paramaters:
+        featured_responses: a list of 3 or less string responses
+        length: the length to shorten a response to if needed
+    Returns:
+        a list of 3 or less featured responses shortened to be at or
+            under 'length' words
+    ===================================================================
+    """
+    @classmethod
+    def truncate_featured_responses(cls, featured_responses, length):
+
+        shortened_featured_responses = []
+
+        for response in featured_responses:
+            if len(response.split()) > length:
+                response = ' '.join(response.split()[0:length]) + '...'
+            shortened_featured_responses.append(response)
+
+        return shortened_featured_responses
+
+
+    """
+    ===================================================================
+    Description:
         Print each entry from the dictionary returned by format_results()
         as well as the featured responses
     Paramaters:
@@ -261,4 +281,4 @@ class Sentiment_Analysis(Analysis):
 
         print("\nFeatured {} Responses: ".format(sentiment_analysis_results["average"][1].capitalize()))
         for response in featured_responses:
-            print("\t\"{}\"".format(response))
+            print("\n\t\"{}\"".format(response))
