@@ -1,4 +1,5 @@
 from analysis.Analysis import Analysis
+# from Analysis import Analysis
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # suppresses tf info and warning logs
 from tensorflow.keras.models import load_model
@@ -10,7 +11,11 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 class Sentiment_Analysis(Analysis):
     
     # model_path = os.path.join(os.path.dirname(__file__), 'sentiment_model.tf')
-    model_path = os.path.join(os.path.expanduser('~'), 'FRAT-models\\2_7_sentiment_model.tf')
+    model_path = os.path.join(os.path.expanduser('~'), 'FRAT-models\\analysis\\sentiment_model.tf')
+    # if os.path.exists(model_path):
+    #     print("\n\n\n{} exists\n\n\n".format(model_path))
+    # else:
+    #     print("\n\n\n{} does not exist\n\n\n".format(model_path))
     model = load_model(model_path, compile=False)
     word_index = get_word_index()
 
