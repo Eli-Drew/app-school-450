@@ -69,6 +69,7 @@ class FratForLife(Screen):
         padded_sequences = Sentiment_Analysis.pre_process(data, MAXLEN)
         sentiments = Sentiment_Analysis.analyze(padded_sequences)
         sentiment_analysis_results = Sentiment_Analysis.format_results(sentiments)
+        sentiment_analysis_results.pop("average")
 
         """Analysis Summary Chart"""
         # TODO
@@ -78,8 +79,6 @@ class FratForLife(Screen):
         pie_chart_percentages = []
         for key in sentiment_analysis_results:
             pie_chart_percentages.append(sentiment_analysis_results[key] / 100)
-
-        pie_chart_percentages= pie_chart_percentages[1:]
 
         pie_chart_figure, pie_chart_ax = plt.subplots()
         pie_chart_ax.pie(pie_chart_percentages, labels=pie_chart_labels, autopct='%1.0f%%',
