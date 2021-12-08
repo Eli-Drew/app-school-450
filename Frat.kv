@@ -126,14 +126,6 @@ WindowManager:
     BoxLayout:
         orientation: 'vertical'
 
-        # TITLE #
-        # Label:
-        #     id: title
-        #     color: .7, .7, .7, .7
-        #     font_size: 20  
-        #     center_x: root.width / 2
-        #     top: root.top - 50
-        #     text: "Feedback Response Analysis Report"
         Label:
             text: 'Feedback Response Analysis Report'
             size_hint_y: None
@@ -152,69 +144,71 @@ WindowManager:
                 cols: 2
 
                 # SUMMARY #
-                BoxLayout:
-                    orientation: 'vertical'
-                    # SUMMARY TITLE #
-                    Label:
-                        text: 'Analysis Summary'
+                # BoxLayout:
+                #     orientation: 'vertical'
+                #     # SUMMARY TITLE #
+                #     Label:
+                #         text: 'Analysis Summary'
                     # SUMMARY BODY #
+                GridLayout:
+                    cols: 1
+                    rows: 5
+                    # AVERAGE SENTIMENT #
                     GridLayout:
+                        rows: 1
+                        cols: 2
+                        Label:
+                            text: 'Average Sentiment'
+                        Label:
+                            id: average_sentiment
+                            text: "0.42"
+                    # SENTIMENTS LABEL #
+                    GridLayout:
+                        rows: 1
+                        cols: 2
+                        Label:
+                            text: 'Sentiments'
+                        Label:
+                            text: ''
+                    # SENTIMENT PERCENTAGES #
+                    GridLayout:
+                        rows: 3
+                        cols: 2
+                        Label:
+                            text: "Percent Negative"
+                        Label:
+                            id: percent_negative
+                            text: "56.6%"
+                        Label:
+                            text: "Percent Positive"
+                        Label:
+                            id: percent_positive
+                            text: "56.6%"
+                        Label:
+                            text: "Percent Neutral"
+                        Label:
+                            id: percent_neutral
+                            text: "56.6%"
+                    # THEMES LABEL #
+                    GridLayout:
+                        rows: 1
                         cols: 1
-                        rows: 5
-                        # AVERAGE SENTIMENT #
-                        GridLayout:
-                            rows: 1
-                            cols: 2
-                            Label:
-                                text: 'Average Sentiment'
-                            Label:
-                                id: average_sentiment
-                                text: "0.42"
-                        # SENTIMENTS LABEL #
-                        GridLayout:
-                            rows: 1
-                            cols: 1
-                            Label:
-                                text: 'Sentiments'
-                        # SENTIMENT PERCENTAGES #
-                        GridLayout:
-                            rows: 3
-                            cols: 2
-                            Label:
-                                text: "Percent Negative"
-                            Label:
-                                id: percent_negative
-                                text: "56.6%"
-                            Label:
-                                text: "Percent Positive"
-                            Label:
-                                id: percent_positive
-                                text: "56.6%"
-                            Label:
-                                text: "Percent Neutral"
-                            Label:
-                                id: percent_neutral
-                                text: "56.6%"
-                        # THEMES LABEL #
-                        GridLayout:
-                            rows: 1
-                            cols: 1
-                            Label:
-                                text: 'Themes'
-                        # THEMES LIST #
-                        GridLayout:
-                            rows: 1
-                            cols: 5
-                            Label:
-                                id: theme_1
-                            Label:
-                                id: theme_2
-                            Label:
-                                id: theme_3
-                            Label:
-                                id: theme_4
-                            Label:
-                                id: theme_5
+                        Label:
+                            text: 'Themes'
+                    # THEMES LIST #
+                    GridLayout:
+                        rows: 1
+                        cols: 5
+                        Label:
+                            id: theme_1
+                        Label:
+                            id: theme_2
+                        Label:
+                            id: theme_3
+                        Label:
+                            id: theme_4
+                        Label:
+                            id: theme_5
 
                 # PIE CHART #
                 BoxLayout:
