@@ -218,11 +218,17 @@ class FratForLife(Screen):
         self.ids.csv_txt_input.text = os.path.join(path, filename[0])
         #true_file_name = os.path.join(path, filename[0])
         self.dismiss_popup()
+
+
+
        
 
 class AnalysisReportApp(Screen):
     def clearTopics(self):
         config.topic_list.clear()
+
+    def clear_widgets(self, children=None):
+        return super().clear_widgets(children=children)
 
 
 class WindowManager(ScreenManager):
