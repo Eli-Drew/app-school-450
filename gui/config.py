@@ -9,6 +9,10 @@ featureNames = []
 
 input_method = 'c'
 
+top_five_topics = []
+
+top_five_sentiments = []
+
 
 def init():
     global topic_list

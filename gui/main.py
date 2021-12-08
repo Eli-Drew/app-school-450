@@ -124,6 +124,14 @@ class FratForLife(Screen):
         #true_file_name = os.path.join(path, filename[0])
         self.dismiss_popup()
 
+    """
+    ===================================================================
+    Description: topic plots the thematic topic data on the result page
+    Param(s): self
+    Returns: nothing
+    ===================================================================
+    """
+
     def topic(self):
         # self.manager.get_screen("second").ids.topic_one.text = ', '.join(
         #     config.topic_list[0])
@@ -142,9 +150,16 @@ class FratForLife(Screen):
 
         # build figure (plot)
         fig = plt.figure(figsize=(50, 50))
-        plt.axis("off", figure=fig)
-        plt.imshow(wordcloud, interpolation="bilinear", figure=fig)
+        plot_one = fig.add_subplot(1, 2, 1)
+        plot_two = fig.add_subplot(1, 2, 2)
+        plot_one.axis("off", figure=fig)
+        plot_one.imshow(wordcloud, interpolation="bilinear", figure=fig)
+        plot_two.bar(config.top_five_topics, config.top_five_sentiments)
         fig.get_tight_layout()
+
+        # print(config.top_five_topics[0])
+        # print("\n")
+        # print(config.top_five_sentiments[0])
 
         # put figure on results page at id topic_one
         self.manager.get_screen("second").ids.topic_one.clear_widgets()
@@ -229,17 +244,41 @@ def getCleanData(data):
 =================================================================================
 Description: getTopics prints the the repective topics and their components
 Param(s): model components, feature names, and n = the number of words per topic.
-Returns: Nothing, just prints topics (at least for now).
+Returns: Nothing, appends to config topic list and top five topics.
 =================================================================================
 """
 
 
 def getTopics(components, feature_names, n=50):
+    counter = 0
     config.init()
     for idx, topic in enumerate(components):
         # config.topic_list.append([(feature_names[i]) for i in topic.argsort()[:-n - 1:-1]])
         config.topic_list.append(
             [(feature_names[i], topic[i].round(2)) for i in topic.argsort()[:-n - 1:-1]])
+        if(counter < 5):
+            config.top_five_topics.append(
+                [(feature_names[i]) for i in topic.argsort()[:-n - 1:-1]])
+            config.top_five_sentiments.append(
+                [(topic[i].round(2)) for i in topic.argsort()[:-n - 1:-1]])
+            counter += 1
+    counter = 0
+    # if(config.top_five_topics[] > 5 and config.top_five_sentiments > 5):
+    top_five_topics = str(config.top_five_topics[0]).replace(
+        '"', '').replace('\'', '').replace(' ', '').split("[")
+    top_five_sentiments = str(config.top_five_sentiments[0]).replace(
+        '"', '').replace('\'', '').replace(' ', '').split("[")
+    top_five_topics = str(top_five_topics[1].split("]").pop(0)).split(',')
+    top_five_sentiments = str(
+        top_five_sentiments[1].split("]").pop(0)).split(',')
+    temp_sentiment_list = []
+    temp_topic_list = []
+    # if(len(top_five_topics) > 5 and len(top_five_sentiments) > 5):
+    for i in range(5):
+        temp_topic_list.append(top_five_topics[i])
+        temp_sentiment_list.append(top_five_sentiments[i])
+    config.top_five_sentiments = temp_sentiment_list
+    config.top_five_topics = temp_topic_list
 
 
 class FratApp(App):
