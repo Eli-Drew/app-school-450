@@ -45,7 +45,6 @@ MAXLEN = 250
 
 
 class FratForLife(Screen):
-    #csv_txt_input = ObjectProperty(None)
 
     def main(self):
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
@@ -70,11 +69,8 @@ class FratForLife(Screen):
         Given a matrix M x N, where M = Total number of documents and N = total number of words,
         NMF is the matrix decompostition that generates the Features with M rows and K columns,
         where K = total number of topics and the Components matrix is the matrix of K by N.
-        The Product of the Features and Components matricies results in the approximation of the TF-IDF.
+        The Product of the Features and Components matrices results in the approximation of the TF-IDF.
         '''
-        # thematic_model = load('thematic_model')
-        # thematic_model.fit_transform(vectorData)
-
         config.thematic_model = NMF(
             n_components=1, init='random', random_state=0)
         config.thematic_model.fit_transform(vectorData)
@@ -82,12 +78,6 @@ class FratForLife(Screen):
         # get the feature names and print the topics from the model
         config.featureNames = vectorizer.get_feature_names()
         getTopics(config.thematic_model.components_, config.featureNames)
-
-        # AnalysisReportApp.AnalysisReportApp.topics(topics)
-
-        # topic_one = str(topics[0])
-        # self.ids.topic_text.text = topic_one
-        # open_close(self)
 
     def toggle_disable_inputs(self):
         if(self.ids.csv_txt_input.disabled is True):
@@ -107,12 +97,6 @@ class FratForLife(Screen):
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
-
-    # def show_save(self):
-    #     content = SaveDialog(save=self.save, cancel=self.dismiss_popup)
-    #     self._popup = Popup(title="Save file", content=content,
-    #                         size_hint=(0.9, 0.9))
-    #     self._popup.open()
 
     def load(self, path, filename):
 
@@ -218,7 +202,7 @@ def getCleanData(data):
         for w in tokens:
             # convert words to their base form, like plural to singular
             w = Word(w).lemmatize()
-            if w not in stop_words and len(w) > 3:
+            if w not in stop_words:
                 cleanD.append(w)
             if len(cleanD) != 0:
                 cleanData.append(' '.join(cleanD))
