@@ -155,21 +155,57 @@ WindowManager:
                 # SUMMARY #
                 BoxLayout:
                     orientation: 'vertical'
+                    # SUMMARY TITLE #
                     Label:
                         text: 'Analysis Summary'
-                    Label:
-                    # TODO - make a summary with dummy data. look good. 
-                        text: 'content'
-                        size_hint_y: None
-                        height: 32
-                        # make a grid layout
-                        # Sentiment analysis stuff: overall/average positive negative neutral
-                        # thematic analysis: top themes. talk to brent about this
-
-                        #Title Analysis summary
-                        # average sentiment
-                        # % pos neg neutral - maybe
-                        # Top 5 themes
+                    # SUMMARY BODY #
+                    GridLayout:
+                        cols: 1
+                        rows: 5
+                        # AVERAGE SENTIMENT #
+                        GridLayout:
+                            rows: 1
+                            cols: 2
+                            Label:
+                                text: 'Average Sentiment'
+                            Button:
+                                id: average_sentiment
+                        # SENTIMENTS LABEL #
+                        GridLayout:
+                            rows: 1
+                            cols: 1
+                            Label:
+                                text: 'Sentiments'
+                        # SENTIMENT PERCENTAGES #
+                        GridLayout:
+                            rows: 1
+                            cols: 3
+                            Label:
+                                id: percent_negative
+                            Label:
+                                id: percent_positive
+                            Label:
+                                id: percent_neutral
+                        # THEMES LABEL #
+                        GridLayout:
+                            rows: 1
+                            cols: 1
+                            Label:
+                                text: 'Themes'
+                        # THEMES LIST #
+                        GridLayout:
+                            rows: 1
+                            cols: 5
+                            Label:
+                                id: theme_1
+                            Label:
+                                id: theme_2
+                            Label:
+                                id: theme_3
+                            Label:
+                                id: theme_4
+                            Label:
+                                id: theme_5
 
                 # PIE CHART #
                 BoxLayout:
