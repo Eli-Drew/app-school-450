@@ -53,18 +53,13 @@ class FratForLife(Screen):
         # if input_method is c, read from csv; otherwise, read from text input.
         csv_file_path = self.ids.csv_txt_input.text
         if(config.input_method == 'c'):
-            # data = getData(csv_file_path)
-            # cleanData = getCleanData(data)
             responses = user_input.input.csv_option(csv_file_path, MAXLEN)
             # TODO get validation in gui if path exists or not
                 # will have to do this just for manually entered path
                 # because browsed file is obviously there
         else:
-            # data = ['string']
-            # data[0] = str(self.ids.typed_txt_input.text)
             response = []
             response.append(str(self.ids.typed_txt_input.text))
-            # cleanData = getCleanData(data)
             responses = user_input.input.response_option(response)
 
         # Sentiment Analysis
@@ -87,17 +82,42 @@ class FratForLife(Screen):
 
         """Analysis Summary Chart"""
         # TODO
+        thematic_themes = config.topic_list[0]
         negative_sentiment = sentiment_analysis_results['percent_negative']
         postive_sentiment = sentiment_analysis_results['percent_positive']
         neutral_sentiment = sentiment_analysis_results['percent_neutral']
+        self.manager.get_screen("second").ids.average_sentiment.text = "{} | {}".format(str(average_sentiment[0]),average_sentiment[1])
+        self.manager.get_screen("second").ids.percent_negative.text = "{}%".format(str(negative_sentiment))
+        self.manager.get_screen("second").ids.percent_positive.text = "{}%".format(str(postive_sentiment))
+        self.manager.get_screen("second").ids.percent_neutral.text = "{}%".format(str(neutral_sentiment))
+        top_topics_dict = {}
+
+        topic_one = thematic_themes[0][0].capitalize()
+        topic_two = thematic_themes[1][0].capitalize()
+        topic_three = thematic_themes[2][0].capitalize()
+        topic_four = thematic_themes[3][0].capitalize()
+        topic_five = thematic_themes[4][0].capitalize()
+        top_topics_dict[topic_one] = str(thematic_themes[0][1])
+        top_topics_dict[topic_two] = str(thematic_themes[1][1])
+        top_topics_dict[topic_three] = str(thematic_themes[2][1])
+        top_topics_dict[topic_four] = str(thematic_themes[3][1])
+        top_topics_dict[topic_five] = str(thematic_themes[4][1])
+        self.manager.get_screen("second").ids.theme_1.text = "{} | {}".format(topic_one, top_topics_dict[topic_one])
+        self.manager.get_screen("second").ids.theme_2.text = "{} | {}".format(topic_two, top_topics_dict[topic_two])
+        self.manager.get_screen("second").ids.theme_3.text = "{} | {}".format(topic_three, top_topics_dict[topic_three])
+        self.manager.get_screen("second").ids.theme_4.text = "{} | {}".format(topic_four, top_topics_dict[topic_four])
+        self.manager.get_screen("second").ids.theme_5.text = "{} | {}".format(topic_five, top_topics_dict[topic_five])
 
         """Sentiment Analysis Pie Chart"""
         # pie_chart_labels = 'Negative', 'Positive', 'Neutral'
         pie_chart_labels = []
         pie_chart_percentages = []
         for key in sentiment_analysis_results:
-            pie_chart_percentages.append(sentiment_analysis_results[key] / 100)
-            pie_chart_labels.append(key)
+            if sentiment_analysis_results[key] == 0:
+                continue
+            else:
+                pie_chart_percentages.append(sentiment_analysis_results[key] / 100)
+                pie_chart_labels.append(key.split('_')[1].capitalize())
 
         pie_chart_figure, pie_chart_ax = plt.subplots()
         pie_chart_ax.pie(pie_chart_percentages, labels=pie_chart_labels, autopct='%1.0f%%',
@@ -119,13 +139,24 @@ class FratForLife(Screen):
             word_count.append(sorted_top_words_dict[token_key])
         top_token_ax.bar(words, word_count)
         # top_token_bar.set_facecolor('none')
+        top_token_ax.set_ylabel('Number of Occurrences')
+        # plt.show()
         self.manager.get_screen("second").ids.top_token_bar_chart.add_widget(FigureCanvasKivyAgg(top_token_bar))
 
         """Top Topics and Their Sentiment chart"""
         # TODO
-        topic_one = str(config.topic_list[0])
-        print(topic_one)
-        
+        top_topic_bar = plt.figure()
+        top_topic_ax = top_topic_bar.add_axes([0,0,1,1])
+        topic_words = []
+        topic_sentiment = []
+        for topic_key in top_topics_dict:
+            topic_words.append(topic_key)
+            topic_sentiment.append(top_topics_dict[topic_key])
+        top_topic_ax.bar(topic_words, topic_sentiment)
+        # top_token_bar.set_facecolor('none')
+        top_topic_ax.set_ylabel('Number of Occurrences')
+        self.manager.get_screen("second").ids.top_topic_theme_bar.add_widget(FigureCanvasKivyAgg(top_topic_bar))
+
         # self.ids.topic_text.text = topic_one
         # open_close(self)
 
