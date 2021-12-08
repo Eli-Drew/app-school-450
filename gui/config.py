@@ -5,7 +5,7 @@ topic_list = ["0"]
 
 thematic_model = NMF(n_components=1, init='random', random_state=0)
 
-featureNames = []
+feature_names = []
 
 input_method = 'c'
 

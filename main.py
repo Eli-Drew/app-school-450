@@ -50,12 +50,15 @@ class FratForLife(Screen):
     def main(self):
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
         # get user input and clean the file data
-        # if input_method is c, read from csv, otherwise; read from text input.
+        # if input_method is c, read from csv; otherwise, read from text input.
         csv_file_path = self.ids.csv_txt_input.text
         if(config.input_method == 'c'):
             # data = getData(csv_file_path)
             # cleanData = getCleanData(data)
-            responses = user_input.input.csv_option(csv_file_path)
+            responses = user_input.input.csv_option(csv_file_path, MAXLEN)
+            # TODO get validation in gui if path exists or not
+                # will have to do this just for manually entered path
+                # because browsed file is obviously there
         else:
             # data = ['string']
             # data[0] = str(self.ids.typed_txt_input.text)
@@ -84,6 +87,9 @@ class FratForLife(Screen):
 
         """Analysis Summary Chart"""
         # TODO
+        negative_sentiment = sentiment_analysis_results['percent_negative']
+        postive_sentiment = sentiment_analysis_results['percent_positive']
+        neutral_sentiment = sentiment_analysis_results['percent_neutral']
 
         """Sentiment Analysis Pie Chart"""
         # pie_chart_labels = 'Negative', 'Positive', 'Neutral'
@@ -102,13 +108,6 @@ class FratForLife(Screen):
 
 
         """Top Tokens Chart"""
-        # top_tokens_processed = Top_Words_Analysis.pre_process(data)
-        word_dict = Top_Words_Analysis.pre_process(data, MAXLEN)
-        top_words_dict = Top_Words_Analysis.analyze(word_dict)
-
-        # this has a sorted dictionary from greatest to least
-        sorted_top_words_dict = Top_Words_Analysis.format_results(top_words_dict)
-
         # top tokens bar graph. 
         # TODO make graph look better and add labels
         top_token_bar = plt.figure()
@@ -124,40 +123,9 @@ class FratForLife(Screen):
 
         """Top Topics and Their Sentiment chart"""
         # TODO
-
-
-        # tokenize and vectorize the data
-        # TFIDF = (occurences of word in document / total number of words in document) * (log[total # of documents in corpus / number of documents containing word])
-        vectorizer = TfidfVectorizer(max_features=1000)
-        vectorData = vectorizer.fit_transform(cleanData)
-
-        # Non-Negative Matrix Factorization model...
-        '''
-        Given a matrix M x N, where M = Total number of documents and N = total number of words,
-        NMF is the matrix decompostition that generates the Features with M rows and K columns,
-        where K = total number of topics and the Components matrix is the matrix of K by N.
-        The Product of the Features and Components matricies results in the approximation of the TF-IDF.
-        '''
-        # thematic_model = load('thematic_model')
-        # thematic_model.fit_transform(vectorData)
-
-        config.thematic_model = NMF(
-            n_components=1, init='random', random_state=0)
-        config.thematic_model.fit_transform(vectorData)
-
-        # get the feature names and print the topics from the model
-        config.featureNames = vectorizer.get_feature_names()
-
-        # getTopics returns nothing. builds global variable topicList in config file. 
-        # single element list that holds sentiment value and word per word
-        getTopics(config.thematic_model.components_, config.featureNames)
-
-        # accesss global variable for top topics and their sentiment.
-        # config.topic_list[0]
-
-        # AnalysisReportApp.AnalysisReportApp.topics(topics)
-
-        # topic_one = str(topics[0])
+        topic_one = str(config.topic_list[0])
+        print(topic_one)
+        
         # self.ids.topic_text.text = topic_one
         # open_close(self)
 
@@ -198,36 +166,6 @@ class FratForLife(Screen):
         self.ids.csv_txt_input.text = os.path.join(path, filename[0])
         #true_file_name = os.path.join(path, filename[0])
         self.dismiss_popup()
-
-    def topic(self):
-        # self.manager.get_screen("second").ids.topic_one.text = ', '.join(
-        #     config.topic_list[0])
-        # self.manager.get_screen("second").ids.topic_two.text = ', '.join(
-        #     config.topic_list[1])
-
-        for idx, topic in enumerate(config.thematic_model.components_):
-            if idx == 0:
-                topic_x = [(config.featureNames[i], topic[i].round(2))
-                           for i in topic.argsort()[:-1000 - 1:-1]]
-                topic_x = {i[0]: i[1] for i in topic_x}
-
-        # wordcloud = WordCloud(width=3000, height=3000, stopwords=STOPWORDS,
-        #                       background_color="white", min_font_size=30)
-        # wordcloud = wordcloud.generate_from_frequencies(topic_x)
-
-        # build figure (plot)
-        # fig = plt.figure(figsize=(50, 50))
-        # plt.axis("off", figure=fig)
-        # plt.imshow(wordcloud, interpolation="bilinear", figure=fig)
-        # fig.get_tight_layout()
-
-        # put figure on results page at id topic_one
-        # self.manager.get_screen("second").ids.topic_one.clear_widgets()
-        # self.manager.get_screen("second").ids.topic_one.add_widget(
-        #     FigureCanvasKivyAgg(fig))
-
-        # clear figure
-        fig = plt.figure()
        
 
 class AnalysisReportApp(Screen):
@@ -254,75 +192,6 @@ class LoadDialog(FloatLayout):
 class FratApp(App):
     def build(self):
         Window.size = (1920, 1080)
-
-
-'''
-def __init__(self, **kwargs):
-    super(FratForLife, self).__init__(**kwargs)
-    with self.canvas.before:
-        Color(0, 1, 0)
-'''
-
-"""
-===================================================================
-Description: getData returns the data located at the fileName param
-Param(s): fileName path for data.
-Returns: dataset as list of one element (entire dataset as one elem)
-===================================================================
-"""
-def getData(fileName):
-    # open file
-    file = fileName
-    encodingX = user_input.input.bom_validation(file)
-    data = open(fileName, "r", encoding=encodingX)
-    # split the file data
-    splitData = data.read().replace('"', ' ').replace('’', '\'').split('\n\n')
-    # convert all text to lowercase and replace all newlines with a space
-    realData = [x.lower().replace('\n', ' ')
-                for x in splitData if len(x) > 500]
-    return realData
-
-
-"""
-===============================================================
-Description: getCleanData returns its data param after cleaning
-Param(s): data list (from getData())
-Returns: A list of text, for example:
-
-['great', 'great presentation', 'great presentation clear',...]
-
-===============================================================
-"""
-def getCleanData(data):
-    cleanData = []
-    # stop words are words that lack context meaning but occur frequently in natural language
-    stop_words = set(stopwords.words('english'))
-    for d in data:
-        tokens = ' '.join(TextBlob(d).noun_phrases).split()
-        cleanD = []
-        for w in tokens:
-            # convert words to their base form, like plural to singular
-            w = Word(w).lemmatize()
-            if w not in stop_words and len(w) > 3:
-                cleanD.append(w)
-            if len(cleanD) != 0:
-                cleanData.append(' '.join(cleanD))
-    return cleanData
-
-
-"""
-=================================================================================
-Description: getTopics prints the the repective topics and their components
-Param(s): model components, feature names, and n = the number of words per topic.
-Returns: Nothing, just prints topics (at least for now).
-=================================================================================
-"""
-def getTopics(components, feature_names, n=50):
-    config.init()
-    for idx, topic in enumerate(components):
-        # config.topic_list.append([(feature_names[i]) for i in topic.argsort()[:-n - 1:-1]])
-        config.topic_list.append(
-            [(feature_names[i], topic[i].round(2)) for i in topic.argsort()[:-n - 1:-1]])
 
 
 

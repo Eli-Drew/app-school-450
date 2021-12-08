@@ -63,7 +63,7 @@ Returns:
     an array of string responses from the csv file
 ===================================================================
 """
-def csv_read(path, encodingX):
+def csv_read(path, encodingX, max_len):
     
     responses = []
 
@@ -71,10 +71,14 @@ def csv_read(path, encodingX):
         csv_reader = csv.reader(csv_file, delimiter='|')
         for row in csv_reader:
             try:
+                response = row[0]
+                # # TODO test at some point
+                if len(response.split()) > max_len:
+                    response =  ' '.join(response.split()[0:max_len])
                 responses.append(row[0])
             except:
                 print("***Invalid csv file. The file must only contain one element per row***")
-            
+
     return responses
 
 
@@ -90,23 +94,19 @@ Returns:
 ===================================================================
 """
 
-def csv_option(path):
+def csv_option(entered_path, max_len):
 
     valid_path = False
     while not valid_path:
         
         # entered_path = str(input("Enter full path name of csv file with extension: "))
-        entered_path = path
-#         entered_path = str(input("Enter full path name of csv file with extension: "))
-
         if os.path.exists(entered_path):
             valid_path = True
         else:
             print("That was not a valid path or file.")
 
     endcoding = bom_validation(entered_path)
-    return csv_read(entered_path, endcoding)
-
+    return csv_read(entered_path, endcoding, max_len)
 
 """
 ===================================================================

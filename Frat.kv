@@ -106,7 +106,7 @@ WindowManager:
                 text: 'Analyze'
                 # background_color: (0.921,0.251,0.204,1.0)
                 on_release: 
-                    # root.main()
+                    root.main()
                     app.root.current = "second"
                     root.manager.transition.direction = "left"
                     # root.topic()
@@ -182,19 +182,19 @@ WindowManager:
                             rows: 3
                             cols: 2
                             Label:
-                                id: percent_negative
                                 text: "Percent Negative"
                             Label:
+                                id: percent_negative
                                 text: "56.6%"
                             Label:
-                                id: percent_positive
                                 text: "Percent Positive"
                             Label:
+                                id: percent_positive
                                 text: "56.6%"
                             Label:
-                                id: percent_neutral
                                 text: "Percent Neutral"
                             Label:
+                                id: percent_neutral
                                 text: "56.6%"
                         # THEMES LABEL #
                         GridLayout:

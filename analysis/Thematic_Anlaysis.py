@@ -65,7 +65,6 @@ class Thematic_Analysis(Analysis):
         vectors = cls.vectorizer.fit_transform(clean_responses)
         config.thematic_model.fit_transform(vectors)
         config.feature_names = cls.vectorizer.get_feature_names()
-        # return feature_names
         
 
     """
@@ -80,21 +79,32 @@ class Thematic_Analysis(Analysis):
     """
     @classmethod
     def format_results(cls):
-        # TODO Add in formatting Brent implemented to get a list of the five themes
-        themes = []
-        # TODO would like to make this more readable if kept
+
+        '''
+        Given a matrix M x N, where M = Total number of documents and N = total number of words,
+        NMF is the matrix decompostition that generates the Features with M rows and K columns,
+        where K = total number of topics and the Components matrix is the matrix of K by N.
+        The Product of the Features and Components matricies results in the approximation of the TF-IDF.
+        '''
+        ## we think this is for the word cloud picture
+        # for idx, topic in enumerate(config.thematic_model.components_):
+        #     if idx == 0:
+        #         topic_x_list = []
+        #         for i in topic.argsort()[:-1000 - 1:-1]:
+        #             topic_x_list.append((config.feature_names[i], topic[i].round(2)))
+
+        #         topic_x_dict = {}
+        #         for i in topic_x_list:
+        #             topic_x_dict[i[0]] = i[1]
+
+        # wordcloud = WordCloud(width=3000, height=3000, stopwords=STOPWORDS,
+        #                       background_color="white", min_font_size=30)
+        # wordcloud = wordcloud.generate_from_frequencies(topic_x_dict) # topic_x_dict must have string key and float value
+        config.init()
         for idx, topic in enumerate(config.thematic_model.components_):
-            # themes.append((idx+1), [(feature_names[i], topic[i].round(2)) for i in topic.argsort()[:-50 - 1:-1]])
-            if idx == 0:
-                topic_x = [(config.featureNames[i], topic[i].round(2))
-                            for i in topic.argsort()[:-1000 - 1:-1]]
-                topic_x = {i[0]: i[1] for i in topic_x}
+            config.topic_list.append(
+                [(config.feature_names[i], topic[i].round(2)) for i in topic.argsort()[:-5 - 1:-1]])
 
-        wordcloud = WordCloud(width=3000, height=3000, stopwords=STOPWORDS,
-                              background_color="white", min_font_size=30)
-        wordcloud = wordcloud.generate_from_frequencies(topic_x)
-
-        # return themes
 
 
     """
