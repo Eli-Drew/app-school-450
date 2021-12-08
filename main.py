@@ -1,43 +1,19 @@
-from logging import root
-import kivy
-from kivy.clock import Clock
-from kivy.uix.label import Label
-from kivy.uix.widget import Widget
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.button import Button
-from kivy.uix.textinput import TextInput
-from kivy.uix.togglebutton import ToggleButton
-from kivy.app import App
-from kivy.graphics import Color
-from kivy.core.window import Window
-from joblib import dump, load
-from nltk.corpus import stopwords
-from nltk.probability import FreqDist
-from textblob import Word, TextBlob
-from sklearn.feature_extraction.text import TfidfVectorizer
-from subprocess import Popen
-from kivy.uix.floatlayout import FloatLayout
-from kivy.properties import ObjectProperty
-from kivy.uix.popup import Popup
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.lang import Builder
-from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
-import matplotlib.pyplot as plt
-from sklearn.decomposition import NMF
-from kivy.factory import Factory
-from analysis.Sentiment_Analysis import Sentiment_Analysis
-import user_input.input
-from analysis.Top_Words_Analysis import Top_Words_Analysis
-from analysis.Thematic_Anlaysis import Thematic_Analysis
-
 import os
 import nltk
+import kivy
+from kivy.app import App
+from kivy.core.window import Window
+from kivy.properties import ObjectProperty
+from kivy.uix.popup import Popup
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+import matplotlib.pyplot as plt
+import user_input.input
+from analysis.Sentiment_Analysis import Sentiment_Analysis
+from analysis.Thematic_Anlaysis import Thematic_Analysis
+from analysis.Top_Words_Analysis import Top_Words_Analysis
 from gui import config
-
 
 nltk.download('stopwords')
 kivy.require('2.0.0')
@@ -48,9 +24,8 @@ class FratForLife(Screen):
     #csv_txt_input = ObjectProperty(None)
 
     def main(self):
-        # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
-        # get user input and clean the file data
-        # if input_method is c, read from csv; otherwise, read from text input.
+
+        # If input_method is 'c', read from csv; otherwise, read from text input.
         csv_file_path = self.ids.csv_txt_input.text
         if(config.input_method == 'c'):
             responses = user_input.input.csv_option(csv_file_path, MAXLEN)
@@ -68,86 +43,40 @@ class FratForLife(Screen):
         sentiment_analysis_results = Sentiment_Analysis.format_results(sentiments)
         featured_responses = Sentiment_Analysis.get_featured_responses(
             responses, sentiments, sentiment_analysis_results["average"][1])
-        average_sentiment = sentiment_analysis_results.pop("average")
         
         # Thematic Analysis
         clean_responses = Thematic_Analysis.pre_process(responses, MAXLEN)
         Thematic_Analysis.analyze(clean_responses)
         Thematic_Analysis.format_results()
-        
+        sorted_top_topics_dict = self.get_topics_dict()
+
         # Top Words Analysis
         word_dict = Top_Words_Analysis.pre_process(responses, MAXLEN)
         top_words_dict = Top_Words_Analysis.analyze(word_dict)
         sorted_top_words_dict = Top_Words_Analysis.format_results(top_words_dict)
 
-        """Analysis Summary Chart"""
-        # TODO
-        thematic_themes = config.topic_list[0]
-        negative_sentiment = sentiment_analysis_results['percent_negative']
-        postive_sentiment = sentiment_analysis_results['percent_positive']
-        neutral_sentiment = sentiment_analysis_results['percent_neutral']
-        self.manager.get_screen("second").ids.average_sentiment.text = "{} | {}".format(str(average_sentiment[0]),average_sentiment[1])
-        self.manager.get_screen("second").ids.featured_response_title.text ="Featured {} Responses".format(average_sentiment[1])
-        self.manager.get_screen("second").ids.featured_response_1.text = "\"{}\"".format(featured_responses[0])
-        self.manager.get_screen("second").ids.featured_response_2.text = "\"{}\"".format(featured_responses[1])
-        self.manager.get_screen("second").ids.featured_response_3.text = "\"{}\"".format(featured_responses[2])
+        # Populate GUI
+        self.populate_summary_chart(sentiment_analysis_results, featured_responses, sorted_top_topics_dict)
+        self.populate_pie_chart(sentiment_analysis_results)
+        self.populate_topics_chart(sorted_top_topics_dict)
+        self.populate_words_chart(sorted_top_words_dict)
+
+
+        # self.ids.topic_text.text = topic_one
+        # open_close(self)
+
+
+    """Create dictionary of top topics and related sentiments sorted from greatest to least"""
+    def get_topics_dict(self):
+
+        top_topics_list = config.topic_list[0]
         top_topics_dict = {}
 
-        topic_one = thematic_themes[0][0].capitalize()
-        topic_two = thematic_themes[1][0].capitalize()
-        topic_three = thematic_themes[2][0].capitalize()
-        topic_four = thematic_themes[3][0].capitalize()
-        topic_five = thematic_themes[4][0].capitalize()
-        top_topics_dict[topic_one] = thematic_themes[0][1]
-        top_topics_dict[topic_two] = thematic_themes[1][1]
-        top_topics_dict[topic_three] = thematic_themes[2][1]
-        top_topics_dict[topic_four] = thematic_themes[3][1]
-        top_topics_dict[topic_five] = thematic_themes[4][1]
-        self.manager.get_screen("second").ids.theme_1.text = "{} | {}".format(topic_one, str(top_topics_dict[topic_one]))
-        self.manager.get_screen("second").ids.theme_2.text = "{} | {}".format(topic_two, str(top_topics_dict[topic_two]))
-        self.manager.get_screen("second").ids.theme_3.text = "{} | {}".format(topic_three, str(top_topics_dict[topic_three]))
-        self.manager.get_screen("second").ids.theme_4.text = "{} | {}".format(topic_four, str(top_topics_dict[topic_four]))
-        self.manager.get_screen("second").ids.theme_5.text = "{} | {}".format(topic_five, str(top_topics_dict[topic_five]))
+        # Create topics dicionary out of topics list
+        for topic in top_topics_list:
+            top_topics_dict[topic[0].capitalize()] = topic[1]
 
-        """Sentiment Analysis Pie Chart"""
-        # pie_chart_labels = 'Negative', 'Positive', 'Neutral'
-        pie_chart_labels = []
-        pie_chart_percentages = []
-        for key in sentiment_analysis_results:
-            if sentiment_analysis_results[key] == 0:
-                continue
-            else:
-                pie_chart_percentages.append(sentiment_analysis_results[key] / 100)
-                pie_chart_labels.append(key.split('_')[1].capitalize())
-
-        pie_chart_figure, pie_chart_ax = plt.subplots()
-        pie_chart_ax.pie(pie_chart_percentages, labels=pie_chart_labels, autopct='%1.0f%%',
-                                startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'},textprops={'color': 'white'})
-        # pie_chart_ax.axis('equal')
-        pie_chart_figure.set_facecolor('none')
-        self.manager.get_screen("second").ids.sentiment_chart.add_widget(FigureCanvasKivyAgg(pie_chart_figure))
-
-
-        """Top Tokens Chart"""
-        # top tokens bar graph. 
-        # TODO make graph look better and add labels
-        top_token_bar = plt.figure()
-        top_token_plot = top_token_bar.add_subplot(1, 2, 2)
-        # top_token_ax = top_token_bar.add_axes([0,0,1,1])
-        words = []
-        word_count = []
-        for token_key in sorted_top_words_dict:
-            words.append(token_key)
-            word_count.append(sorted_top_words_dict[token_key])
-        top_token_plot.bar(words, word_count)
-        top_token_plot.set_facecolor('none')
-        top_token_plot.set_ylabel('Number of Occurrences')
-        top_token_plot.set_xlabel('Top Words')
-        # plt.show()
-        self.manager.get_screen("second").ids.top_token_bar_chart.add_widget(FigureCanvasKivyAgg(top_token_bar))
-
-        """Top Topics and Their Sentiment chart"""
-        # TODO
+        # Sort top_topics_dict
         sorted_top_topics_dict = {}
         max_sentiment_topic = ""
         max_sentiemnt = 0
@@ -165,21 +94,102 @@ class FratForLife(Screen):
             max_sentiment_topic = ""
             max_sentiemnt = 0
 
+        return sorted_top_topics_dict
+
+
+    """Analysis Summary Chart"""
+    def populate_summary_chart(self, sentiment_analysis_results, featured_responses, sorted_top_topics_dict):
+
+        average_sentiment = sentiment_analysis_results.pop("average")
+
+        # Add average sentiment results to summary chart
+        self.manager.get_screen("second").ids.average_sentiment.text = "{} | {}".format(str(average_sentiment[0]), average_sentiment[1])
+        self.manager.get_screen("second").ids.featured_response_title.text ="Featured {} Responses".format(average_sentiment[1])
+        
+        # Add featured responses to summary chart
+        # TODO make the responses be populated on different GUI fields
+        # for i in range(len(featured_responses)):
+        #     self.manager.get_screen("second").ids.featured_response_1.text = "\"{}\"".format(featured_responses[i])
+        self.manager.get_screen("second").ids.featured_response_1.text = "\"{}\"".format(featured_responses[0])
+        self.manager.get_screen("second").ids.featured_response_2.text = "\"{}\"".format(featured_responses[1])
+        self.manager.get_screen("second").ids.featured_response_3.text = "\"{}\"".format(featured_responses[2])
+
+        # Add top topics to summary chart
+        # TODO make the topics be populated on different GUI fields
+        # for topic, sentiment in sorted_top_topics_dict.items():
+        #     self.manager.get_screen("second").ids.theme_1.text = "{} | {}".format(topic, str(sentiment))
+        self.manager.get_screen("second").ids.theme_1.text = "{} | {}".format("topic1", str(1.5))
+        self.manager.get_screen("second").ids.theme_2.text = "{} | {}".format("topic2", str(1.5))
+        self.manager.get_screen("second").ids.theme_3.text = "{} | {}".format("topic3", str(1.5))
+        self.manager.get_screen("second").ids.theme_4.text = "{} | {}".format("topic4", str(1.5))
+        self.manager.get_screen("second").ids.theme_5.text = "{} | {}".format("topic5", str(1.5))
+
+    
+    """Sentiment Analysis Pie Chart"""
+    def populate_pie_chart(self, sentiment_analysis_results):
+        
+        pie_chart_labels = []
+        pie_chart_percentages = []
+
+        for sentiment_type, percent in sentiment_analysis_results.items():
+            if percent == 0:
+                continue
+            else:
+                pie_chart_labels.append(sentiment_type.split('_')[1].capitalize())
+                pie_chart_percentages.append(percent / 100)
+
+        pie_chart_figure, pie_chart_ax = plt.subplots()
+        pie_chart_ax.pie(pie_chart_percentages, labels=pie_chart_labels, autopct='%1.0f%%',
+                                startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'},textprops={'color': 'white'})
+        # pie_chart_ax.axis('equal')
+        pie_chart_figure.set_facecolor('none')
+        self.manager.get_screen("second").ids.sentiment_chart.add_widget(FigureCanvasKivyAgg(pie_chart_figure))
+
+
+    """Top Topics/Sentiments Chart"""
+    def populate_topics_chart(self, sorted_top_topics_dict):
+
         top_topic_bar = plt.figure()
         top_topic_plot = top_topic_bar.add_subplot(1, 2, 2)
-        topic_words = []
-        topic_sentiment = []
-        for topic_key in top_topics_dict:
-            topic_words.append(topic_key)
-            topic_sentiment.append(sorted_top_topics_dict[topic_key])
-        top_topic_plot.bar(topic_words, topic_sentiment)
-        # top_token_bar.set_facecolor('none')
+
+        topics = []
+        topic_sentiments = []
+
+        for topic, topic_sentiment in sorted_top_topics_dict.items():
+            topics.append(topic)
+            topic_sentiments.append(topic_sentiment)
+
+        top_topic_plot.bar(topics, topic_sentiments)
+        # top_words_bar.set_facecolor('none')
         top_topic_plot.set_ylabel('Sentiment Rating')
         top_topic_plot.set_xlabel('Top Topics')
+
         self.manager.get_screen("second").ids.top_topic_theme_bar.add_widget(FigureCanvasKivyAgg(top_topic_bar))
 
-        # self.ids.topic_text.text = topic_one
-        # open_close(self)
+
+    """Top Words Chart"""
+    def populate_words_chart(self, sorted_top_words_dict):
+
+        # TODO make graph look better and add labels
+        top_words_bar = plt.figure()
+        top_words_plot = top_words_bar.add_subplot(1, 2, 2)
+        # top_token_ax = top_words_bar.add_axes([0,0,1,1])
+
+        words = []
+        word_counts = []
+
+        for word, word_count in sorted_top_words_dict.items():
+            words.append(word)
+            word_counts.append(word_count)
+
+        top_words_plot.bar(words, word_count)
+        top_words_plot.set_facecolor('none')
+        top_words_plot.set_ylabel('Number of Occurrences')
+        top_words_plot.set_xlabel('Top Words')
+
+        # plt.show()
+        self.manager.get_screen("second").ids.top_token_bar_chart.add_widget(FigureCanvasKivyAgg(top_words_bar))
+
 
     def toggle_disable_inputs(self):
         if(self.ids.csv_txt_input.disabled is True):
@@ -193,8 +203,10 @@ class FratForLife(Screen):
             config.input_method = 'r'
             self.ids.browse_btn.disabled = True
 
+
     def dismiss_popup(self):
         self._popup.dismiss()
+
 
     def show_load(self):
         content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
@@ -202,12 +214,14 @@ class FratForLife(Screen):
                             size_hint=(0.9, 0.9))
         self._popup.open()
 
+
     # def show_analysis_in_process(self):
     # TODO
     # not sure how this is going to work
     #     self.analysis_animation = Factory.AnalysisPopup()
     #     self.analysis_animation.update_pop_up_text("Running Analysis")
     #     self.analysis_animation.open()
+
 
     def load(self, path, filename):
 
@@ -244,7 +258,6 @@ class LoadDialog(FloatLayout):
 class FratApp(App):
     def build(self):
         Window.size = (1920, 1080)
-
 
 
 if __name__ == '__main__':
