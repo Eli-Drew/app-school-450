@@ -10,8 +10,12 @@ Returns:
     an array of response from the user
 ===================================================================
 """
-def response_option(max_len):
-    response = str(input("Enter in a response with no more than {} words: ".format(max_len)))
+
+def response_option(response, max_len):
+    # response = str(input("Enter in a response with no more than {} words: ".format(max_len)))
+    if len(response.split()) > max_len:
+        response =  ' '.join(response.split()[0:max_len])
+
     return [response]
 
 
@@ -85,12 +89,16 @@ Returns:
     an array of string responses
 ===================================================================
 """
-def csv_option():
+
+def csv_option(path):
 
     valid_path = False
     while not valid_path:
         
-        entered_path = str(input("Enter full path name of csv file with extension: "))
+        # entered_path = str(input("Enter full path name of csv file with extension: "))
+        entered_path = path
+#         entered_path = str(input("Enter full path name of csv file with extension: "))
+
         if os.path.exists(entered_path):
             valid_path = True
         else:

@@ -28,12 +28,11 @@ from kivy.lang import Builder
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib.pyplot as plt
 from sklearn.decomposition import NMF
-from wordcloud import WordCloud
-from wordcloud import STOPWORDS
 from kivy.factory import Factory
 from analysis.Sentiment_Analysis import Sentiment_Analysis
 import user_input.input
 from analysis.Top_Words_Analysis import Top_Words_Analysis
+from analysis.Thematic_Anlaysis import Thematic_Analysis
 
 import os
 import nltk
@@ -54,31 +53,45 @@ class FratForLife(Screen):
         # if input_method is c, read from csv, otherwise; read from text input.
         csv_file_path = self.ids.csv_txt_input.text
         if(config.input_method == 'c'):
-            # encoding = user_input.input.bom_validation(csv_file_path)
-            data = getData(csv_file_path)
-            cleanData = getCleanData(data)
+            # data = getData(csv_file_path)
+            # cleanData = getCleanData(data)
+            responses = user_input.input.csv_option(csv_file_path)
         else:
             # data = ['string']
             # data[0] = str(self.ids.typed_txt_input.text)
-            data = []
-            data.append(str(self.ids.typed_txt_input.text))
-            cleanData = getCleanData(data)
+            response = []
+            response.append(str(self.ids.typed_txt_input.text))
+            # cleanData = getCleanData(data)
+            responses = user_input.input.response_option(response)
 
-
-        """Sentiment Analysis"""
-        padded_sequences = Sentiment_Analysis.pre_process(data, MAXLEN)
+        # Sentiment Analysis
+        padded_sequences = Sentiment_Analysis.pre_process(responses, MAXLEN)
         sentiments = Sentiment_Analysis.analyze(padded_sequences)
         sentiment_analysis_results = Sentiment_Analysis.format_results(sentiments)
-        sentiment_analysis_results.pop("average")
+        featured_responses = Sentiment_Analysis.get_featured_responses(
+            responses, sentiments, sentiment_analysis_results["average"][1])
+        average_sentiment = sentiment_analysis_results.pop("average")
+        
+        # Thematic Analysis
+        clean_responses = Thematic_Analysis.pre_process(responses, MAXLEN)
+        feature_names = Thematic_Analysis.analyze(clean_responses)
+        themes = Thematic_Analysis.format_results(feature_names)
+        
+        # Top Words Analysis
+        word_dict = Top_Words_Analysis.pre_process(responses, MAXLEN)
+        top_words_dict = Top_Words_Analysis.analyze(word_dict)
+        sorted_top_words_dict = Top_Words_Analysis.format_results(top_words_dict)
 
         """Analysis Summary Chart"""
         # TODO
 
         """Sentiment Analysis Pie Chart"""
-        pie_chart_labels = 'Negative', 'Positive', 'Neutral'
+        # pie_chart_labels = 'Negative', 'Positive', 'Neutral'
+        pie_chart_labels = []
         pie_chart_percentages = []
         for key in sentiment_analysis_results:
             pie_chart_percentages.append(sentiment_analysis_results[key] / 100)
+            pie_chart_labels.append(key)
 
         pie_chart_figure, pie_chart_ax = plt.subplots()
         pie_chart_ax.pie(pie_chart_percentages, labels=pie_chart_labels, autopct='%1.0f%%',

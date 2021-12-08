@@ -12,10 +12,10 @@ class Sentiment_Analysis(Analysis):
     model_path = os.path.join(os.path.expanduser('~'), 'FRAT-models\\2_7_sentiment_model.tf')
     model = load_model(model_path, compile=False)
     word_index = get_word_index()
-
     negative_range = [0.00, 0.44]
     neutral_range = [0.45, 0.55]
     positive_range = [0.56, 1.00]
+
 
     """
     ===================================================================
