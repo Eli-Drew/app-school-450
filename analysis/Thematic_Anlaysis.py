@@ -4,6 +4,8 @@ from nltk.corpus import stopwords
 from textblob import Word, TextBlob
 from sklearn.decomposition import NMF
 from sklearn.feature_extraction.text import TfidfVectorizer
+from wordcloud import WordCloud
+from wordcloud import STOPWORDS
 
 class Thematic_Analysis(Analysis):
 
@@ -81,6 +83,11 @@ class Thematic_Analysis(Analysis):
         # TODO would like to make this more readable if kept
         for idx, topic in enumerate(cls.nmf_model.components_):
             themes.append((idx+1), [(feature_names[i], topic[i].round(2)) for i in topic.argsort()[:-50 - 1:-1]])
+
+        wordcloud = WordCloud(width=3000, height=3000, stopwords=STOPWORDS,
+                              background_color="white", min_font_size=30)
+        wordcloud = wordcloud.generate_from_frequencies(topic_x)
+
         return themes
 
 
