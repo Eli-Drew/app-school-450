@@ -105,7 +105,7 @@ class Sentiment_Analysis(Analysis):
         elif (cls.positive_range[0] <= average_sentiment <= cls.positive_range[1]):
             average_sentiment_type = "positive"
 
-        sentiment_analysis_results["average"] = [average_sentiment, average_sentiment_type]
+        sentiment_analysis_results["average"] = [average_sentiment, average_sentiment_type.capitalize()]
 
         # Ensure total of percents is equal to 100
         total_percent = sentiment_analysis_results["percent_negative"] \
