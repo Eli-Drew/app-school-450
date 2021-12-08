@@ -50,12 +50,15 @@ class FratForLife(Screen):
     def main(self):
         # C:/Users/Brentlee/Downloads/demoData.csv <- Example file location input
         # get user input and clean the file data
-        # if input_method is c, read from csv, otherwise; read from text input.
+        # if input_method is c, read from csv; otherwise, read from text input.
         csv_file_path = self.ids.csv_txt_input.text
         if(config.input_method == 'c'):
             # data = getData(csv_file_path)
             # cleanData = getCleanData(data)
             responses = user_input.input.csv_option(csv_file_path)
+            # TODO get validation in gui if path exists or not
+                # will have to do this just for manually entered path
+                # because browsed file is obviously there
         else:
             # data = ['string']
             # data[0] = str(self.ids.typed_txt_input.text)
@@ -103,11 +106,11 @@ class FratForLife(Screen):
 
         """Top Tokens Chart"""
         # top_tokens_processed = Top_Words_Analysis.pre_process(data)
-        word_dict = Top_Words_Analysis.pre_process(data, MAXLEN)
-        top_words_dict = Top_Words_Analysis.analyze(word_dict)
+        # word_dict = Top_Words_Analysis.pre_process(data, MAXLEN)
+        # top_words_dict = Top_Words_Analysis.analyze(word_dict)
 
         # this has a sorted dictionary from greatest to least
-        sorted_top_words_dict = Top_Words_Analysis.format_results(top_words_dict)
+        # sorted_top_words_dict = Top_Words_Analysis.format_results(top_words_dict)
 
         # top tokens bar graph. 
         # TODO make graph look better and add labels
@@ -128,8 +131,8 @@ class FratForLife(Screen):
 
         # tokenize and vectorize the data
         # TFIDF = (occurences of word in document / total number of words in document) * (log[total # of documents in corpus / number of documents containing word])
-        vectorizer = TfidfVectorizer(max_features=1000)
-        vectorData = vectorizer.fit_transform(cleanData)
+        # vectorizer = TfidfVectorizer(max_features=1000)
+        # vectorData = vectorizer.fit_transform(cleanData)
 
         # Non-Negative Matrix Factorization model...
         '''
@@ -141,12 +144,12 @@ class FratForLife(Screen):
         # thematic_model = load('thematic_model')
         # thematic_model.fit_transform(vectorData)
 
-        config.thematic_model = NMF(
-            n_components=1, init='random', random_state=0)
-        config.thematic_model.fit_transform(vectorData)
+        # config.thematic_model = NMF(
+        #     n_components=1, init='random', random_state=0)
+        # config.thematic_model.fit_transform(vectorData)
 
         # get the feature names and print the topics from the model
-        config.featureNames = vectorizer.get_feature_names()
+        # config.featureNames = vectorizer.get_feature_names()
 
         # getTopics returns nothing. builds global variable topicList in config file. 
         # single element list that holds sentiment value and word per word
