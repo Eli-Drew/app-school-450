@@ -109,7 +109,7 @@ WindowManager:
                     root.main()
                     app.root.current = "second"
                     root.manager.transition.direction = "left"
-                    root.topic()
+                    # root.topic()
 
 <AnalysisReportApp>:
     name: "second"
@@ -168,8 +168,9 @@ WindowManager:
                             cols: 2
                             Label:
                                 text: 'Average Sentiment'
-                            Button:
+                            Label:
                                 id: average_sentiment
+                                text: "0.42"
                         # SENTIMENTS LABEL #
                         GridLayout:
                             rows: 1
@@ -178,14 +179,23 @@ WindowManager:
                                 text: 'Sentiments'
                         # SENTIMENT PERCENTAGES #
                         GridLayout:
-                            rows: 1
-                            cols: 3
+                            rows: 3
+                            cols: 2
+                            Label:
+                                text: "Percent Negative"
                             Label:
                                 id: percent_negative
+                                text: "56.6%"
+                            Label:
+                                text: "Percent Positive"
                             Label:
                                 id: percent_positive
+                                text: "56.6%"
+                            Label:
+                                text: "Percent Neutral"
                             Label:
                                 id: percent_neutral
+                                text: "56.6%"
                         # THEMES LABEL #
                         GridLayout:
                             rows: 1
@@ -238,7 +248,7 @@ WindowManager:
                     size_hint_y: None
                     height: 50
                     on_release: 
-                        root.clearTopics()
+                        root.clearTopics() # this needs to change. 
                         app.root.current = "main"
                         root.manager.transition.direction = "right"
 
