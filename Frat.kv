@@ -1,0 +1,292 @@
+#:kivy 2.0.0
+#:import utils kivy.utils
+
+WindowManager:
+    FratForLife:
+        name: "main"
+    AnalysisReportApp:
+        name: "second"
+
+<FratForLife>:
+    name: "main"
+
+    csv_txt_input: csv_txt_input
+
+    canvas.before:
+
+        Color:
+            rgb: utils.get_color_from_hex('#0f6875')
+
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        size: root.width, root.height
+        spacing: 50
+        padding: 50
+
+        Label:
+            id: title
+            color: .7, .7, .7, .7
+            font_size: 70  
+            center_x: root.width / 2
+            top: root.top - 50
+            text: "Feedback Response Analysis Tool"
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size: root.width, root.height
+            
+            topic_text: topic_text
+            TextInput:
+                id: topic_text
+                halign: 'center'
+                valign: 'middle'
+                center_y: root.width / 2
+                disabled: True
+                text: 'Welcome to the Feedback Response Analysis Tool. \nThis tool takes either a csv file or your plain text in and performs thematic, semantic, and sentiment analysis on it. \nBy default, you can click the "Browse local files" button to choose a csv file to analyze. \nClick the "Toggle Input Method" button to enable plaintext input and type in the bottom text field. \nYou will see your results after clicking the "Analyze" button.'
+
+        ToggleButton:
+            id: toggle_btn
+            size_hint: 0.1, 0.5
+            center_y: root.width / 2
+            text: 'Toggle Input Method'
+            width: 50
+            on_release: root.toggle_disable_inputs()
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            size: root.width, root.height/4
+            spacing: 10
+
+            TextInput:
+                id: csv_txt_input
+                size_hint: 1, 0.5
+                center_y: root.width / 2
+                top: root.top - 50
+                text: 'CSV file location'
+
+            Button:
+                id: browse_btn
+                size_hint: 1, 0.5
+                center_y: root.width / 2
+                top: root.top - 50
+                text: 'Browse local files'
+                on_release: root.show_load()
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size: root.width, root.height/4
+
+            TextInput:
+                id: typed_txt_input
+                center_y: root.width / 2
+                disabled: True
+                text: 'Enable toggle to type in a single response.'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size: root.width, root.height/4
+
+            Label:
+                id: title
+                color: .5, .5, .5, .5
+                font_size: 70  
+                center_x: root.width / 2
+                top: root.top - 50
+                text: " "
+
+            Button:
+                id: analyze_btn
+                size_hint: 0.25, 0.5
+                center_y: root.width / 2
+                top: root.top - 50
+                text: 'Analyze'
+                # background_color: (0.921,0.251,0.204,1.0)
+                on_release: 
+                    root.main()
+                    app.root.current = "second"
+                    root.manager.transition.direction = "left"
+
+<AnalysisReportApp>:
+    name: "second"
+
+    canvas.before:
+
+        Color:
+            rgb: utils.get_color_from_hex('#0f6875')
+
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    # LAYOUT #
+    BoxLayout:
+        orientation: 'vertical'
+
+        Label:
+            text: 'Feedback Response Analysis Report'
+            size_hint_y: None
+            height: 64
+            padding: (8, 8)
+            color: .7, .7, .7, .7
+            font_size: 45 
+            center_x: root.width / 2
+
+        # CONTENT #
+        BoxLayout:
+            orientation: 'horizontal'
+
+            # GRID #
+            GridLayout:
+                cols: 2
+
+                # SUMMARY #
+                # BoxLayout:
+                #     orientation: 'vertical'
+                #     # SUMMARY TITLE #
+                #     Label:
+                #         text: 'Analysis Summary'
+                    # SUMMARY BODY #
+                GridLayout:
+                    cols: 1
+                    rows: 5
+                    # AVERAGE SENTIMENT #
+                    GridLayout:
+                        rows: 2
+                        cols: 1
+                        Label:
+                            text: 'Average Sentiment'
+                            text_size: self.size
+                            halign: 'left'
+                            padding_x: 20
+                        Label:
+                            id: average_sentiment
+                            text: "0.42"
+                            text_size: self.size
+                            halign: 'left'
+                            padding_x: 20
+                    # SENTIMENTS LABEL #
+                    GridLayout:
+                        rows: 1
+                        cols: 1
+                        Label:
+                            id: featured_response_title
+                            text: 'Featured Responses For Average Sentiment'
+                            text_size: self.size
+                            halign: 'left'
+                            padding_x: 20
+
+                    # SENTIMENT PERCENTAGES #
+                    GridLayout:
+                        rows: 3
+                        cols: 1
+                        # Label:
+                        #     text: "Featured Response"
+                        Label:
+                            id: featured_response_1
+                            text: "56.6%"
+                            text_size: self.width, None
+                            size_hint: 1, None
+                            height: self.texture_size[1]
+                            padding_x: 50
+                            padding_y: 10 
+                        # Label:
+                        #     text: "Featured Response"
+                        Label:
+                            id: featured_response_2
+                            text: "56.6%"
+                            text_size: self.width, None
+                            size_hint: 1, None
+                            height: self.texture_size[1]
+                            padding_x: 50
+                        # Label:
+                        #     text: "Featured Response"
+                        Label:
+                            id: featured_response_3
+                            text: "56.6%"
+                            text_size: self.width, None
+                            size_hint: 1, None
+                            height: self.texture_size[1]
+                            padding_x: 50
+                            padding_y: 10
+                    # THEMES LABEL #
+                    GridLayout:
+                        rows: 1
+                        cols: 
+                        # size_hint: 1, None
+                        # padding_y: 50
+                        Label:
+                            text: 'Themes'
+                            text_size: self.size
+                            halign: 'left'
+                            padding_x: 20
+                    # THEMES LIST #
+                    GridLayout:
+                        rows: 1
+                        cols: 5
+                        Label:
+                            id: theme_1
+                        Label:
+                            id: theme_2
+                        Label:
+                            id: theme_3
+                        Label:
+                            id: theme_4
+                        Label:
+                            id: theme_5
+
+                # PIE CHART #
+                BoxLayout:
+                    orientation: 'vertical'
+                    BoxLayout:
+                        orientation: 'vertical'
+                        id: sentiment_chart
+
+                # Top Topics (Themes) #
+                BoxLayout:
+                    orientation: 'vertical'
+                    BoxLayout:
+                        id: top_topic_theme_bar
+
+                # Top Tokens Bar Chart #
+                BoxLayout:
+                    orientation: 'vertical'
+                    BoxLayout:
+                        orientation: 'vertical'
+                        id: top_token_bar_chart
+
+            # SIDEBAR #
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: None
+                width: 200
+
+                Button:
+                    text: 'New Analysis'
+                    size_hint_y: None
+                    height: 50
+                    on_release: 
+                        root.clearTopics() # this needs to change. 
+                        app.root.current = "main"
+                        root.manager.transition.direction = "right"
+
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
