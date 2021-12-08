@@ -6,12 +6,13 @@ from sklearn.decomposition import NMF
 from sklearn.feature_extraction.text import TfidfVectorizer
 from wordcloud import WordCloud
 from wordcloud import STOPWORDS
+from gui import config
 
 class Thematic_Analysis(Analysis):
 
     nltk.download('stopwords') # TODO this may need to be saved somewhere too so we can load it in locally without having to download it
     vectorizer = TfidfVectorizer(max_features=1000)
-    nmf_model = NMF(n_components=5, init='random', random_state=0)
+    config.thematic_model = NMF(n_components=1, init='random', random_state=0)
 
     """
     ===================================================================
@@ -32,6 +33,7 @@ class Thematic_Analysis(Analysis):
     def pre_process(cls, responses, max_len):
         
         clean_responses = []
+        # split_responses = responses.read().replace('"', ' ').replace('’', '\'').split('\n\n')
         responses = [resp.lower().replace('\n', ' ') for resp in responses if len(resp) > max_len]
         stop_words = set(stopwords.words('english'))
 
@@ -40,7 +42,7 @@ class Thematic_Analysis(Analysis):
             clean_resp = []
             for word in tokens:
                 word = Word(word).lemmatize()
-                if word not in stop_words and len(word) > 4:
+                if word not in stop_words:
                     clean_resp.append(word)
                 if len(clean_resp) != 0:
                     clean_responses.append(' '.join(clean_resp))
@@ -61,9 +63,9 @@ class Thematic_Analysis(Analysis):
     @classmethod
     def analyze(cls, clean_responses):
         vectors = cls.vectorizer.fit_transform(clean_responses)
-        cls.nmf_model.fit_transform(vectors)
-        feature_names = cls.vectorizer.get_feature_names()
-        return feature_names
+        config.thematic_model.fit_transform(vectors)
+        config.feature_names = cls.vectorizer.get_feature_names()
+        # return feature_names
         
 
     """
@@ -77,18 +79,22 @@ class Thematic_Analysis(Analysis):
     ===================================================================
     """
     @classmethod
-    def format_results(cls, feature_names):
+    def format_results(cls):
         # TODO Add in formatting Brent implemented to get a list of the five themes
         themes = []
         # TODO would like to make this more readable if kept
-        for idx, topic in enumerate(cls.nmf_model.components_):
-            themes.append((idx+1), [(feature_names[i], topic[i].round(2)) for i in topic.argsort()[:-50 - 1:-1]])
+        for idx, topic in enumerate(config.thematic_model.components_):
+            # themes.append((idx+1), [(feature_names[i], topic[i].round(2)) for i in topic.argsort()[:-50 - 1:-1]])
+            if idx == 0:
+                topic_x = [(config.featureNames[i], topic[i].round(2))
+                            for i in topic.argsort()[:-1000 - 1:-1]]
+                topic_x = {i[0]: i[1] for i in topic_x}
 
         wordcloud = WordCloud(width=3000, height=3000, stopwords=STOPWORDS,
                               background_color="white", min_font_size=30)
         wordcloud = wordcloud.generate_from_frequencies(topic_x)
 
-        return themes
+        # return themes
 
 
     """
