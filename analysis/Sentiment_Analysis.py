@@ -157,7 +157,8 @@ class Sentiment_Analysis(Analysis):
                 targeted_sentiments_dict[sentiment] = responses[response_num]
             response_num += 1
 
-        return Sentiment_Analysis.sort_feautred_reponses(targeted_sentiments_dict, target_value)
+        sorted_featured_responses = Sentiment_Analysis.sort_feautred_reponses(targeted_sentiments_dict, target_value)
+        return Sentiment_Analysis.truncate_featured_responses(sorted_featured_responses, 30)
 
 
     """
