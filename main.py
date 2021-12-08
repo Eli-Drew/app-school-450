@@ -74,8 +74,8 @@ class FratForLife(Screen):
         
         # Thematic Analysis
         clean_responses = Thematic_Analysis.pre_process(responses, MAXLEN)
-        feature_names = Thematic_Analysis.analyze(clean_responses)
-        themes = Thematic_Analysis.format_results(feature_names)
+        Thematic_Analysis.analyze(clean_responses)
+        Thematic_Analysis.format_results()
         
         # Top Words Analysis
         word_dict = Top_Words_Analysis.pre_process(responses, MAXLEN)
@@ -211,15 +211,15 @@ class FratForLife(Screen):
                            for i in topic.argsort()[:-1000 - 1:-1]]
                 topic_x = {i[0]: i[1] for i in topic_x}
 
-        wordcloud = WordCloud(width=3000, height=3000, stopwords=STOPWORDS,
-                              background_color="white", min_font_size=30)
-        wordcloud = wordcloud.generate_from_frequencies(topic_x)
+        # wordcloud = WordCloud(width=3000, height=3000, stopwords=STOPWORDS,
+        #                       background_color="white", min_font_size=30)
+        # wordcloud = wordcloud.generate_from_frequencies(topic_x)
 
         # build figure (plot)
-        fig = plt.figure(figsize=(50, 50))
-        plt.axis("off", figure=fig)
-        plt.imshow(wordcloud, interpolation="bilinear", figure=fig)
-        fig.get_tight_layout()
+        # fig = plt.figure(figsize=(50, 50))
+        # plt.axis("off", figure=fig)
+        # plt.imshow(wordcloud, interpolation="bilinear", figure=fig)
+        # fig.get_tight_layout()
 
         # put figure on results page at id topic_one
         # self.manager.get_screen("second").ids.topic_one.clear_widgets()
