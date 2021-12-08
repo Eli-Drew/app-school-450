@@ -93,8 +93,6 @@ class FratForLife(Screen):
             pie_chart_percentages.append(sentiment_analysis_results[key] / 100)
             pie_chart_labels.append(key)
 
-        pie_chart_percentages= pie_chart_percentages[1:]
-
         pie_chart_figure, pie_chart_ax = plt.subplots()
         pie_chart_ax.pie(pie_chart_percentages, labels=pie_chart_labels, autopct='%1.0f%%',
                                 startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'},textprops={'color': 'white'})
