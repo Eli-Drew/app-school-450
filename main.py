@@ -25,17 +25,19 @@ class FratForLife(Screen):
 
     def main(self):
 
-        # If input_method is 'c', read from csv; otherwise, read from text input.
-        csv_file_path = self.ids.csv_txt_input.text
         if(config.input_method == 'c'):
-            responses = user_input.input.csv_option(csv_file_path, MAXLEN)
-            # TODO get validation in gui if path exists or not
-                # will have to do this just for manually entered path
-                # because browsed file is obviously there
+            valid_path = False
+            while not valid_path:
+                csv_file_path = self.ids.csv_txt_input.text
+                responses = user_input.input.csv_option(csv_file_path, MAXLEN)
+                if not responses == "INVALID":
+                    valid_path = True
+                else:
+                    # TODO replace this with a popup message that should have to be clicked to exit to be able re-enter another file
+                    print("That was not a valid csv path or file. File must exist and end in a \'.csv\' extension.")
         else:
-            response = []
-            response.append(str(self.ids.typed_txt_input.text))
-            responses = user_input.input.response_option(response)
+            response = self.ids.typed_txt_input.text
+            responses = user_input.input.response_option(response, MAXLEN)
 
         # Sentiment Analysis
         padded_sequences = Sentiment_Analysis.pre_process(responses, MAXLEN)
