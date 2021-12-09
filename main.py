@@ -60,7 +60,7 @@ class FratForLife(Screen):
         else:
             response = []
             response.append(str(self.ids.typed_txt_input.text))
-            responses = user_input.input.response_option(response)
+            responses = user_input.input.response_option(response, MAXLEN)
 
         # Sentiment Analysis
         padded_sequences = Sentiment_Analysis.pre_process(responses, MAXLEN)
