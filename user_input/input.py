@@ -5,14 +5,19 @@ import csv, os
 Description:
     Receives and limits the text area to max_len words
 Paramaters:
+    response: the string resonse passed in if running from the GUI
+        or None if passed in for command line
     max_len: the max word length the response can be
 Returns:
     an array of response from the user
 ===================================================================
 """
-
 def response_option(response, max_len):
-    # response = str(input("Enter in a response with no more than {} words: ".format(max_len)))
+    
+    # True when runnning application from command line
+    if response == None:
+        response = str(input("Enter in a response with no more than {} words: ".format(max_len)))
+
     if len(response.split()) > max_len:
         response =  ' '.join(response.split()[0:max_len])
 
@@ -24,13 +29,13 @@ def response_option(response, max_len):
 Description:
     Finds the encoding of the csv file being read
 Paramaters:
-    filename: the csv file of records to be validated
+    csv_file_path: the string csv file path of records to be validated
     default: the default encoding to be returned
 Returns:
     the encoding detected in the csv file
 ===================================================================
 """
-def bom_validation(filename, default='utf-8'):
+def bom_validation(csv_file_path, default='utf-8'):
 
     msboms = dict((bom['sig'], bom) for bom in (
         {'name': 'UTF-8', 'sig': b'\xEF\xBB\xBF', 'encoding': 'utf-8'},
@@ -44,8 +49,8 @@ def bom_validation(filename, default='utf-8'):
             'encoding': 'utf-32-le'},
         {'name': 'UTF-8-SIG', 'sig': b'\xef\xbb\xbf', 'encoding': 'utf-8-sig'}))
 
-    with open(filename, 'rb') as f:
-        sig = f.read(4)
+    with open(csv_file_path, 'rb') as csv_file:
+        sig = csv_file.read(4)
         for sl in range(3, 0, -1):
             if sig[0:sl] in msboms:
                 return msboms[sig[0:sl]]['encoding']
@@ -57,27 +62,27 @@ def bom_validation(filename, default='utf-8'):
 Description:
     Reads the csv file and makes sure it is formatted correctly
 Paramaters:
-    path: the path of the csv file
+    csv_file_path: the string path of the csv file
     encodingX: the encoding found by bom_validation()
+    max_len: the max word length a response can be
 Returns:
     an array of string responses from the csv file
 ===================================================================
 """
-def csv_read(path, encodingX, max_len):
+def csv_read(csv_file_path, encodingX, max_len):
     
     responses = []
 
-    with open(path, newline='', encoding=encodingX) as csv_file:    
+    with open(csv_file_path, newline='', encoding=encodingX) as csv_file:    
         csv_reader = csv.reader(csv_file, delimiter='|')
         for row in csv_reader:
             try:
                 response = row[0]
-                # # TODO test at some point
                 if len(response.split()) > max_len:
                     response =  ' '.join(response.split()[0:max_len])
-                responses.append(row[0])
+                responses.append(response)
             except:
-                print("***Invalid csv file. The file must only contain one element per row***")
+                print("***Invalid row. The file must only contain one element per row***")
 
     return responses
 
@@ -85,28 +90,41 @@ def csv_read(path, encodingX, max_len):
 """
 ===================================================================
 Description:
-    Prompts the user for a csv file, validates, and then returns
-    the file as an array of responses
+    If called from get_input() for app to be ran via command line,
+        prompts the user for a csv file. If not, uses the path retrieved
+        from the GUI. Validates and then returns the file as an array
+        of responses
 Paramaters:
-    N/A
+    csv_file_path: the string path of the csv file if running from
+        the GUI or None if passed in for command line
+    max_len: the max word length a response can be
 Returns:
     an array of string responses
 ===================================================================
 """
 
-def csv_option(entered_path, max_len):
+def csv_option(csv_file_path, max_len):
 
-    valid_path = False
-    while not valid_path:
-        
-        # entered_path = str(input("Enter full path name of csv file with extension: "))
-        if os.path.exists(entered_path):
-            valid_path = True
-        else:
-            print("That was not a valid path or file.")
+    # True when runnning application from command line
+    if csv_file_path == None:
 
-    endcoding = bom_validation(entered_path)
-    return csv_read(entered_path, endcoding, max_len)
+        valid_path = False
+        while not valid_path:
+            
+            csv_file_path = str(input("Enter full path name of csv file with extension: "))
+            if not (os.path.exists(csv_file_path) and csv_file_path[-4:] == '.csv'):
+                print("That was not a valid csv path or file. File must exist and end in a \'.csv\' extension.")
+            else:
+                valid_path = True
+    
+    # When runnning application from GUI
+    else:
+        if not (os.path.exists(csv_file_path) and csv_file_path[-4:] == '.csv'):
+            return "INVALID"
+
+    endcoding = bom_validation(csv_file_path)
+    return csv_read(csv_file_path, endcoding, max_len)
+
 
 """
 ===================================================================
@@ -137,4 +155,4 @@ def get_input(max_len):
             print("Enter a vaild response.")
             print("=" * 50)
 
-    return response_option(max_len) if (option == 'r' or option == 'R') else csv_option()
+    return response_option(None, max_len) if (option == 'r' or option == 'R') else csv_option(None, max_len)
