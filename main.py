@@ -235,16 +235,20 @@ class FratForLife(Screen):
         #true_file_name = os.path.join(path, filename[0])
         self.dismiss_popup()
 
+    # def refresh_analysis(self):
+    #     pie_chart_container = self.manager.get_screen("second").ids.sentiment_chart_container
+    #     pie_chart = self.manager.get_screen("second").ids.sentiment_chart
+    #     pie_chart_container.remove_widget(pie_chart)
 
-
-       
 
 class AnalysisReportApp(Screen):
     def clearTopics(self):
         config.topic_list.clear()
 
-    def clear_widgets(self, children=None):
-        return super().clear_widgets(children=children)
+    def refresh_analysis(self):
+        pie_chart_container = self.ids.sentiment_chart_container
+        pie_chart = self.ids.sentiment_chart
+        pie_chart_container.remove_widget(pie_chart)
 
 
 class WindowManager(ScreenManager):

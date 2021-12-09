@@ -241,6 +241,7 @@ WindowManager:
                 # PIE CHART #
                 BoxLayout:
                     orientation: 'vertical'
+                    id: sentiment_chart_container
                     BoxLayout:
                         orientation: 'vertical'
                         id: sentiment_chart
@@ -269,9 +270,9 @@ WindowManager:
                     size_hint_y: None
                     height: 50
                     on_release: 
-                        # root.clear_widgets() # this needs to change. 
                         app.root.current = "main"
                         root.manager.transition.direction = "right"
+                        root.refresh_analysis()
 
 <LoadDialog>:
     BoxLayout:
