@@ -144,22 +144,20 @@ def pre_process(responses, max_len):
     stop_words = set(stopwords.words('english'))
 
     clean_responses = []
-
-    tokenized_responses = []
     for response in responses:
+
+        # Filter out non-alphanumeric characters and truncate to max_len
         response = text_to_word_sequence(response)
         if len(response) > max_len:
-            tokenized_responses.append(' '.join(response[:max_len]))
-        else:
-            tokenized_responses.append(' '.join(response))
-
-    for response in tokenized_responses:
-        current_response = []
-        for word in response.split():
+            response = response[:max_len]
+        
+        # Remove stop words and lemmatize words from response
+        clean_response = []
+        for word in response:
             if word not in stop_words:
                 word = Word(word).lemmatize()
-                current_response.append(word)
-        clean_responses.append(' '.join(current_response))
+                clean_response.append(word)
+        clean_responses.append(' '.join(clean_response))
 
     return clean_responses
 
