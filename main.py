@@ -1,6 +1,7 @@
 from kivy.config import Config
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
-# do not move the above two lines. they have to come before the rest of the imports
+Config.set('graphics','fullscreen','auto')
+# do not move the above three lines. they have to come before the rest of the imports
 import os
 import nltk
 import kivy
@@ -26,6 +27,7 @@ MAXLEN = 250
 
 class FratForLife(Screen):
     #csv_txt_input = ObjectProperty(None)
+    # C:\Users\Drew\Documents\app-school-450\data_sets\trip_test.csv
 
     def main(self):
 
@@ -112,23 +114,20 @@ class FratForLife(Screen):
         self.manager.get_screen("second").ids.average_sentiment.text = "{} | {}".format(str(average_sentiment[0]), average_sentiment[1])
         self.manager.get_screen("second").ids.featured_response_title.text ="Featured {} Responses".format(average_sentiment[1])
         
+        # featured_responses = featured_responses[0]
         # Add featured responses to summary chart
-        # TODO make the responses be populated on different GUI fields
-        # for i in range(len(featured_responses)):
-        #     self.manager.get_screen("second").ids.featured_response_1.text = "\"{}\"".format(featured_responses[i])
-        self.manager.get_screen("second").ids.featured_response_1.text = "\"{}\"".format(featured_responses[0])
-        self.manager.get_screen("second").ids.featured_response_2.text = "\"{}\"".format(featured_responses[1])
-        self.manager.get_screen("second").ids.featured_response_3.text = "\"{}\"".format(featured_responses[2])
+        # TODO the featured_response_layout.children labels should probably be created dynamically rather than updating already existing labels
+        featured_response_ids = [featured_response_id for featured_response_id in self.manager.get_screen("second").ids.featured_response_layout.children]
+        for index in range(len(featured_responses)):
+            featured_response_ids[index].text = "\"{}\"".format(featured_responses[index])
 
-        # Add top topics to summary chart
-        # TODO make the topics be populated on different GUI fields
+        # # Add top topics to summary chart
+        # # TODO the themes_layout.children labels should probably be created dynamically rather than updating already existing labels
+        # theme_ids = [theme_id for theme_id in self.manager.get_screen("second").ids.themes_layout.children]
+        # index = 0
         # for topic, sentiment in sorted_top_topics_dict.items():
-        #     self.manager.get_screen("second").ids.theme_1.text = "{} | {}".format(topic, str(sentiment))
-        self.manager.get_screen("second").ids.theme_1.text = "{} | {}".format("topic1", str(1.5))
-        self.manager.get_screen("second").ids.theme_2.text = "{} | {}".format("topic2", str(1.5))
-        self.manager.get_screen("second").ids.theme_3.text = "{} | {}".format("topic3", str(1.5))
-        self.manager.get_screen("second").ids.theme_4.text = "{} | {}".format("topic4", str(1.5))
-        self.manager.get_screen("second").ids.theme_5.text = "{} | {}".format("topic5", str(1.5))
+        #     theme_ids[index].text = "{} | {}".format(topic, str(sentiment))
+        #     index += 1
 
     
     """Sentiment Analysis Pie Chart"""
@@ -170,10 +169,12 @@ class FratForLife(Screen):
             topic_sentiments.append(topic_sentiment)
 
         top_topic_plot.bar(topics, topic_sentiments)
-        # top_words_bar.set_facecolor('none')
         top_topic_plot.set_ylabel('Sentiment Rating')
         top_topic_plot.set_xlabel('Top Topics')
-
+        top_topic_bar.set_facecolor('none')
+        top_topic_plot.yaxis.label.set_color('white')
+        top_topic_plot.xaxis.label.set_color('white')
+        
         container_id = 'top_topic_theme_bar_container'
         new_id = 'top_topic_theme_bar'
         self.create_plot_box_layout(container_id, new_id)
@@ -196,9 +197,18 @@ class FratForLife(Screen):
             word_counts.append(word_count)
 
         top_words_plot.bar(words, word_count)
-        top_words_plot.set_facecolor('none')
+        top_words_bar.set_facecolor('none')
         top_words_plot.set_ylabel('Number of Occurrences')
         top_words_plot.set_xlabel('Top Words')
+
+        top_words_plot.xaxis.label.set_color('white')
+        top_words_plot.yaxis.label.set_color('white')
+        # top_words_bar.xticks(color='w')
+        # top_words_bar.yticks(color='w')
+        # top_words_plot.spines['bottom'].set_color('white')
+        # top_words_plot.spines['top'].set_color('white')
+        # top_words_plot.spines['left'].set_color('white')
+        # top_words_plot.spines['right'].set_color('white')
 
         container_id = 'top_token_bar_chart_container'
         new_id = 'top_token_bar_chart'

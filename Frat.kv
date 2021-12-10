@@ -183,11 +183,11 @@ WindowManager:
                     GridLayout:
                         rows: 3
                         cols: 1
+                        id: featured_response_layout
                         # Label:
                         #     text: "Featured Response"
                         Label:
                             id: featured_response_1
-                            text: "56.6%"
                             text_size: self.width, None
                             size_hint: 1, None
                             height: self.texture_size[1]
@@ -197,7 +197,6 @@ WindowManager:
                         #     text: "Featured Response"
                         Label:
                             id: featured_response_2
-                            text: "56.6%"
                             text_size: self.width, None
                             size_hint: 1, None
                             height: self.texture_size[1]
@@ -206,23 +205,22 @@ WindowManager:
                         #     text: "Featured Response"
                         Label:
                             id: featured_response_3
-                            text: "56.6%"
                             text_size: self.width, None
                             size_hint: 1, None
                             height: self.texture_size[1]
                             padding_x: 50
                             padding_y: 10
                     # THEMES LABEL #
-                    GridLayout:
-                        rows: 1
-                        cols: 
-                        # size_hint: 1, None
-                        # padding_y: 50
-                        Label:
-                            text: 'Themes'
-                            text_size: self.size
-                            halign: 'left'
-                            padding_x: 20
+                    # GridLayout:
+                    #     rows: 1
+                    #     cols: 
+                    #     # size_hint: 1, None
+                    #     # padding_y: 50
+                    #     Label:
+                    #         text: 'Themes'
+                    #         text_size: self.size
+                    #         halign: 'left'
+                    #         padding_x: 20
                     # THEMES LIST #
                     GridLayout:
                         rows: 1
@@ -250,6 +248,7 @@ WindowManager:
                 BoxLayout:
                     orientation: 'vertical'
                     id: top_topic_theme_bar_container
+                    padding_horizontal: 20
                     # BoxLayout:
                     #     id: top_topic_theme_bar
 
