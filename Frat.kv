@@ -241,22 +241,25 @@ WindowManager:
                 # PIE CHART #
                 BoxLayout:
                     orientation: 'vertical'
-                    BoxLayout:
-                        orientation: 'vertical'
-                        id: sentiment_chart
+                    id: sentiment_chart_container
+                    # BoxLayout:
+                    #     orientation: 'vertical'
+                    #     id: sentiment_chart
 
                 # Top Topics (Themes) #
                 BoxLayout:
                     orientation: 'vertical'
-                    BoxLayout:
-                        id: top_topic_theme_bar
+                    id: top_topic_theme_bar_container
+                    # BoxLayout:
+                    #     id: top_topic_theme_bar
 
                 # Top Tokens Bar Chart #
                 BoxLayout:
                     orientation: 'vertical'
-                    BoxLayout:
-                        orientation: 'vertical'
-                        id: top_token_bar_chart
+                    id: top_token_bar_chart_container
+                    # BoxLayout:
+                    #     orientation: 'vertical'
+                    #     id: top_token_bar_chart
 
             # SIDEBAR #
             BoxLayout:
@@ -269,9 +272,10 @@ WindowManager:
                     size_hint_y: None
                     height: 50
                     on_release: 
-                        root.clearTopics() # this needs to change. 
+                        root.clear_topics()
                         app.root.current = "main"
                         root.manager.transition.direction = "right"
+                        root.remove_plot_graphs()
 
 <LoadDialog>:
     BoxLayout:

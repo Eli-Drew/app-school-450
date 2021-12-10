@@ -1,3 +1,6 @@
+from kivy.config import Config
+Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+# do not move the above two lines. they have to come before the rest of the imports
 import os
 import nltk
 import kivy
@@ -14,6 +17,7 @@ from analysis.Sentiment_Analysis import Sentiment_Analysis
 from analysis.Thematic_Anlaysis import Thematic_Analysis
 from analysis.Top_Words_Analysis import Top_Words_Analysis
 from gui import config
+from kivy.uix.boxlayout import BoxLayout
 
 nltk.download('stopwords')
 kivy.require('2.0.0')
@@ -145,6 +149,10 @@ class FratForLife(Screen):
                                 startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'},textprops={'color': 'white'})
         # pie_chart_ax.axis('equal')
         pie_chart_figure.set_facecolor('none')
+
+        container_id = 'sentiment_chart_container'
+        new_id = 'sentiment_chart'
+        self.create_plot_box_layout(container_id, new_id)
         self.manager.get_screen("second").ids.sentiment_chart.add_widget(FigureCanvasKivyAgg(pie_chart_figure))
 
 
@@ -166,6 +174,9 @@ class FratForLife(Screen):
         top_topic_plot.set_ylabel('Sentiment Rating')
         top_topic_plot.set_xlabel('Top Topics')
 
+        container_id = 'top_topic_theme_bar_container'
+        new_id = 'top_topic_theme_bar'
+        self.create_plot_box_layout(container_id, new_id)
         self.manager.get_screen("second").ids.top_topic_theme_bar.add_widget(FigureCanvasKivyAgg(top_topic_bar))
 
 
@@ -189,7 +200,9 @@ class FratForLife(Screen):
         top_words_plot.set_ylabel('Number of Occurrences')
         top_words_plot.set_xlabel('Top Words')
 
-        # plt.show()
+        container_id = 'top_token_bar_chart_container'
+        new_id = 'top_token_bar_chart'
+        self.create_plot_box_layout(container_id, new_id)
         self.manager.get_screen("second").ids.top_token_bar_chart.add_widget(FigureCanvasKivyAgg(top_words_bar))
 
 
@@ -234,11 +247,31 @@ class FratForLife(Screen):
         self.ids.csv_txt_input.text = os.path.join(path, filename[0])
         #true_file_name = os.path.join(path, filename[0])
         self.dismiss_popup()
-       
+
+    def create_plot_box_layout(self, container_id, new_id):
+    # TODO passing the id is odd
+        container = self.manager.get_screen("second").ids[container_id]
+        layout = BoxLayout(orientation='vertical')
+        container.add_widget(layout)
+        self.manager.get_screen("second").ids[new_id] = layout
+
 
 class AnalysisReportApp(Screen):
-    def clearTopics(self):
+    def clear_topics(self):
         config.topic_list.clear()
+
+    def remove_plot_graphs(self):
+        pie_chart_container = self.ids.sentiment_chart_container
+        pie_chart = self.ids.sentiment_chart
+        pie_chart_container.remove_widget(pie_chart)
+
+        top_topics_chart_container = self.ids.top_topic_theme_bar_container
+        top_topic_chart = self.ids.top_topic_theme_bar
+        top_topics_chart_container.remove_widget(top_topic_chart)
+
+        top_words_chart_container = self.ids.top_token_bar_chart_container
+        top_words_chart = self.ids.top_token_bar_chart
+        top_words_chart_container.remove_widget(top_words_chart)
 
 
 class WindowManager(ScreenManager):
