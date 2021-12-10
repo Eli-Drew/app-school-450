@@ -147,10 +147,9 @@ class FratForLife(Screen):
         # pie_chart_ax.axis('equal')
         pie_chart_figure.set_facecolor('none')
 
-        container = self.manager.get_screen("second").ids.sentiment_chart_container
-        layout = BoxLayout(orientation='vertical')
-        container.add_widget(layout)
-        self.manager.get_screen("second").ids['sentiment_chart'] = layout
+        container_id = 'sentiment_chart_container'
+        new_id = 'sentiment_chart'
+        self.create_plot_box_layout(container_id, new_id)
         self.manager.get_screen("second").ids.sentiment_chart.add_widget(FigureCanvasKivyAgg(pie_chart_figure))
 
 
@@ -172,10 +171,9 @@ class FratForLife(Screen):
         top_topic_plot.set_ylabel('Sentiment Rating')
         top_topic_plot.set_xlabel('Top Topics')
 
-        container = self.manager.get_screen("second").ids.top_topic_theme_bar_container
-        layout = BoxLayout(orientation='vertical')
-        container.add_widget(layout)
-        self.manager.get_screen("second").ids['top_topic_theme_bar'] = layout
+        container_id = 'top_topic_theme_bar_container'
+        new_id = 'top_topic_theme_bar'
+        self.create_plot_box_layout(container_id, new_id)
         self.manager.get_screen("second").ids.top_topic_theme_bar.add_widget(FigureCanvasKivyAgg(top_topic_bar))
 
 
@@ -199,13 +197,9 @@ class FratForLife(Screen):
         top_words_plot.set_ylabel('Number of Occurrences')
         top_words_plot.set_xlabel('Top Words')
 
-        container = self.manager.get_screen("second").ids.top_token_bar_chart_container
-        layout = BoxLayout(orientation='vertical')
-        container.add_widget(layout)
-        self.manager.get_screen("second").ids['top_token_bar_chart'] = layout
-        # container_id = 'top_token_bar_chart_container'
-        # new_id = 'top_token_bar_chart'
-        # self.create_plot_box_layout(container_id, new_id)
+        container_id = 'top_token_bar_chart_container'
+        new_id = 'top_token_bar_chart'
+        self.create_plot_box_layout(container_id, new_id)
         self.manager.get_screen("second").ids.top_token_bar_chart.add_widget(FigureCanvasKivyAgg(top_words_bar))
 
 
@@ -256,7 +250,7 @@ class FratForLife(Screen):
         container = self.manager.get_screen("second").ids[container_id]
         layout = BoxLayout(orientation='vertical')
         container.add_widget(layout)
-        self.manager.get_screen("second").ids[container_id] = layout
+        self.manager.get_screen("second").ids[new_id] = layout
 
 
 class AnalysisReportApp(Screen):
