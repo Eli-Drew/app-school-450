@@ -1,3 +1,6 @@
+from kivy.config import Config
+Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+# do not move the above two lines. they have to come before the rest of the imports
 import os
 import nltk
 import kivy
