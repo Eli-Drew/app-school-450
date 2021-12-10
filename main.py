@@ -6,18 +6,19 @@ import nltk
 import kivy
 from kivy.app import App
 from kivy.core.window import Window
-from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.properties import ObjectProperty
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib.pyplot as plt
 import user_input.input
 from analysis.Sentiment_Analysis import Sentiment_Analysis
 from analysis.Thematic_Anlaysis import Thematic_Analysis
 from analysis.Top_Words_Analysis import Top_Words_Analysis
-from gui import config
-from kivy.uix.boxlayout import BoxLayout
+from gui import config # TODO change gui/config name to something else to avoid confusion with kivy.config
+
 
 nltk.download('stopwords')
 kivy.require('2.0.0')
@@ -29,44 +30,44 @@ class FratForLife(Screen):
 
     def main(self):
 
+        # TODO validate that there is at least some input
         if(config.input_method == 'c'):
             valid_path = False
             while not valid_path:
                 csv_file_path = self.ids.csv_txt_input.text
-                responses = user_input.input.csv_option(csv_file_path, MAXLEN)
-                if not responses == "INVALID":
+                processed_responses, raw_responses = user_input.input.csv_option(csv_file_path, MAXLEN)
+                if not processed_responses == "INVALID":
                     valid_path = True
                 else:
                     # TODO replace this with a popup message that should have to be clicked to exit to be able re-enter another file
                     print("That was not a valid csv path or file. File must exist and end in a \'.csv\' extension.")
         else:
             response = self.ids.typed_txt_input.text
-            responses = user_input.input.response_option(response, MAXLEN)
+            processed_responses, raw_responses = user_input.input.response_option(response, MAXLEN)
 
         # Sentiment Analysis
-        padded_sequences = Sentiment_Analysis.pre_process(responses, MAXLEN)
+        padded_sequences = Sentiment_Analysis.pre_process(processed_responses)
         sentiments = Sentiment_Analysis.analyze(padded_sequences)
         sentiment_analysis_results = Sentiment_Analysis.format_results(sentiments)
         featured_responses = Sentiment_Analysis.get_featured_responses(
-            responses, sentiments, sentiment_analysis_results["average"][1])
+            raw_responses, sentiments, sentiment_analysis_results["average"][1])
         
         # Thematic Analysis
-        clean_responses = Thematic_Analysis.pre_process(responses, MAXLEN)
+        clean_responses = Thematic_Analysis.pre_process(processed_responses, MAXLEN)
         Thematic_Analysis.analyze(clean_responses)
         Thematic_Analysis.format_results()
         sorted_top_topics_dict = self.get_topics_dict()
 
         # Top Words Analysis
-        word_dict = Top_Words_Analysis.pre_process(responses, MAXLEN)
+        word_dict = Top_Words_Analysis.pre_process(processed_responses)
         top_words_dict = Top_Words_Analysis.analyze(word_dict)
         sorted_top_words_dict = Top_Words_Analysis.format_results(top_words_dict)
 
         # Populate GUI
-        self.populate_summary_chart(sentiment_analysis_results, featured_responses, sorted_top_topics_dict)
+        self.populate_summary_chart(sentiment_analysis_results, featured_responses)
         self.populate_pie_chart(sentiment_analysis_results)
         self.populate_topics_chart(sorted_top_topics_dict)
         self.populate_words_chart(sorted_top_words_dict)
-
 
         # self.ids.topic_text.text = topic_one
         # open_close(self)
@@ -104,33 +105,21 @@ class FratForLife(Screen):
 
 
     """Analysis Summary Chart"""
-    def populate_summary_chart(self, sentiment_analysis_results, featured_responses, sorted_top_topics_dict):
+    def populate_summary_chart(self, sentiment_analysis_results, featured_responses):
 
         average_sentiment = sentiment_analysis_results.pop("average")
 
         # Add average sentiment results to summary chart
-        self.manager.get_screen("second").ids.average_sentiment.text = "{} | {}".format(str(average_sentiment[0]), average_sentiment[1])
-        self.manager.get_screen("second").ids.featured_response_title.text ="Featured {} Responses".format(average_sentiment[1])
-        
+        self.manager.get_screen("second").ids.average_sentiment.text = "{} | {}".format(str(average_sentiment[0]), average_sentiment[1].capitalize())
+        self.manager.get_screen("second").ids.featured_response_title.text = "Featured {} Responses".format(average_sentiment[1].capitalize())
+
         # Add featured responses to summary chart
-        # TODO make the responses be populated on different GUI fields
-        # for i in range(len(featured_responses)):
-        #     self.manager.get_screen("second").ids.featured_response_1.text = "\"{}\"".format(featured_responses[i])
-        self.manager.get_screen("second").ids.featured_response_1.text = "\"{}\"".format(featured_responses[0])
-        self.manager.get_screen("second").ids.featured_response_2.text = "\"{}\"".format(featured_responses[1])
-        self.manager.get_screen("second").ids.featured_response_3.text = "\"{}\"".format(featured_responses[2])
-
-        # Add top topics to summary chart
-        # TODO make the topics be populated on different GUI fields
-        # for topic, sentiment in sorted_top_topics_dict.items():
-        #     self.manager.get_screen("second").ids.theme_1.text = "{} | {}".format(topic, str(sentiment))
-        self.manager.get_screen("second").ids.theme_1.text = "{} | {}".format("topic1", str(1.5))
-        self.manager.get_screen("second").ids.theme_2.text = "{} | {}".format("topic2", str(1.5))
-        self.manager.get_screen("second").ids.theme_3.text = "{} | {}".format("topic3", str(1.5))
-        self.manager.get_screen("second").ids.theme_4.text = "{} | {}".format("topic4", str(1.5))
-        self.manager.get_screen("second").ids.theme_5.text = "{} | {}".format("topic5", str(1.5))
-
+        # TODO the featured_response_layout.children labels should probably be created dynamically rather than updating already existing labels
+        featured_response_ids = [featured_response_id for featured_response_id in self.manager.get_screen("second").ids.featured_response_layout.children]
+        for index in range(len(featured_responses)):
+            featured_response_ids[index].text = "\"{}\"".format(featured_responses[index])
     
+
     """Sentiment Analysis Pie Chart"""
     def populate_pie_chart(self, sentiment_analysis_results):
         

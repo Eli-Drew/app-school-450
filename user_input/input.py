@@ -1,4 +1,8 @@
-import csv, os
+import os, csv
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # suppresses tf info and warning logs
+from tensorflow.keras.preprocessing.text import text_to_word_sequence
+from nltk.corpus import stopwords
+from textblob import Word
 
 """
 ===================================================================
@@ -7,9 +11,10 @@ Description:
 Paramaters:
     response: the string resonse passed in if running from the GUI
         or None if passed in for command line
-    max_len: the max word length the response can be
+    max_len: the max word length a response will be truncated to
 Returns:
-    an array of response from the user
+    a list of one string response pre-processed;
+    a list of one string response without any pre-processing
 ===================================================================
 """
 def response_option(response, max_len):
@@ -18,10 +23,7 @@ def response_option(response, max_len):
     if response == None:
         response = str(input("Enter in a response with no more than {} words: ".format(max_len)))
 
-    if len(response.split()) > max_len:
-        response =  ' '.join(response.split()[0:max_len])
-
-    return [response]
+    return pre_process([response], max_len), [response]
 
 
 """
@@ -52,8 +54,8 @@ def bom_validation(csv_file_path, default='utf-8'):
     with open(csv_file_path, 'rb') as csv_file:
         sig = csv_file.read(4)
         for sl in range(3, 0, -1):
-            if sig[0:sl] in msboms:
-                return msboms[sig[0:sl]]['encoding']
+            if sig[:sl] in msboms:
+                return msboms[sig[:sl]]['encoding']
         return default
 
 
@@ -64,12 +66,11 @@ Description:
 Paramaters:
     csv_file_path: the string path of the csv file
     encodingX: the encoding found by bom_validation()
-    max_len: the max word length a response can be
 Returns:
-    an array of string responses from the csv file
+    a list of string responses from the csv file
 ===================================================================
 """
-def csv_read(csv_file_path, encodingX, max_len):
+def csv_read(csv_file_path, encodingX):
     
     responses = []
 
@@ -77,10 +78,7 @@ def csv_read(csv_file_path, encodingX, max_len):
         csv_reader = csv.reader(csv_file, delimiter='|')
         for row in csv_reader:
             try:
-                response = row[0]
-                if len(response.split()) > max_len:
-                    response =  ' '.join(response.split()[0:max_len])
-                responses.append(response)
+                responses.append(row[0])
             except:
                 print("***Invalid row. The file must only contain one element per row***")
 
@@ -91,15 +89,16 @@ def csv_read(csv_file_path, encodingX, max_len):
 ===================================================================
 Description:
     If called from get_input() for app to be ran via command line,
-        prompts the user for a csv file. If not, uses the path retrieved
-        from the GUI. Validates and then returns the file as an array
-        of responses
+    prompts the user for a csv file. If not, uses the path retrieved
+    from the GUI. Validates and then returns the file as an array
+    of responses
 Paramaters:
     csv_file_path: the string path of the csv file if running from
-        the GUI or None if passed in for command line
-    max_len: the max word length a response can be
+        the GUI or None if passed for command line
+    max_len: the max word length a response will be truncated to
 Returns:
-    an array of string responses
+    a list of string responses pre-processed;
+    a list of string responses without any pre-processing
 ===================================================================
 """
 
@@ -123,8 +122,46 @@ def csv_option(csv_file_path, max_len):
             return "INVALID"
 
     endcoding = bom_validation(csv_file_path)
-    return csv_read(csv_file_path, endcoding, max_len)
+    responses = csv_read(csv_file_path, endcoding)
+    return pre_process(responses, max_len), responses
 
+
+"""
+===================================================================
+Description:
+    General pre-processing of user input for all analyses which
+    removes non-alphanumeric characters, truncates to max_len
+    words, removes stop words, and lemmatizes words
+Paramaters:
+    responses: a list of strings from user input
+    max_len: the max word length a response will be truncated to
+Returns:
+    a list of pre-processed strings
+===================================================================
+"""
+def pre_process(responses, max_len):
+    
+    stop_words = set(stopwords.words('english'))
+
+    clean_responses = []
+
+    tokenized_responses = []
+    for response in responses:
+        response = text_to_word_sequence(response)
+        if len(response) > max_len:
+            tokenized_responses.append(' '.join(response[:max_len]))
+        else:
+            tokenized_responses.append(' '.join(response))
+
+    for response in tokenized_responses:
+        current_response = []
+        for word in response.split():
+            if word not in stop_words:
+                word = Word(word).lemmatize()
+                current_response.append(word)
+        clean_responses.append(' '.join(current_response))
+
+    return clean_responses
 
 """
 ===================================================================
@@ -135,7 +172,7 @@ Description:
 Paramaters:
     max_len: the max word length a response can be
 Returns:
-    an array of string responses
+    a list of string responses
 ===================================================================
 """
 def get_input(max_len):
@@ -155,4 +192,7 @@ def get_input(max_len):
             print("Enter a vaild response.")
             print("=" * 50)
 
-    return response_option(None, max_len) if (option == 'r' or option == 'R') else csv_option(None, max_len)
+    if (option == 'r' or option == 'R'):
+        return response_option(None, max_len)
+    else:
+        return csv_option(None, max_len)

@@ -14,22 +14,22 @@ def main():
     while flag:
 
         # Get user's responses
-        responses = get_input(MAXLEN)
+        processed_responses, raw_responses = get_input(MAXLEN)
 
         # Sentiment Analysis
-        padded_sequences = Sentiment_Analysis.pre_process(responses, MAXLEN)
+        padded_sequences = Sentiment_Analysis.pre_process(processed_responses)
         sentiments = Sentiment_Analysis.analyze(padded_sequences)
         sentiment_analysis_results = Sentiment_Analysis.format_results(sentiments)
         featured_responses = Sentiment_Analysis.get_featured_responses(
-            responses, sentiments, sentiment_analysis_results["average"][1])
+            raw_responses, sentiments, sentiment_analysis_results["average"][1])
         
         # Thematic Analysis
-        # clean_responses = Thematic_Analysis.pre_process(responses, MAXLEN)
+        # clean_responses = Thematic_Analysis.pre_process(processed_responses, MAXLEN)
         # feature_names = Thematic_Analysis.analyze(clean_responses)
         # themes = Thematic_Analysis.format_results(feature_names)
         
         # Top Words Analysis
-        word_dict = Top_Words_Analysis.pre_process(responses, MAXLEN)
+        word_dict = Top_Words_Analysis.pre_process(processed_responses)
         top_words_dict = Top_Words_Analysis.analyze(word_dict)
         sorted_top_words_dict = Top_Words_Analysis.format_results(top_words_dict)
 

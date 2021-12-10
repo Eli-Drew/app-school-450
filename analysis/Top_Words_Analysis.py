@@ -1,5 +1,4 @@
 from analysis.Analysis import Analysis
-from analysis.Thematic_Anlaysis import Thematic_Analysis
 
 class Top_Words_Analysis(Analysis):
 
@@ -9,19 +8,14 @@ class Top_Words_Analysis(Analysis):
         Iterates through all words from the user's responses and creates
         a dictionary of the words seen and their count of occurrences
     Paramaters:
-        responses: TBD based on implementation
-            (responses needs to end up being a 2D array of strings before iterating through)
-        max_len: the max word count that the responses can have
+        responses: a list of string responses
     Returns:
         Dictionary with all words and their count of occurrences
     ===================================================================
     """
     @classmethod
-    def pre_process(cls, responses, max_len):
-        # TODO uncomment line after first ensuring pre_process() is working correctly
-        # TODO The pre-processed responses returned from Thematic_Analysis.pre_process() called in main
-        #       should probably actually be passed in instead
-        # responses = Thematic_Analysis.pre_process(responses, max_len)
+    def pre_process(cls, responses):
+
         word_dict = {}
         for resp in responses:
             for word in resp.split():
@@ -135,67 +129,3 @@ class Top_Words_Analysis(Analysis):
         print("\nTop {} Occurring Words:".format(len(sorted_words_dict)))
         for word, count in sorted_words_dict.items():
             print("{}: {}".format(word, count))
-# from analysis.Analysis import Analysis
-# #from textblob import Word, TextBlob
-# import nltk
-# from nltk.corpus import stopwords
-
-# import ssl
-
-# try:
-#     _create_unverified_https_context = ssl._create_unverified_context
-# except AttributeError:
-#     pass
-# else:
-#     ssl._create_default_https_context = _create_unverified_https_context
-
-# nltk.download('stopwords')
-
-
-# class Top_Words_Analysis(Analysis):
-
-
-#     """
-#     ===================================================================
-#     Description:
-#         Iterates through all words from the user's responses and creates
-#         a dictionary of the words seen and their count of occurrences
-#     Paramaters:
-#         responses: TBD based on implementation
-#             (responses needs to end up being a 2D array of strings before iterating through)
-#         max_len: the max word count that the responses can have
-#     Returns:
-#         Dictionary with all words and their count of occurrences
-#     ===================================================================
-#     """
-
-    
-
-#     @classmethod
-#     def pre_process(cls, responses, max_len):
-
-        
-
-        
-#         #file = open('stopwords.txt', 'r')
-
-#         stop_words = set(stopwords.words('english'))
-
-#         data =[]
-#         for response in responses:
-#             CleanResponse = " "
-#             for word in response.split():
-#                if word.lower() not in stop_words:
-#                    CleanResponse += (word + ' ')
-#             data.append(CleanResponse.strip())
-
-
-
-#         word_dict = {}
-#         for resp in data:
-#             for word in resp.split():
-#                 if word not in word_dict:
-#                     word_dict[word] = 1
-#                 else:
-#                     word_dict[word] += 1
-#         return word_dic

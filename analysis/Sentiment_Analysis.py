@@ -12,6 +12,7 @@ class Sentiment_Analysis(Analysis):
     model_path = os.path.join(os.path.expanduser('~'), 'FRAT-models\\2_7_sentiment_model.tf')
     model = load_model(model_path, compile=False)
     word_index = get_word_index()
+
     negative_range = [0.00, 0.44]
     neutral_range = [0.45, 0.55]
     positive_range = [0.56, 1.00]
@@ -20,26 +21,24 @@ class Sentiment_Analysis(Analysis):
     """
     ===================================================================
     Description:
-        Tokenizes an array of strings into sequences of integers
+        Tokenizes a list of strings into sequences of integers
         and does any padding or truncating if necessary
     Paramaters:
-        responses: an array of strings to be pre-processed
-        max_len: the max word length a response can be
+        responses: a list of strings to be pre-processed
     Returns:
-        the padded sequences as a 2D array of integers
+        the padded sequences as a 2D list of integers
     ===================================================================
     """
     @classmethod
-    def pre_process(cls, responses, max_len):
+    def pre_process(cls, responses):
 
         token_sequences = []
 
         for response in responses:
-            word_seq = text_to_word_sequence(response)
-            token_seq = [cls.word_index[word] if word in cls.word_index else 0 for word in word_seq]
+            token_seq = [cls.word_index[word] if word in cls.word_index else 0 for word in response.split()]
             token_sequences.append(token_seq)
 
-        return pad_sequences(token_sequences, max_len)
+        return pad_sequences(token_sequences)
 
 
     """
@@ -105,7 +104,7 @@ class Sentiment_Analysis(Analysis):
         elif (cls.positive_range[0] <= average_sentiment <= cls.positive_range[1]):
             average_sentiment_type = "positive"
 
-        sentiment_analysis_results["average"] = [average_sentiment, average_sentiment_type.capitalize()]
+        sentiment_analysis_results["average"] = [average_sentiment, average_sentiment_type]
 
         # Ensure total of percents is equal to 100
         total_percent = sentiment_analysis_results["percent_negative"] \
@@ -124,7 +123,7 @@ class Sentiment_Analysis(Analysis):
     Description:
         Find up to 3 responses showcasing the average sentiment
     Paramaters:
-        responses: an array of strings
+        responses: a list of string responses without any pre-processing
         sentiments: the predicted sentiments as a 2D array of floating points
             returned by analyze()
         average_sentiment_type: the type of the average of sentiments
@@ -165,7 +164,7 @@ class Sentiment_Analysis(Analysis):
     ===================================================================
     Description:
         Sort and get up to 3 sentiment/response entries from
-            a dict of sentiment keys and response values
+        a dict of sentiment keys and response values
     Paramaters:
         targeted_sentiments: the dict of sentiments and corresponding responses
         target_value: the targeted sentiment value to base sorting off of
@@ -226,14 +225,14 @@ class Sentiment_Analysis(Analysis):
                 featured_responses.append(response)
 
         num_responses = 3 if (len(featured_responses) >= 3) else len(featured_responses)
-        return featured_responses[0:num_responses]
+        return featured_responses[:num_responses]
 
 
     """
     ===================================================================
     Description:
         Shorten the featured responses if necessesary to prepare for
-            presentation
+        presentation
     Paramaters:
         featured_responses: a list of 3 or less string responses
         length: the length to shorten a response to if needed
@@ -249,7 +248,7 @@ class Sentiment_Analysis(Analysis):
 
         for response in featured_responses:
             if len(response.split()) > length:
-                response = ' '.join(response.split()[0:length]) + '...'
+                response = ' '.join(response.split()[:length]) + '...'
             shortened_featured_responses.append(response)
 
         return shortened_featured_responses

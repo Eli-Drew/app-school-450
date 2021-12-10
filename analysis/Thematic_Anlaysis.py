@@ -1,5 +1,4 @@
 from analysis.Analysis import Analysis
-import nltk # TODO this can be removed when nltk.download('stopwords') is saved and loaded in
 from nltk.corpus import stopwords
 from textblob import Word, TextBlob
 from sklearn.decomposition import NMF
@@ -10,7 +9,6 @@ from gui import config
 
 class Thematic_Analysis(Analysis):
 
-    nltk.download('stopwords') # TODO this may need to be saved somewhere too so we can load it in locally without having to download it
     vectorizer = TfidfVectorizer(max_features=1000)
     config.thematic_model = NMF(n_components=1, init='random', random_state=0)
 
@@ -25,11 +23,6 @@ class Thematic_Analysis(Analysis):
         To be written
     ===================================================================
     """
-    # TODO make sure this method truncates responses to max_len,
-    #                            removes end of sentence punctuations
-    #                            lematizes
-    #                            returns a 2D array of strings so Top_Words_Analysis.find_top_words() can use it
-    @classmethod
     def pre_process(cls, responses, max_len):
         
         clean_responses = []
