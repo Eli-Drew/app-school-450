@@ -20,10 +20,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import os, csv
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # suppresses tf info and warning logs
-from tensorflow.keras.preprocessing.text import text_to_word_sequence
-from nltk.corpus import stopwords
-from textblob import Word
 
 """
 ===================================================================
