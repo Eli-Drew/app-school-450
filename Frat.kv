@@ -96,7 +96,6 @@ WindowManager:
                 font_size: 70  
                 center_x: root.width / 2
                 top: root.top - 50
-                text: " "
 
             Button:
                 id: analyze_btn
@@ -158,13 +157,12 @@ WindowManager:
                         rows: 2
                         cols: 1
                         Label:
-                            text: 'Average Sentiment'
+                            text: 'Average Sentiment:'
                             text_size: self.size
                             halign: 'left'
                             padding_x: 20
                         Label:
                             id: average_sentiment
-                            text: "0.42"
                             text_size: self.size
                             halign: 'left'
                             padding_x: 20
@@ -174,69 +172,36 @@ WindowManager:
                         cols: 1
                         Label:
                             id: featured_response_title
-                            text: 'Featured Responses For Average Sentiment'
+                            text: 'Featured Responses For Average Sentiment:'
                             text_size: self.size
                             halign: 'left'
                             padding_x: 20
 
                     # SENTIMENT PERCENTAGES #
                     GridLayout:
+                        id: featured_response_layout
                         rows: 3
                         cols: 1
-                        # Label:
-                        #     text: "Featured Response"
                         Label:
                             id: featured_response_1
-                            text: "56.6%"
                             text_size: self.width, None
                             size_hint: 1, None
                             height: self.texture_size[1]
                             padding_x: 50
                             padding_y: 10 
-                        # Label:
-                        #     text: "Featured Response"
                         Label:
                             id: featured_response_2
-                            text: "56.6%"
                             text_size: self.width, None
                             size_hint: 1, None
                             height: self.texture_size[1]
                             padding_x: 50
-                        # Label:
-                        #     text: "Featured Response"
                         Label:
                             id: featured_response_3
-                            text: "56.6%"
                             text_size: self.width, None
                             size_hint: 1, None
                             height: self.texture_size[1]
                             padding_x: 50
                             padding_y: 10
-                    # THEMES LABEL #
-                    GridLayout:
-                        rows: 1
-                        cols: 
-                        # size_hint: 1, None
-                        # padding_y: 50
-                        Label:
-                            text: 'Themes'
-                            text_size: self.size
-                            halign: 'left'
-                            padding_x: 20
-                    # THEMES LIST #
-                    GridLayout:
-                        rows: 1
-                        cols: 5
-                        Label:
-                            id: theme_1
-                        Label:
-                            id: theme_2
-                        Label:
-                            id: theme_3
-                        Label:
-                            id: theme_4
-                        Label:
-                            id: theme_5
 
                 # PIE CHART #
                 BoxLayout:
