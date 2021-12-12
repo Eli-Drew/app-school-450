@@ -18,6 +18,11 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ===================================================================================================
 """
+"""
+=========================================================
+Class SDD reference: Section 3.2.3.3, 3.2.2.3.5, 3.2.4.3.
+=========================================================
+"""
 
 from analysis.Analysis import Analysis
 import os
