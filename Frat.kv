@@ -248,7 +248,6 @@ WindowManager:
                 BoxLayout:
                     orientation: 'vertical'
                     id: top_topic_theme_bar_container
-                    padding_horizontal: 20
                     # BoxLayout:
                     #     id: top_topic_theme_bar
 
@@ -293,3 +292,10 @@ WindowManager:
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
+
+<AnalysisPopUp>:
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            text: 'OK'
+            on_release: root.dismiss_popup()

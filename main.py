@@ -19,6 +19,9 @@ from analysis.Thematic_Anlaysis import Thematic_Analysis
 from analysis.Top_Words_Analysis import Top_Words_Analysis
 from gui import config
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
 
 nltk.download('stopwords')
 kivy.require('2.0.0')
@@ -33,14 +36,15 @@ class FratForLife(Screen):
 
         if(config.input_method == 'c'):
             valid_path = False
-            while not valid_path:
-                csv_file_path = self.ids.csv_txt_input.text
-                responses = user_input.input.csv_option(csv_file_path, MAXLEN)
-                if not responses == "INVALID":
-                    valid_path = True
-                else:
-                    # TODO replace this with a popup message that should have to be clicked to exit to be able re-enter another file
-                    print("That was not a valid csv path or file. File must exist and end in a \'.csv\' extension.")
+            # while not valid_path:
+            csv_file_path = self.ids.csv_txt_input.text
+            responses = user_input.input.csv_option(csv_file_path, MAXLEN)
+            if not responses == "INVALID":
+                valid_path = True
+            else:
+
+                print("That was not a valid csv path or file. File must exist and end in a \'.csv\' extension.")
+                return
         else:
             response = self.ids.typed_txt_input.text
             responses = user_input.input.response_option(response, MAXLEN)
@@ -68,10 +72,6 @@ class FratForLife(Screen):
         self.populate_pie_chart(sentiment_analysis_results)
         self.populate_topics_chart(sorted_top_topics_dict)
         self.populate_words_chart(sorted_top_words_dict)
-
-
-        # self.ids.topic_text.text = topic_one
-        # open_close(self)
 
 
     """Create dictionary of top topics and related sentiments sorted from greatest to least"""
@@ -120,14 +120,6 @@ class FratForLife(Screen):
         featured_response_ids = [featured_response_id for featured_response_id in self.manager.get_screen("second").ids.featured_response_layout.children]
         for index in range(len(featured_responses)):
             featured_response_ids[index].text = "\"{}\"".format(featured_responses[index])
-
-        # # Add top topics to summary chart
-        # # TODO the themes_layout.children labels should probably be created dynamically rather than updating already existing labels
-        # theme_ids = [theme_id for theme_id in self.manager.get_screen("second").ids.themes_layout.children]
-        # index = 0
-        # for topic, sentiment in sorted_top_topics_dict.items():
-        #     theme_ids[index].text = "{} | {}".format(topic, str(sentiment))
-        #     index += 1
 
     
     """Sentiment Analysis Pie Chart"""
@@ -203,12 +195,6 @@ class FratForLife(Screen):
 
         top_words_plot.xaxis.label.set_color('white')
         top_words_plot.yaxis.label.set_color('white')
-        # top_words_bar.xticks(color='w')
-        # top_words_bar.yticks(color='w')
-        # top_words_plot.spines['bottom'].set_color('white')
-        # top_words_plot.spines['top'].set_color('white')
-        # top_words_plot.spines['left'].set_color('white')
-        # top_words_plot.spines['right'].set_color('white')
 
         container_id = 'top_token_bar_chart_container'
         new_id = 'top_token_bar_chart'
@@ -238,14 +224,6 @@ class FratForLife(Screen):
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
-
-
-    # def show_analysis_in_process(self):
-    # TODO
-    # not sure how this is going to work
-    #     self.analysis_animation = Factory.AnalysisPopup()
-    #     self.analysis_animation.update_pop_up_text("Running Analysis")
-    #     self.analysis_animation.open()
 
 
     def load(self, path, filename):
@@ -286,13 +264,6 @@ class AnalysisReportApp(Screen):
 
 class WindowManager(ScreenManager):
     pass
-
-
-class AnalysisPopup(Popup):
-    pop_up_text = ObjectProperty()
-
-    def update_pop_up_text(self, p_message):
-        self.pop_up_text.text = p_message
 
 
 class LoadDialog(FloatLayout):

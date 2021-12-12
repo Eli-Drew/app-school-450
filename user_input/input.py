@@ -156,3 +156,9 @@ def get_input(max_len):
             print("=" * 50)
 
     return response_option(None, max_len) if (option == 'r' or option == 'R') else csv_option(None, max_len)
+
+# def csv_validate(csv_file_path):
+#         if not (os.path.exists(csv_file_path) and csv_file_path[-4:] == '.csv'):
+#             print("That was not a valid csv path or file. File must exist and end in a \'.csv\' extension.")
+#         else:
+#             valid_path = True  
