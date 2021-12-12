@@ -1,6 +1,30 @@
+"""
+===================================================================================================
+Copyright 2021 Brent Anderson, Hannah Bolick, Kadidia Kantao, Henry Knehans, Drew Rinker
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+and associated documentation files (the 'Software'), to deal in the Software without restriction, 
+including without limitation the rights to use, copy, modify, merge, publish, distribute, 
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is 
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or 
+substantial portions of the Software.
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN 
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+===================================================================================================
+"""
+
+"""
+===============================================
+Class SDD reference: Section(s) 4.0, 4.1, 4.1.1
+===============================================
+"""
+
 from kivy.config import Config
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
-Config.set('graphics','fullscreen','auto')
 # Do not move the above two lines. They must to come first.
 import os
 import kivy
@@ -29,7 +53,7 @@ class FratForLife(Screen):
 
         if(gui_config.input_method == 'c'):
             csv_file_path = self.ids.csv_txt_input.text
-            responses = user_input.input.csv_option(csv_file_path, MAXLEN)
+            processed_responses, raw_responses = user_input.input.csv_option(csv_file_path, MAXLEN)
             csv_file_path = self.ids.csv_txt_input.text
             responses = user_input.input.csv_option(csv_file_path, MAXLEN)
             if not responses == "INVALID":
