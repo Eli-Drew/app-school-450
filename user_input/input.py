@@ -155,8 +155,7 @@ def pre_process(responses, max_len):
         clean_response = []
         for word in response:
             if word not in stop_words:
-                word = Word(word).lemmatize()
-                clean_response.append(word)
+                clean_response.append(Word(word).lemmatize())
         clean_responses.append(' '.join(clean_response))
 
     return clean_responses

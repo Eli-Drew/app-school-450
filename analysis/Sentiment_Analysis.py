@@ -1,10 +1,9 @@
 from analysis.Analysis import Analysis
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # suppresses tf info and warning logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # Suppresses TensorFlow info and warning logs
 from tensorflow.keras.models import load_model
-import tensorflow.python.keras.engine.base_layer_v1 # needed for compiling deliverable
+import tensorflow.python.keras.engine.base_layer_v1 # Needed for compiling deliverable
 from tensorflow.keras.datasets.imdb import get_word_index
-from tensorflow.keras.preprocessing.text import text_to_word_sequence
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 class Sentiment_Analysis(Analysis):
@@ -24,7 +23,7 @@ class Sentiment_Analysis(Analysis):
         Tokenizes a list of strings into sequences of integers
         and does any padding or truncating if necessary
     Paramaters:
-        responses: a list of strings to be pre-processed
+        responses: a list of string responses
     Returns:
         the padded sequences as a 2D list of integers
     ===================================================================
@@ -46,9 +45,10 @@ class Sentiment_Analysis(Analysis):
     Description:
         Predicts the sentiments of the sequences based off of the model
     Paramaters:
-        padded_sequences: the padded sequences of integers returned by pre_process()
+        padded_sequences: the padded sequences of integers returned by
+            pre_process()
     Returns:
-        the predicted sentiments as 2D array of floating points
+        the predicted sentiments as 2D list of floating points
     ===================================================================
     """
     @classmethod
@@ -64,7 +64,7 @@ class Sentiment_Analysis(Analysis):
         overall sentiment as well as the percentages of negative, neural,
         and positive sentiments
     Paramaters:
-        sentiments: the predicted sentiments as a 2D array of floating points
+        sentiments: the predicted sentiments as a 2D list of floating points
     Returns:
         dictionary containing the average sentiment and percentages of
         negative, neural, and positive sentiments throughout the responses
@@ -124,7 +124,7 @@ class Sentiment_Analysis(Analysis):
         Find up to 3 responses showcasing the average sentiment
     Paramaters:
         responses: a list of string responses without any pre-processing
-        sentiments: the predicted sentiments as a 2D array of floating points
+        sentiments: the predicted sentiments as a 2D list of floating points
             returned by analyze()
         average_sentiment_type: the type of the average of sentiments
             (negative, neutral, positive)
@@ -238,7 +238,7 @@ class Sentiment_Analysis(Analysis):
         length: the length to shorten a response to if needed
     Returns:
         a list of 3 or less featured responses shortened to be at or
-            under 'length' words
+        under 'length' words
     ===================================================================
     """
     @classmethod

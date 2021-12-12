@@ -29,7 +29,7 @@ class Top_Words_Analysis(Analysis):
     """
     ===================================================================
     Description:
-        Takes the word_dict returned by created_word_dict() and finds the
+        Takes the word_dict returned by pre_process() and finds the
         top 5 words with the highest counts
     Paramaters:
         word_dict: dictionary with all words and their count of occurrences
@@ -66,7 +66,7 @@ class Top_Words_Analysis(Analysis):
                         min_top_word = top_word
                         min_top_count = top_count
 
-        # Find and remove any word from top_words_dict if any initial entry is still present
+        # Find and remove any word from top_words_dict if any entry at initialization is still present
         # This is a very rare case
         remove_words = []
         for word, count in top_words_dict.items():
@@ -100,13 +100,13 @@ class Top_Words_Analysis(Analysis):
         for i in range(len(top_words_dict)):
 
             for word, count in top_words_dict.items():
-                if word in sorted_words_dict.keys():
-                    continue
-                elif count > max_count:
+                if count > max_count:
                     max_count = count
                     max_count_word = word
 
-            sorted_words_dict[max_count_word] = max_count
+            sorted_words_dict[max_count_word.capitalize()] = max_count
+
+            del top_words_dict[max_count_word]
             max_count_word = ""
             max_count = 0
 

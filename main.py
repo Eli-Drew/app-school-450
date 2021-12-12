@@ -1,8 +1,8 @@
 from kivy.config import Config
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
-# do not move the above two lines. they have to come before the rest of the imports
+Config.set('graphics','fullscreen','auto')
+# Do not move the above two lines. They must to come first.
 import os
-import nltk
 import kivy
 from kivy.app import App
 from kivy.core.window import Window
@@ -17,30 +17,27 @@ import user_input.input
 from analysis.Sentiment_Analysis import Sentiment_Analysis
 from analysis.Thematic_Anlaysis import Thematic_Analysis
 from analysis.Top_Words_Analysis import Top_Words_Analysis
-from gui import config # TODO change gui/config name to something else to avoid confusion with kivy.config
+import gui_config
 
-
-nltk.download('stopwords')
 kivy.require('2.0.0')
 
 MAXLEN = 250
 
 class FratForLife(Screen):
-    #csv_txt_input = ObjectProperty(None)
 
     def main(self):
 
-        # TODO validate that there is at least some input
-        if(config.input_method == 'c'):
-            valid_path = False
-            while not valid_path:
-                csv_file_path = self.ids.csv_txt_input.text
-                processed_responses, raw_responses = user_input.input.csv_option(csv_file_path, MAXLEN)
-                if not processed_responses == "INVALID":
-                    valid_path = True
-                else:
-                    # TODO replace this with a popup message that should have to be clicked to exit to be able re-enter another file
-                    print("That was not a valid csv path or file. File must exist and end in a \'.csv\' extension.")
+        if(gui_config.input_method == 'c'):
+            csv_file_path = self.ids.csv_txt_input.text
+            responses = user_input.input.csv_option(csv_file_path, MAXLEN)
+            csv_file_path = self.ids.csv_txt_input.text
+            responses = user_input.input.csv_option(csv_file_path, MAXLEN)
+            if not responses == "INVALID":
+                valid_path = True
+            else:
+
+                print("That was not a valid csv path or file. File must exist and end in a \'.csv\' extension.")
+                return
         else:
             response = self.ids.typed_txt_input.text
             processed_responses, raw_responses = user_input.input.response_option(response, MAXLEN)
@@ -53,11 +50,10 @@ class FratForLife(Screen):
             raw_responses, sentiments, sentiment_analysis_results["average"][1])
         
         # Thematic Analysis
-        clean_responses = Thematic_Analysis.pre_process(processed_responses, MAXLEN)
-        Thematic_Analysis.analyze(clean_responses)
-        Thematic_Analysis.format_results()
-        sorted_top_topics_dict = self.get_topics_dict()
-
+        topics_dict = Thematic_Analysis.pre_process(processed_responses)
+        top_topics_dict = Thematic_Analysis.analyze(topics_dict)
+        sorted_top_topics_dict = Thematic_Analysis.format_results(top_topics_dict)
+        
         # Top Words Analysis
         word_dict = Top_Words_Analysis.pre_process(processed_responses)
         top_words_dict = Top_Words_Analysis.analyze(word_dict)
@@ -68,40 +64,6 @@ class FratForLife(Screen):
         self.populate_pie_chart(sentiment_analysis_results)
         self.populate_topics_chart(sorted_top_topics_dict)
         self.populate_words_chart(sorted_top_words_dict)
-
-        # self.ids.topic_text.text = topic_one
-        # open_close(self)
-
-
-    """Create dictionary of top topics and related sentiments sorted from greatest to least"""
-    def get_topics_dict(self):
-
-        top_topics_list = config.topic_list[0]
-        top_topics_dict = {}
-
-        # Create topics dicionary out of topics list
-        for topic in top_topics_list:
-            top_topics_dict[topic[0].capitalize()] = topic[1]
-
-        # Sort top_topics_dict
-        sorted_top_topics_dict = {}
-        max_sentiment_topic = ""
-        max_sentiemnt = 0
-
-        for i in range(len(top_topics_dict)):
-
-            for topic, sentiment in top_topics_dict.items():
-                if topic in sorted_top_topics_dict.keys():
-                    continue
-                elif sentiment > max_sentiemnt:
-                    max_sentiemnt = sentiment
-                    max_sentiment_topic = topic
-
-            sorted_top_topics_dict[max_sentiment_topic] = max_sentiemnt
-            max_sentiment_topic = ""
-            max_sentiemnt = 0
-
-        return sorted_top_topics_dict
 
 
     """Analysis Summary Chart"""
@@ -114,7 +76,6 @@ class FratForLife(Screen):
         self.manager.get_screen("second").ids.featured_response_title.text = "Featured {} Responses".format(average_sentiment[1].capitalize())
 
         # Add featured responses to summary chart
-        # TODO the featured_response_layout.children labels should probably be created dynamically rather than updating already existing labels
         featured_response_ids = [featured_response_id for featured_response_id in self.manager.get_screen("second").ids.featured_response_layout.children]
         for index in range(len(featured_responses)):
             featured_response_ids[index].text = "\"{}\"".format(featured_responses[index])
@@ -136,7 +97,7 @@ class FratForLife(Screen):
         pie_chart_figure, pie_chart_ax = plt.subplots()
         pie_chart_ax.pie(pie_chart_percentages, labels=pie_chart_labels, autopct='%1.0f%%',
                                 startangle=90, wedgeprops={'linewidth': 3.0, 'edgecolor': 'white'},textprops={'color': 'white'})
-        # pie_chart_ax.axis('equal')
+
         pie_chart_figure.set_facecolor('none')
 
         container_id = 'sentiment_chart_container'
@@ -145,22 +106,24 @@ class FratForLife(Screen):
         self.manager.get_screen("second").ids.sentiment_chart.add_widget(FigureCanvasKivyAgg(pie_chart_figure))
 
 
-    """Top Topics/Sentiments Chart"""
+    """Top Topics Chart"""
     def populate_topics_chart(self, sorted_top_topics_dict):
 
         top_topic_bar = plt.figure()
         top_topic_plot = top_topic_bar.add_subplot(1, 2, 2)
 
         topics = []
-        topic_sentiments = []
+        topic_count = []
 
-        for topic, topic_sentiment in sorted_top_topics_dict.items():
+        for topic, count in sorted_top_topics_dict.items():
             topics.append(topic)
-            topic_sentiments.append(topic_sentiment)
+            topic_count.append(count)
 
-        top_topic_plot.bar(topics, topic_sentiments)
-        # top_words_bar.set_facecolor('none')
-        top_topic_plot.set_ylabel('Sentiment Rating')
+        top_topic_plot.bar(topics, topic_count)
+        top_topic_plot.set_ylabel('Number of Occurrences')
+        top_topic_bar.set_facecolor('none')
+        top_topic_plot.yaxis.label.set_color('white')
+        top_topic_plot.xaxis.label.set_color('white')
         top_topic_plot.set_xlabel('Top Topics')
 
         container_id = 'top_topic_theme_bar_container'
@@ -172,10 +135,8 @@ class FratForLife(Screen):
     """Top Words Chart"""
     def populate_words_chart(self, sorted_top_words_dict):
 
-        # TODO make graph look better and add labels
         top_words_bar = plt.figure()
         top_words_plot = top_words_bar.add_subplot(1, 2, 2)
-        # top_token_ax = top_words_bar.add_axes([0,0,1,1])
 
         words = []
         word_counts = []
@@ -185,9 +146,12 @@ class FratForLife(Screen):
             word_counts.append(word_count)
 
         top_words_plot.bar(words, word_count)
-        top_words_plot.set_facecolor('none')
+        top_words_bar.set_facecolor('none')
         top_words_plot.set_ylabel('Number of Occurrences')
         top_words_plot.set_xlabel('Top Words')
+
+        top_words_plot.xaxis.label.set_color('white')
+        top_words_plot.yaxis.label.set_color('white')
 
         container_id = 'top_token_bar_chart_container'
         new_id = 'top_token_bar_chart'
@@ -199,13 +163,13 @@ class FratForLife(Screen):
         if(self.ids.csv_txt_input.disabled is True):
             self.ids.csv_txt_input.disabled = False
             self.ids.typed_txt_input.disabled = True
-            config.input_method = 'c'
             self.ids.browse_btn.disabled = False
+            gui_config.input_method = 'c'
         else:
             self.ids.csv_txt_input.disabled = True
             self.ids.typed_txt_input.disabled = False
-            config.input_method = 'r'
             self.ids.browse_btn.disabled = True
+            gui_config.input_method = 'r'
 
 
     def dismiss_popup(self):
@@ -219,26 +183,14 @@ class FratForLife(Screen):
         self._popup.open()
 
 
-    # def show_analysis_in_process(self):
-    # TODO
-    # not sure how this is going to work
-    #     self.analysis_animation = Factory.AnalysisPopup()
-    #     self.analysis_animation.update_pop_up_text("Running Analysis")
-    #     self.analysis_animation.open()
-
-
     def load(self, path, filename):
 
-        # with open(os.path.join(path, filename[0])) as stream:
-        #     self.text_input.text = stream.read()
-
-        # self.dismiss_popup()
         self.ids.csv_txt_input.text = os.path.join(path, filename[0])
-        #true_file_name = os.path.join(path, filename[0])
         self.dismiss_popup()
 
+
     def create_plot_box_layout(self, container_id, new_id):
-    # TODO passing the id is odd
+
         container = self.manager.get_screen("second").ids[container_id]
         layout = BoxLayout(orientation='vertical')
         container.add_widget(layout)
@@ -246,9 +198,7 @@ class FratForLife(Screen):
 
 
 class AnalysisReportApp(Screen):
-    def clear_topics(self):
-        config.topic_list.clear()
-
+    
     def remove_plot_graphs(self):
         pie_chart_container = self.ids.sentiment_chart_container
         pie_chart = self.ids.sentiment_chart
@@ -273,7 +223,7 @@ class AnalysisPopup(Popup):
     def update_pop_up_text(self, p_message):
         self.pop_up_text.text = p_message
 
-
+        
 class LoadDialog(FloatLayout):
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)

@@ -236,8 +236,7 @@ WindowManager:
                     text: 'New Analysis'
                     size_hint_y: None
                     height: 50
-                    on_release: 
-                        root.clear_topics()
+                    on_release:
                         app.root.current = "main"
                         root.manager.transition.direction = "right"
                         root.remove_plot_graphs()

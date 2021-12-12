@@ -24,9 +24,9 @@ def main():
             raw_responses, sentiments, sentiment_analysis_results["average"][1])
         
         # Thematic Analysis
-        # clean_responses = Thematic_Analysis.pre_process(processed_responses, MAXLEN)
-        # feature_names = Thematic_Analysis.analyze(clean_responses)
-        # themes = Thematic_Analysis.format_results(feature_names)
+        topics_dict = Thematic_Analysis.pre_process(processed_responses)
+        top_topics_dict = Thematic_Analysis.analyze(topics_dict)
+        sorted_top_topics_dict = Thematic_Analysis.format_results(top_topics_dict)
         
         # Top Words Analysis
         word_dict = Top_Words_Analysis.pre_process(processed_responses)
@@ -36,8 +36,7 @@ def main():
         # Print Analysis Results
         print("\n=================Analysis Results=================")
         Sentiment_Analysis.print_sentiment_results(sentiment_analysis_results, featured_responses)
-        # Thematic_Analysis.print_themes(themes)
-        print("\nTop 5 Themes:\nTheme 1: 0.0\nTheme 2: 0.0\nTheme 3: 0.0\nTheme 4: 0.0\nTheme 5: 0.0")
+        Thematic_Analysis.print_top_themes(sorted_top_topics_dict)
         Top_Words_Analysis.print_top_words(sorted_top_words_dict)
         print("\n==================================================")
 
