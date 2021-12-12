@@ -19,7 +19,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ===================================================================================================
 """
 
-from analysis.Analysis import Analysis
+from analysis.analysis import Analysis
 import nltk # TODO this can be removed when nltk.download('stopwords') is saved and loaded in
 from nltk.corpus import stopwords
 from textblob import Word, TextBlob

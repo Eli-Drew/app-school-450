@@ -19,7 +19,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ===================================================================================================
 """
 
-from analysis.Analysis import Analysis
+from analysis.analysis import Analysis
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # suppresses tf info and warning logs
 from tensorflow.keras.models import load_model

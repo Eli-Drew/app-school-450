@@ -94,6 +94,8 @@ class FratForLife(Screen):
         self.populate_topics_chart(sorted_top_topics_dict)
         self.populate_words_chart(sorted_top_words_dict)
 
+        self.manager.current = "second"
+
 
     """Create dictionary of top topics and related sentiments sorted from greatest to least"""
     def get_topics_dict(self):
