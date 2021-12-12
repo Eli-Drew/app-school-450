@@ -1,6 +1,28 @@
 #:kivy 2.0.0
 #:import utils kivy.utils
 
+#===================================================================================================
+#Copyright 2021 Brent Anderson, Hannah Bolick, Kadidia Kantao, Henry Knehans, Drew Rinker
+#Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+#and associated documentation files (the 'Software'), to deal in the Software without restriction, 
+#including without limitation the rights to use, copy, modify, merge, publish, distribute, 
+#sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is 
+#furnished to do so, subject to the following conditions:
+#The above copyright notice and this permission notice shall be included in all copies or 
+#substantial portions of the Software.
+#THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+#INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+#PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+#COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN 
+#AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+#WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#===================================================================================================
+
+#====================================================
+#Class SDD reference: Section(s) 4.0, 4.1, 4.1.1, 4.3
+#====================================================
+
+
 WindowManager:
     FratForLife:
         name: "main"
@@ -96,7 +118,6 @@ WindowManager:
                 font_size: 70  
                 center_x: root.width / 2
                 top: root.top - 50
-                text: " "
 
             Button:
                 id: analyze_btn
@@ -158,13 +179,12 @@ WindowManager:
                         rows: 2
                         cols: 1
                         Label:
-                            text: 'Average Sentiment'
+                            text: 'Average Sentiment:'
                             text_size: self.size
                             halign: 'left'
                             padding_x: 20
                         Label:
                             id: average_sentiment
-                            text: "0.42"
                             text_size: self.size
                             halign: 'left'
                             padding_x: 20
@@ -174,89 +194,59 @@ WindowManager:
                         cols: 1
                         Label:
                             id: featured_response_title
-                            text: 'Featured Responses For Average Sentiment'
+                            text: 'Featured Responses For Average Sentiment:'
                             text_size: self.size
                             halign: 'left'
                             padding_x: 20
 
                     # SENTIMENT PERCENTAGES #
                     GridLayout:
+                        id: featured_response_layout
                         rows: 3
                         cols: 1
-                        # Label:
-                        #     text: "Featured Response"
                         Label:
                             id: featured_response_1
-                            text: "56.6%"
                             text_size: self.width, None
                             size_hint: 1, None
                             height: self.texture_size[1]
                             padding_x: 50
                             padding_y: 10 
-                        # Label:
-                        #     text: "Featured Response"
                         Label:
                             id: featured_response_2
-                            text: "56.6%"
                             text_size: self.width, None
                             size_hint: 1, None
                             height: self.texture_size[1]
                             padding_x: 50
-                        # Label:
-                        #     text: "Featured Response"
                         Label:
                             id: featured_response_3
-                            text: "56.6%"
                             text_size: self.width, None
                             size_hint: 1, None
                             height: self.texture_size[1]
                             padding_x: 50
                             padding_y: 10
-                    # THEMES LABEL #
-                    GridLayout:
-                        rows: 1
-                        cols: 
-                        # size_hint: 1, None
-                        # padding_y: 50
-                        Label:
-                            text: 'Themes'
-                            text_size: self.size
-                            halign: 'left'
-                            padding_x: 20
-                    # THEMES LIST #
-                    GridLayout:
-                        rows: 1
-                        cols: 5
-                        Label:
-                            id: theme_1
-                        Label:
-                            id: theme_2
-                        Label:
-                            id: theme_3
-                        Label:
-                            id: theme_4
-                        Label:
-                            id: theme_5
 
                 # PIE CHART #
                 BoxLayout:
                     orientation: 'vertical'
-                    BoxLayout:
-                        orientation: 'vertical'
-                        id: sentiment_chart
+                    id: sentiment_chart_container
+                    # BoxLayout:
+                    #     orientation: 'vertical'
+                    #     id: sentiment_chart
 
                 # Top Topics (Themes) #
                 BoxLayout:
                     orientation: 'vertical'
-                    BoxLayout:
-                        id: top_topic_theme_bar
+                    id: top_topic_theme_bar_container
+                    # BoxLayout:
+                    #     id: top_topic_theme_bar
 
                 # Top Tokens Bar Chart #
                 BoxLayout:
                     orientation: 'vertical'
-                    BoxLayout:
-                        orientation: 'vertical'
-                        id: top_token_bar_chart
+                    id: top_token_bar_chart_container
+                    # BoxLayout:
+                    #     orientation: 'vertical'
+                    #     id: top_token_bar_chart
 
             # SIDEBAR #
             BoxLayout:
@@ -268,10 +258,10 @@ WindowManager:
                     text: 'New Analysis'
                     size_hint_y: None
                     height: 50
-                    on_release: 
-                        root.clearTopics() # this needs to change. 
+                    on_release:
                         app.root.current = "main"
                         root.manager.transition.direction = "right"
+                        root.remove_plot_graphs()
 
 <LoadDialog>:
     BoxLayout:

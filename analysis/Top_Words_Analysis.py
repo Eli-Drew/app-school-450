@@ -1,5 +1,29 @@
+"""
+===================================================================================================
+Copyright 2021 Brent Anderson, Hannah Bolick, Kadidia Kantao, Henry Knehans, Drew Rinker
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+and associated documentation files (the 'Software'), to deal in the Software without restriction, 
+including without limitation the rights to use, copy, modify, merge, publish, distribute, 
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is 
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or 
+substantial portions of the Software.
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN 
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+===================================================================================================
+"""
+
+"""
+=========================================================
+Class SDD reference: Section 3.2.3.3, 3.2.2.3.5, 3.2.4.3.
+=========================================================
+"""
+
 from analysis.Analysis import Analysis
-from analysis.Thematic_Anlaysis import Thematic_Analysis
 
 class Top_Words_Analysis(Analysis):
 
@@ -9,19 +33,14 @@ class Top_Words_Analysis(Analysis):
         Iterates through all words from the user's responses and creates
         a dictionary of the words seen and their count of occurrences
     Paramaters:
-        responses: TBD based on implementation
-            (responses needs to end up being a 2D array of strings before iterating through)
-        max_len: the max word count that the responses can have
+        responses: a list of string responses
     Returns:
         Dictionary with all words and their count of occurrences
     ===================================================================
     """
     @classmethod
-    def pre_process(cls, responses, max_len):
-        # TODO uncomment line after first ensuring pre_process() is working correctly
-        # TODO The pre-processed responses returned from Thematic_Analysis.pre_process() called in main
-        #       should probably actually be passed in instead
-        # responses = Thematic_Analysis.pre_process(responses, max_len)
+    def pre_process(cls, responses):
+
         word_dict = {}
         for resp in responses:
             for word in resp.split():
@@ -35,7 +54,7 @@ class Top_Words_Analysis(Analysis):
     """
     ===================================================================
     Description:
-        Takes the word_dict returned by created_word_dict() and finds the
+        Takes the word_dict returned by pre_process() and finds the
         top 5 words with the highest counts
     Paramaters:
         word_dict: dictionary with all words and their count of occurrences
@@ -72,7 +91,7 @@ class Top_Words_Analysis(Analysis):
                         min_top_word = top_word
                         min_top_count = top_count
 
-        # Find and remove any word from top_words_dict if any initial entry is still present
+        # Find and remove any word from top_words_dict if any entry at initialization is still present
         # This is a very rare case
         remove_words = []
         for word, count in top_words_dict.items():
@@ -106,13 +125,13 @@ class Top_Words_Analysis(Analysis):
         for i in range(len(top_words_dict)):
 
             for word, count in top_words_dict.items():
-                if word in sorted_words_dict.keys():
-                    continue
-                elif count > max_count:
+                if count > max_count:
                     max_count = count
                     max_count_word = word
 
-            sorted_words_dict[max_count_word] = max_count
+            sorted_words_dict[max_count_word.capitalize()] = max_count
+
+            del top_words_dict[max_count_word]
             max_count_word = ""
             max_count = 0
 

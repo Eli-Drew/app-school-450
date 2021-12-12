@@ -1,10 +1,34 @@
+"""
+===================================================================================================
+Copyright 2021 Brent Anderson, Hannah Bolick, Kadidia Kantao, Henry Knehans, Drew Rinker
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+and associated documentation files (the 'Software'), to deal in the Software without restriction, 
+including without limitation the rights to use, copy, modify, merge, publish, distribute, 
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is 
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or 
+substantial portions of the Software.
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN 
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+===================================================================================================
+"""
+
+"""
+=========================================================
+Class SDD reference: Section 3.2.3.3, 3.2.2.3.5, 3.2.4.3.
+=========================================================
+"""
+
 from analysis.Analysis import Analysis
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # suppresses tf info and warning logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # Suppresses TensorFlow info and warning logs
 from tensorflow.keras.models import load_model
-import tensorflow.python.keras.engine.base_layer_v1 # needed for compiling deliverable
+import tensorflow.python.keras.engine.base_layer_v1 # Needed for compiling deliverable
 from tensorflow.keras.datasets.imdb import get_word_index
-from tensorflow.keras.preprocessing.text import text_to_word_sequence
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 class Sentiment_Analysis(Analysis):
@@ -12,6 +36,7 @@ class Sentiment_Analysis(Analysis):
     model_path = os.path.join(os.path.expanduser('~'), 'FRAT-models\\2_7_sentiment_model.tf')
     model = load_model(model_path, compile=False)
     word_index = get_word_index()
+
     negative_range = [0.00, 0.44]
     neutral_range = [0.45, 0.55]
     positive_range = [0.56, 1.00]
@@ -20,26 +45,24 @@ class Sentiment_Analysis(Analysis):
     """
     ===================================================================
     Description:
-        Tokenizes an array of strings into sequences of integers
+        Tokenizes a list of strings into sequences of integers
         and does any padding or truncating if necessary
     Paramaters:
-        responses: an array of strings to be pre-processed
-        max_len: the max word length a response can be
+        responses: a list of string responses
     Returns:
-        the padded sequences as a 2D array of integers
+        the padded sequences as a 2D list of integers
     ===================================================================
     """
     @classmethod
-    def pre_process(cls, responses, max_len):
+    def pre_process(cls, responses):
 
         token_sequences = []
 
         for response in responses:
-            word_seq = text_to_word_sequence(response)
-            token_seq = [cls.word_index[word] if word in cls.word_index else 0 for word in word_seq]
+            token_seq = [cls.word_index[word] if word in cls.word_index else 0 for word in response.split()]
             token_sequences.append(token_seq)
 
-        return pad_sequences(token_sequences, max_len)
+        return pad_sequences(token_sequences)
 
 
     """
@@ -47,9 +70,10 @@ class Sentiment_Analysis(Analysis):
     Description:
         Predicts the sentiments of the sequences based off of the model
     Paramaters:
-        padded_sequences: the padded sequences of integers returned by pre_process()
+        padded_sequences: the padded sequences of integers returned by
+            pre_process()
     Returns:
-        the predicted sentiments as 2D array of floating points
+        the predicted sentiments as 2D list of floating points
     ===================================================================
     """
     @classmethod
@@ -65,7 +89,7 @@ class Sentiment_Analysis(Analysis):
         overall sentiment as well as the percentages of negative, neural,
         and positive sentiments
     Paramaters:
-        sentiments: the predicted sentiments as a 2D array of floating points
+        sentiments: the predicted sentiments as a 2D list of floating points
     Returns:
         dictionary containing the average sentiment and percentages of
         negative, neural, and positive sentiments throughout the responses
@@ -105,7 +129,7 @@ class Sentiment_Analysis(Analysis):
         elif (cls.positive_range[0] <= average_sentiment <= cls.positive_range[1]):
             average_sentiment_type = "positive"
 
-        sentiment_analysis_results["average"] = [average_sentiment, average_sentiment_type.capitalize()]
+        sentiment_analysis_results["average"] = [average_sentiment, average_sentiment_type]
 
         # Ensure total of percents is equal to 100
         total_percent = sentiment_analysis_results["percent_negative"] \
@@ -124,8 +148,8 @@ class Sentiment_Analysis(Analysis):
     Description:
         Find up to 3 responses showcasing the average sentiment
     Paramaters:
-        responses: an array of strings
-        sentiments: the predicted sentiments as a 2D array of floating points
+        responses: a list of string responses without any pre-processing
+        sentiments: the predicted sentiments as a 2D list of floating points
             returned by analyze()
         average_sentiment_type: the type of the average of sentiments
             (negative, neutral, positive)
@@ -157,7 +181,7 @@ class Sentiment_Analysis(Analysis):
                 targeted_sentiments_dict[sentiment] = responses[response_num]
             response_num += 1
 
-        sorted_featured_responses = Sentiment_Analysis.sort_feautred_reponses(targeted_sentiments_dict, target_value)
+        sorted_featured_responses = Sentiment_Analysis.sort_featured_reponses(targeted_sentiments_dict, target_value)
         return Sentiment_Analysis.truncate_featured_responses(sorted_featured_responses, 30)
 
 
@@ -165,7 +189,7 @@ class Sentiment_Analysis(Analysis):
     ===================================================================
     Description:
         Sort and get up to 3 sentiment/response entries from
-            a dict of sentiment keys and response values
+        a dict of sentiment keys and response values
     Paramaters:
         targeted_sentiments: the dict of sentiments and corresponding responses
         target_value: the targeted sentiment value to base sorting off of
@@ -174,7 +198,7 @@ class Sentiment_Analysis(Analysis):
     ===================================================================
     """
     @classmethod
-    def sort_feautred_reponses(cls, targeted_sentiments_dict, target_value):
+    def sort_featured_reponses(cls, targeted_sentiments_dict, target_value):
         
         featured_responses = []
         sorted_responses_dict = {}
@@ -226,20 +250,20 @@ class Sentiment_Analysis(Analysis):
                 featured_responses.append(response)
 
         num_responses = 3 if (len(featured_responses) >= 3) else len(featured_responses)
-        return featured_responses[0:num_responses]
+        return featured_responses[:num_responses]
 
 
     """
     ===================================================================
     Description:
         Shorten the featured responses if necessesary to prepare for
-            presentation
+        presentation
     Paramaters:
         featured_responses: a list of 3 or less string responses
         length: the length to shorten a response to if needed
     Returns:
         a list of 3 or less featured responses shortened to be at or
-            under 'length' words
+        under 'length' words
     ===================================================================
     """
     @classmethod
@@ -249,7 +273,7 @@ class Sentiment_Analysis(Analysis):
 
         for response in featured_responses:
             if len(response.split()) > length:
-                response = ' '.join(response.split()[0:length]) + '...'
+                response = ' '.join(response.split()[:length]) + '...'
             shortened_featured_responses.append(response)
 
         return shortened_featured_responses
